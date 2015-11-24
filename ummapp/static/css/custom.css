@@ -1,8 +1,8 @@
 .main-top-bar{
-	background: #ffffff;
+    background: #ffffff;
     padding: 18px 0 14px 0;
+    border-bottom: 1px solid #cfcfcf;
     margin-bottom: 6px;
-    margin-bottom: -20px;
 }
 .logo {
     background: url(../../static/images/regalix_logo.jpg) no-repeat;
@@ -10,15 +10,15 @@
     height:80px;
 }
 .main-category-bar{
-	background: #4d4d4d;
+    background: #4d4d4d;
     padding: 18px;
     margin-bottom: 10px;
 }
 .main-option{
-	margin-left:-40px;
+    margin-left:-40px;
 }
-.main-category-bar ul li span {
-	text-decoration: none;
+.main-category-bar ul li a {
+    text-decoration: none;
     font-size: 24px;
     line-height: 34px;
     color: #ffffff;
@@ -28,7 +28,7 @@
     padding-bottom: 12px;
     display: block;
 }
-.main-option li span.active  {
+.main-category-bar ul li.active a {
     border-bottom: 3px solid #ffb609;
     color: #ffb609;
     margin-bottom: -1px;
@@ -216,3 +216,31 @@ hr.line3 {
 }
 
 h1.bottom-row { display: inline-block; margin:0; padding: 15px 32px; background: #007944; font-size: 16px; color: #fff;font-weight:bold }
+
+/* ++++++++++++ ummoffering html page css ++++++++++++   */
+.main-link a{
+    display: inline-block;
+    margin: 0 20px 0 0;
+    color: #4d4d4d;
+    font-size: 20px;
+    font-weight: 500;
+    padding: 0 0 5px 0;
+    border-bottom: 3px solid #fff;
+text-decoration: none;}
+
+.main-link .active h3 {
+    border-bottom: 3px solid #ffb607;
+    color: #ffb607;
+    padding-bottom: 10px;
+    margin-bottom: -1px;
+}
+
+
+/* Important part */
+.modal-dialog{
+    overflow-y: initial !important
+}
+.modal-body{
+    overflow-y: auto;
+    height: 700px;
+}

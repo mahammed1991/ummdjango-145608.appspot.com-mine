@@ -20,4 +20,14 @@ urlpatterns = [
     url(r'^umm/admin/', include(admin.site.urls)),
     url(r'^$', 'umm_app.views.home'),
     url(r'^task/', "umm_app.views.tasks", name="tasks"),
+   
+    url(r'^umm/$', "umm_app.views.home1", name="home1"),
+    url(r'^task_list/(?P<cat_id>\d+)/', 'umm_app.views.task_list', name='task_list'),
+    url(r'^left_column_list/(?P<task_id>\d+)/', 'umm_app.views.left_column_list', name='left_column_list'),
+    url(r'^elevator_pitch_data/(?P<task_id>\d+)/', 'umm_app.views.elevator_pitch_data', name='elevator_pitch_data'),
+    url(r'^right_column_list/(?P<task_id>\d+)/', 'umm_app.views.right_column_list', name='right_column_list'),
+    url(r'^combodata/$', 'umm_app.views.combo_data', name='combo_data'),
+    url(r'^budget_band/$', 'umm_app.views.budget_band', name='budget_band'),
+   
+
 ]

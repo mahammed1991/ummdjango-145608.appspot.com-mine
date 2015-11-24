@@ -18,7 +18,7 @@ class QuarterAdmin(admin.ModelAdmin):
 
 
 class BudgetBandAdmin(admin.ModelAdmin):
-    list_display = ('band_details', 'created_date', 'modified_date')
+    list_display = ('parent_quarter_id', 'created_date', 'modified_date')
     formfield_overrides = {models.TextField: {'widget': forms.Textarea(attrs={'class':'ckeditor'})}, }
 
     class Media:

@@ -103,7 +103,7 @@ else:
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'umm_tool',
             'USER': 'root',
-            'PASSWORD': 'arun',
+            'PASSWORD': '123456',
         }
     }
 

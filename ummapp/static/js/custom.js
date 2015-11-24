@@ -59,3 +59,4 @@ $(".sbtn").click(function (e){
 		$(".advertiser-goal").append('<h4 class="text-center"> <em class="text-danger"><br>Watch out this space for your advertiser goal better<br><br></em> </h4>');
 	}
 });
+
