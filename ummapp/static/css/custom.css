@@ -27,6 +27,7 @@
     border-bottom: 3px solid #4d4d4d;
     padding-bottom: 12px;
     display: block;
+    cursor: pointer; 
 }
 .main-category-bar ul li.active a {
     border-bottom: 3px solid #ffb609;
@@ -133,6 +134,8 @@ hr.line {
 			 text-decoration: none; 
 			 padding: 8px 15px;
 			 min-width:235px;
+             cursor: pointer; 
+
 
 }
 
@@ -243,4 +246,11 @@ text-decoration: none;}
 .modal-body{
     overflow-y: auto;
     height: 700px;
+}
+.looper{
+        float: left;
+}
+.item{
+        cursor: pointer; 
+
 }

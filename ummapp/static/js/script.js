@@ -23,16 +23,17 @@ $.ajax({
         dataType: 'json',
         success: function(data, response, xhr)
         {
-           
+            $('.looper').looper({
+               
+            });
             for(i=0; i<data.length; i++)
             {
                 mytag=document.createElement('a');
                 mytag.setAttribute('id',data[i].pk);
+                mytag.setAttribute('class', "item");
                 mytag.innerHTML = data[i].fields.title;
-                $('.myclass').append(mytag);      
+                $('.myclass').append(mytag);
             }
-            
-
             $('.myclass').click(function(){
                 $('.mytable').empty();
                 for(i=0; i<data.length; i++)

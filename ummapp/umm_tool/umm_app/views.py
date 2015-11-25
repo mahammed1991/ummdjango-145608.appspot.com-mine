@@ -49,14 +49,22 @@ def tasks(request):
 
 def home1(request):
     template = "home.html"
+    categorys = list()
+    tasks = list()
+    lefttab = list()
+    righttab = list()
+
     quarters = Quarter.objects.filter(is_active=True)
-    for q in quarters:
-        a = q.id
-    categorys = Category.objects.filter(parent_quarter_id=a, is_disable=False)
-    tasks = Task.objects.filter(parent_category_id=categorys[0], is_disable=False)
-    lefttab = ColumnData.objects.filter(parent_task_id=tasks[0], is_disable=False)
-    righttab = AdditionData.objects.filter(parent_task_id=tasks[0], is_disable=False)
-    return render(request, template, {'tasks': tasks, 'lefttab': lefttab, 'righttab': righttab, 'categorys': categorys, 'quarters':quarters})
+    if len(quarters):
+        for q in quarters:
+            quarter_id = q.id
+            categorys = Category.objects.filter(parent_quarter_id=quarter_id, is_disable=False)
+            if len(categorys):
+                tasks = Task.objects.filter(parent_category_id=categorys[0], is_disable=False)
+                if len(tasks):
+                    lefttab = ColumnData.objects.filter(parent_task_id=tasks[0], is_disable=False)
+                    righttab = AdditionData.objects.filter(parent_task_id=tasks[0], is_disable=False)
+    return render(request, template, {'tasks': tasks, 'lefttab': lefttab, 'righttab': righttab, 'categorys': categorys, 'quarters': quarters})
 
 
 def task_list(request, cat_id):
@@ -68,10 +76,12 @@ def task_list(request, cat_id):
 
 def combo_data(request):
     quarters = Quarter.objects.filter(is_active=True)
-    for q in quarters:
-        a = q.id
-    combodata = ComboUpdate.objects.filter(parent_quarter_id_id=a)
-    data = serializers.serialize('json', combodata)
+    data = dict()
+    if len(quarters):
+        for q in quarters:
+            quarter_id = q.id
+            combodata = ComboUpdate.objects.filter(parent_quarter_id_id=quarter_id)
+            data = serializers.serialize('json', combodata)
     response = HttpResponse(data, content_type='application/json')
     return response
 
@@ -97,17 +107,13 @@ def elevator_pitch_data(request, task_id):
     return response
 
 
-
-
-
-
-
-
 def budget_band(request):
     quarters = Quarter.objects.filter(is_active=True)
-    for q in quarters:
-        a = q.id
-    budgetbanddetail = BudgetBand.objects.filter(parent_quarter_id_id=a)
-    data = serializers.serialize('json', budgetbanddetail)
+    data = dict()
+    if len(quarters):
+        for q in quarters:
+            quarter_id = q.id
+            budgetbanddetail = BudgetBand.objects.filter(parent_quarter_id_id=quarter_id)
+            data = serializers.serialize('json', budgetbanddetail)
     response = HttpResponse(data, content_type='application/json')
     return response

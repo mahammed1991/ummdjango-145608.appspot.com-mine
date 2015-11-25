@@ -6,12 +6,10 @@
 	<title>UMM - Tool</title>
 	{% load staticfiles %}
 	<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.css'%}">
-    <script type="text/javascript" src="{% static 'js/jquery-1.8.2.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
-	<script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+    
 	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap.min.css'%}">
 	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap-theme.min.css'%}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/looper.css'%}">
 	<link rel="stylesheet" type="text/css" href="{% static 'css/custom.css'%}">
 </head>
 
@@ -23,17 +21,22 @@
 					<div  class="img-responsive logo" ></div>
 				</div>
 				<div class="col-md-6">
+					
 					{% for q in quarters %}
 					<h1 class="text-left text-danger" >UMM Offerings {{q.quarter_name}} {{q.quarter_year}}</h1>
 					{% endfor %}
+					
 				</div>
 			</div>
 			<div class="row">
 				<div class="container-fluid main-link">
-					<a href="/" > <h3 clas="adv "> Advertiser Goals </h3> </a>
+					
+					
 					{% for q in quarters %}
+					<a href="/" > <h3 clas="adv "> Advertiser Goals </h3> </a>
 					<a href="/umm/" class="active"> <h3 clas="adv"> UMM offerings {{q.quarter_name}} {{q.quarter_year}} </h3> </a>
 					{% endfor %}
+					
 					<hr class="line2">
 				</div>
 			</div>
@@ -52,9 +55,14 @@
 		<div class="container-fluid" >
 			<div class="row">
 				<div class="col-xs-12 col-md-3 col-md-3 col-lg-2 sub-row1">Combos Update</div>
-				<div class="col-xs-12 col-md-9 col-md-9 col-lg-10 sub-row2 myclass" data-toggle="modal" data-target="#myModal2"></div>
+				<div data-looper="go" class="looper">
+				<div class="col-xs-12 col-md-9 col-md-9 col-lg-10 sub-row2 myclass looper-inner" data-toggle="modal" data-target="#myModal2">
+					
+				</div>
+			</div>
 			</div>
 		</div>
+
 		<div class="container-fluid table-box " >
 			<div class="col-md-10 col-sm-9 table-setting">
 				<div class="table-responsive">
@@ -158,6 +166,11 @@
 </div>
 
 </div>
+	<script type="text/javascript" src="{% static 'js/jquery-1.8.2.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/looper.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/script.js' %}"></script>
 </body>
 </html>
 
