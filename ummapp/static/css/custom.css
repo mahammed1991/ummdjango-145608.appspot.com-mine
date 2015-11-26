@@ -251,12 +251,15 @@ text-decoration: none;}
 .modal-dialog{
     overflow-y: initial !important
 }
+
 .modal-body{
     overflow-y: auto;
     height: 700px;
 }
+
 .looper{
         float: left;
+
 }
 .item{
         cursor: pointer; 
