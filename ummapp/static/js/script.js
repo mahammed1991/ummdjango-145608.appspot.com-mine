@@ -1,5 +1,6 @@
-
 $(document).ready(function(){
+
+    var cateSubTaskList = [];
 
     BudgetBandTableLoad()
     
@@ -7,12 +8,22 @@ $(document).ready(function(){
 
     elem_id = $('ul.main-option li:first-child a').attr('id');
     taskList(elem_id);
+    $("#"+elem_id).addClass("make-active");
 
     $('a.main-category').click(function () {
-        taskList(this.id)
-    });
+        taskList(this.id);
 
-    
+        for(i=0; i<cateList.length; i++){
+            if(cateList[i]==this.id)
+            {
+                $("#"+this.id).addClass("make-active");
+            }
+            else
+            {
+                $("#" + cateList[i]).removeClass("make-active");
+            }
+        }
+    });
 });
 
 
@@ -59,6 +70,8 @@ $.ajax({
 
 
 function taskList(id){
+    cateSubTaskList = [];
+
     $.ajax({
         type: 'GET',
         url: '/task_list/'+ id ,
@@ -91,10 +104,17 @@ function createSubTasks(data){
         {
             newlink=document.createElement('a');
             newlink.setAttribute('class',"sub-task-link")
-            link = data[i].pk
+            link = "subtask_"+data[i].pk
             newlink.setAttribute('id',link);
             newlink.innerHTML = data[i].fields.task_name;
             $('.sub-task').append(newlink);
+
+            cateSubTaskList.push(link);
+        }
+
+        if(data.length >0){
+            link = "subtask_"+data[0].pk;
+             $("#"+link).addClass("make-active-subtask");
         }
         
         TableLoad(global_id);
@@ -102,15 +122,33 @@ function createSubTasks(data){
         RightTableLoad(global_id);
     }
 
-    $('.sub-task-link').bind('click', function(event) {
-        TableLoad(event.target.id)
-        PitchDataLoad(event.target.id)
-        RightTableLoad(event.target.id)
 
+$('.sub-task-link').bind('click', function(event) {
+    subtaskid = event.target.id.toString();
+    subtaskid = subtaskid.replace("subtask_","");
+    TableLoad(subtaskid);
+    PitchDataLoad(subtaskid);
+    RightTableLoad(subtaskid);
+
+    for(i=0; i<cateSubTaskList.length; i++)
+        {
+            if(cateSubTaskList[i]==event.target.id)
+            {
+                $("#"+event.target.id).addClass("make-active-subtask");
+            }
+            else
+            {
+                $("#" + cateSubTaskList[i]).removeClass("make-active-subtask");
+            }
+        }
     });
 }
 
+
 function TableLoad(taskid){
+    taskid = taskid.toString();
+    taskid = taskid.replace("subtask_","");
+
     $('#key_row').empty()
     $('#value_row').empty()
     $.ajax({
@@ -162,6 +200,8 @@ function PitchDataLoad(taskid){
 
 function RightTableLoad(taskid){ 
 
+    document.getElementById("myModalLabel").innerHTML = document.getElementById("subtask_"+taskid).innerHTML;
+
     $.ajax({
         type: 'GET',
         url: '/right_column_list/'+ taskid ,
@@ -172,10 +212,6 @@ function RightTableLoad(taskid){
             $('.modal-body #tab1').append(data[0].fields.email_pitch_guidelines)
             $('.modal-body #tab2').append(data[0].fields.implementation_guide)
             $('.modal-body #tab3').append(data[0].fields.faq)
-
-            // $('ul.nav.nav-tabs li:nth-child(1)').tab('show')
-            // $('ul.nav.nav-tabs li:nth-child(1)').addClass('active');
-            // $('#tab1').addClass('active');
 
             $('a#email_pitch').click(function(){
                 $('#tab2').removeClass('active');
@@ -204,6 +240,8 @@ function RightTableLoad(taskid){
                 $('ul.nav.nav-tabs li:nth-child(2)').removeClass('active');
                 $('ul.nav.nav-tabs li:nth-child(3)').addClass('active');
             });
+
+
         },
         error:function(error)
         {
