@@ -25,6 +25,12 @@
 					{% for q in quarters %}
 					<h1 class="text-left text-danger" >UMM Offerings {{q.quarter_name}} {{q.quarter_year}}</h1>
 					{% endfor %}
+									
+					<div class="user">	
+						{{ user.get_full_name|default:user.username }}
+						<br>
+						<a href="{% url 'auth:logout' %}?next=/">Logout</a>
+					</div>
 					
 				</div>
 			</div>
