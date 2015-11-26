@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'umm_app',
+    'social.apps.django_app.default',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -103,7 +104,7 @@ else:
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'umm_tool',
             'USER': 'root',
-            'PASSWORD': '123456',
+            'PASSWORD': 'arun',
         }
     }
 
@@ -126,7 +127,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
-#STATIC_ROOT = 'static'
+# STATIC_ROOT = 'static'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
@@ -136,3 +137,61 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'),)
+
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+   'django.contrib.auth.context_processors.auth',
+   'django.core.context_processors.debug',
+   'django.core.context_processors.i18n',
+   'django.core.context_processors.media',
+   'django.core.context_processors.static',
+   'django.core.context_processors.tz',
+   'django.contrib.messages.context_processors.messages',
+   'social.apps.django_app.context_processors.backends',
+   'social.apps.django_app.context_processors.login_redirect',
+)
+
+AUTHENTICATION_BACKENDS = (
+   'social.backends.google.GoogleOAuth2',
+   'django.contrib.auth.backends.ModelBackend',
+)
+
+LOGIN_REDIRECT_URL = '/'
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "1064684042327-h33glt7irkk0r3bm21sko4bfb4j1at93.apps.googleusercontent.com"
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "sqEjwTRPXFnXp1fR6LyNexG2"
+
+LOGIN_URL = '/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+LOGIN_ERROR_URL = '/auth/error'
+
+# Social Auth error handling
+SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = LOGIN_URL
+SOCIAL_AUTH_BACKEND_ERROR_URL = LOGIN_URL
+
+# Use email as username for user acccounts
+SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_USE_DEPRECATED_API = True
+
+# list of domains allowed
+SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = ['regalix-inc.com', 'google.com']
+SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_EMAILS = ['']
+
+SOCIAL_AUTH_RAISE_EXCEPTIONS = True
+
+SOCIAL_AUTH_SESSION_EXPIRATION = False
+
+SOCIAL_AUTH_PIPELINE = (
+    'social.pipeline.social_auth.social_details',
+    'social.pipeline.social_auth.social_uid',
+    'umm_app.views.check_email',
+    'social.pipeline.social_auth.auth_allowed',
+    'social.pipeline.social_auth.social_user',
+    'social.pipeline.user.get_username',
+    'social.pipeline.social_auth.associate_by_email',
+    'social.pipeline.user.create_user',
+    'social.pipeline.social_auth.associate_user',
+    'social.pipeline.social_auth.load_extra_data',
+    'social.pipeline.user.user_details'
+)

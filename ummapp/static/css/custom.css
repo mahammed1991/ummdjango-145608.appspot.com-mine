@@ -218,6 +218,14 @@ hr.line3 {
     padding:20px 0 0 20px;
 }
 
+.taskwrap{margin-bottom: 10px;}
+
+.line3{height: 2px;
+       width: 100%;
+       background: #EEEEEE;
+       margin-bottom: 10px; 
+}
+
 h1.bottom-row { display: inline-block; margin:0; padding: 15px 32px; background: #007944; font-size: 16px; color: #fff;font-weight:bold }
 
 /* ++++++++++++ ummoffering html page css ++++++++++++   */
@@ -253,4 +261,52 @@ text-decoration: none;}
 .item{
         cursor: pointer; 
 
+}
+
+#header{width: 100%;
+        background: transparent url('../images/header-bg.png') repeat-x scroll 0% 0%;
+        height: 104px;
+}
+
+#header-content{width: 1000px;
+                height: 98px;
+                margin: 0px auto;
+}
+
+#logo{background: transparent url('../images/logo.png');
+      width: 153px;
+      height: 39px;
+      background-repeat: none;
+      float: left;
+      margin-top:30px; 
+}
+
+#extra{height:0px;
+       border-top: 1px solid #CCC;
+       margin-top: 0px;
+}
+
+.login-container{width: 381px;
+                 height: 342px;
+                 background: transparent url("../images/login-bg.png") no-repeat scroll 0% 0%;
+                 margin: 6% auto 0px;
+}
+
+.login{width: 132px;
+       height: 72px;
+       float: left;
+       margin: 34.5% 39.5%;
+}
+
+.footer{width: 100%;
+        height: 5%;
+        background:#991B1E;
+        position: absolute;
+        bottom: 0px; 
+
+
+}
+
+#error{margin-left: 30%;
+      margin-top: 20px;
 }

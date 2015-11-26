@@ -1,16 +1,21 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, redirect
 from .models import ExtraTask, Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, GoalTaskMap, Question
-import json
 from django.core import serializers
+from django.contrib.auth.decorators import login_required
+from django.template.context import RequestContext
+from django.conf import settings
+import json
 
 
 # view for Advertiser Goals
 
 def home(request):
     goal_map = GoalTaskMap.objects.all()
-    return render(request, "index.html", {'goal_map': goal_map})
+    context = RequestContext(request, {'request': request, 'user': request.user, 'goal_map': goal_map})
+    return render(request, "index.html", context_instance=context)
 
 
+@login_required
 def tasks(request):
     task_name = request.GET['data']
     goal = Goal.objects.filter(goal_name=task_name)
@@ -46,7 +51,7 @@ def tasks(request):
 
 
 # view for UMM Offerings
-
+@login_required
 def home1(request):
     template = "home.html"
     categorys = list()
@@ -67,6 +72,7 @@ def home1(request):
     return render(request, template, {'tasks': tasks, 'lefttab': lefttab, 'righttab': righttab, 'categorys': categorys, 'quarters': quarters})
 
 
+@login_required
 def task_list(request, cat_id):
     tasks = Task.objects.filter(parent_category_id_id=cat_id, is_disable=False)
     data = serializers.serialize('json', tasks)
@@ -74,6 +80,7 @@ def task_list(request, cat_id):
     return response
 
 
+@login_required
 def combo_data(request):
     quarters = Quarter.objects.filter(is_active=True)
     data = dict()
@@ -86,6 +93,7 @@ def combo_data(request):
     return response
 
 
+@login_required
 def left_column_list(request, task_id):
     column_listing_left = ColumnData.objects.filter(parent_task_id_id=task_id, is_disable=False)
     data = serializers.serialize('json', column_listing_left)
@@ -93,6 +101,7 @@ def left_column_list(request, task_id):
     return response
 
 
+@login_required
 def right_column_list(request, task_id):
     column_listing_right = AdditionData.objects.filter(parent_task_id_id=task_id, is_disable=False)
     data = serializers.serialize('json', column_listing_right)
@@ -100,6 +109,7 @@ def right_column_list(request, task_id):
     return response
 
 
+@login_required
 def elevator_pitch_data(request, task_id):
     elevator_pitch_data = AdditionData.objects.filter(parent_task_id_id=task_id, is_disable=False)
     data = serializers.serialize('json', elevator_pitch_data)
@@ -107,6 +117,7 @@ def elevator_pitch_data(request, task_id):
     return response
 
 
+@login_required
 def budget_band(request):
     quarters = Quarter.objects.filter(is_active=True)
     data = dict()
@@ -117,3 +128,17 @@ def budget_band(request):
             data = serializers.serialize('json', budgetbanddetail)
     response = HttpResponse(data, content_type='application/json')
     return response
+
+
+def auth_error(request):
+    error = "Please sign out from current Google account and use your Regalix Email Id to login"
+    context = RequestContext(request, {'request': request, 'user': request.user, 'error': error})
+    return render(request, 'index.html', context_instance=context)
+
+
+def check_email(request, strategy, details, *args, **kwargs):
+    email = details.get('email')
+    domain = details.get('email').split('@')[1]
+    if domain not in settings.SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS:
+        if email not in settings.SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_EMAILS:
+            return redirect('/auth/error')

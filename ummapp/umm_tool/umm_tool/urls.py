@@ -18,9 +18,13 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^umm/admin/', include(admin.site.urls)),
+    url('', include('social.apps.django_app.urls', namespace='social')),
+    url('^auth/', include('django.contrib.auth.urls', namespace='auth')),
+    url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'umm_app.views.home'),
     url(r'^task/', "umm_app.views.tasks", name="tasks"),
-   
+    url(r'^auth/error/', "umm_app.views.auth_error", name="error"),
+    url(r'^login/', "umm_app.views.home", name=""),
     url(r'^umm/$', "umm_app.views.home1", name="home1"),
     url(r'^task_list/(?P<cat_id>\d+)/', 'umm_app.views.task_list', name='task_list'),
     url(r'^left_column_list/(?P<task_id>\d+)/', 'umm_app.views.left_column_list', name='left_column_list'),
@@ -28,6 +32,4 @@ urlpatterns = [
     url(r'^right_column_list/(?P<task_id>\d+)/', 'umm_app.views.right_column_list', name='right_column_list'),
     url(r'^combodata/$', 'umm_app.views.combo_data', name='combo_data'),
     url(r'^budget_band/$', 'umm_app.views.budget_band', name='budget_band'),
-   
-
 ]
