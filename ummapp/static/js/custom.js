@@ -14,7 +14,6 @@ $(".sbtn").click(function (e){
 	$(".taskrecommend").html('');
 	$(".taskrecommend2").html('');
 	$(".advertiser-goal").html('');
-	$(".taskrecommend2").html('<br><br><br><p>More Recommendations:</p>');
 	if (checked.length >0)
 	{	var k = 1;
 		for(var j=0;j<checked.length;j++ )
@@ -33,10 +32,14 @@ $(".sbtn").click(function (e){
 				    	{
 				    		$(".taskrecommend").append('<a class="sub-task-link " href="/" >'+ data['goals'][i] +'</a>');
 				    	}
-				    	for (var i =0;i<data['extra_tasks'].length;i++)
+				    	if(data['extra_tasks'].length > 0)
 				    	{
-				    		$(".taskrecommend2").append('<ul class="extra"><li>' + data['extra_tasks'][i] + '</li></ul>');
-				    	}
+				    		$(".taskrecommend2").html('<br><br><br><p>More Recommendations:</p>');
+					    	for (var i =0;i<data['extra_tasks'].length;i++)
+					    	{
+					    		$(".taskrecommend2").append('<ul class="extra"><li>' + data['extra_tasks'][i] + '</li></ul>');
+					    	}
+					    }
 				    	for (var i =0;i<data['questions'].length;i++)
 				    	{
 				    		$(".advertiser-goal").append('<ol start="'+ k +'" class="extra"><li>' + data['questions'][i] + '</li></ol>');
@@ -58,5 +61,20 @@ $(".sbtn").click(function (e){
 		$(".taskrecommend2").html('');
 		$(".advertiser-goal").append('<h4 class="text-center"> <em class="text-danger"><br>Watch out this space for your advertiser goal better<br><br></em> </h4>');
 	}
+	setTimeout(function(){
+		var questions = $(".advertiser-goal").children();
+		console.log(questions);
+		for(var i=0;i<questions.length;i++)
+		{
+			if($(questions[i]).attr('class') == "extra")
+			{
+				$("h4").remove();
+			}
+		}
+		if(questions.length ==0)
+		{
+			$(".advertiser-goal").append('<h4 class="text-center"> <em class="text-danger"><br>Watch out this space for your task recommendations<br><br></em> </h4>');
+		}
+	}, 300);
 });
 
