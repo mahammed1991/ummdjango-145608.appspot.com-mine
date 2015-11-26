@@ -238,19 +238,35 @@ text-decoration: none;}
     margin-bottom: -1px;
 }
 
-
-/* Important part */
 .modal-dialog{
     overflow-y: initial !important
 }
+
 .modal-body{
     overflow-y: auto;
     height: 700px;
 }
+
 .looper{
         float: left;
+
 }
+
 .item{
         cursor: pointer; 
+        font-size: 16px;
 
+}
+
+.make-active{
+    color: #ffb609 !important;
+    border-bottom: 3px solid #FFAB07!important;;
+}
+
+.make-active-subtask{
+    background-color: #009b59 !important;
+}
+
+.nav-tabs li a{
+    font-size: 16px;
 }
