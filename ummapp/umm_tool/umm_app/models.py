@@ -113,7 +113,7 @@ class GoalTaskMap(models.Model):
 class ColumnData(models.Model):
     parent_task_id = models.ForeignKey(Task)
     column_name = models.CharField(max_length=250)
-    column_value = models.TextField(max_length=1000)
+    column_value = models.TextField()
     is_disable = models.BooleanField(default=False)
 
     def __unicode__(self):
@@ -122,10 +122,10 @@ class ColumnData(models.Model):
 
 class AdditionData(models.Model):
     parent_task_id = models.ForeignKey(Task)
-    email_pitch_guidelines = models.CharField(max_length=250)
-    implementation_guide = models.CharField(max_length=250)
-    faq = models.CharField(max_length=250)
-    elevator_pitch = models.TextField(max_length=1000)
+    email_pitch_guidelines = models.TextField()
+    implementation_guide = models.TextField()
+    faq = models.TextField()
+    elevator_pitch = models.TextField()
     is_disable = models.BooleanField(default=False)
 
     def __unicode__(self):

@@ -266,6 +266,19 @@ text-decoration: none;}
 
 }
 
+.make-active{
+    color: #ffb609 !important;
+    border-bottom: 3px solid #FFAB07!important;;
+}
+
+.make-active-subtask{
+    background-color: #009b59 !important;
+}
+
+.nav-tabs li a{
+    font-size: 16px;
+}
+
 #header{width: 100%;
         background: transparent url('../images/header-bg.png') repeat-x scroll 0% 0%;
         height: 104px;
