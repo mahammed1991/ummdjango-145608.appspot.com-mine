@@ -11,7 +11,7 @@ class ComboInline(admin.TabularInline):
 
 class QuarterAdmin(admin.ModelAdmin):
     inlines = [ComboInline, ]
-    list_display = ('quarter_name', 'quarter_year', 'created_date', 'modified_date')
+    list_display = (u'quarter', 'quarter_year', 'created_date', 'modified_date')
 
     class Meta:
         model = Quarter
