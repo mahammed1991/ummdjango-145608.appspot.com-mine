@@ -14,10 +14,10 @@ class Migration(migrations.Migration):
             name='AdditionData',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('email_pitch_guidelines', models.CharField(max_length=250)),
-                ('implementation_guide', models.CharField(max_length=250)),
-                ('faq', models.CharField(max_length=250)),
-                ('elevator_pitch', models.TextField(max_length=1000)),
+                ('email_pitch_guidelines', models.TextField()),
+                ('implementation_guide', models.TextField()),
+                ('faq', models.TextField()),
+                ('elevator_pitch', models.TextField()),
                 ('is_disable', models.BooleanField(default=False)),
             ],
         ),
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('column_name', models.CharField(max_length=250)),
-                ('column_value', models.TextField(max_length=1000)),
+                ('column_value', models.TextField()),
                 ('is_disable', models.BooleanField(default=False)),
             ],
         ),
@@ -90,7 +90,7 @@ class Migration(migrations.Migration):
             name='Quarter',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('quarter_name', models.CharField(default=1, max_length=250, choices=[(b'JAN-MAR', b'JAN-MAR'), (b'APR-JUN', b'APR-JUN'), (b'JUL-SEPT', b'JUL-SEPT'), (b'OCT-DEC', b'OCT-DEC')])),
+                ('quarter', models.IntegerField(default=1, choices=[(1, b'1'), (2, b'2'), (3, b'3'), (4, b'4')])),
                 ('quarter_year', models.IntegerField()),
                 ('created_date', models.DateTimeField()),
                 ('modified_date', models.DateTimeField(auto_now=True)),
@@ -118,7 +118,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='quarter',
-            unique_together=set([('quarter_name', 'quarter_year')]),
+            unique_together=set([('quarter', 'quarter_year')]),
         ),
         migrations.AddField(
             model_name='goaltaskmap',
@@ -143,7 +143,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='category',
             name='parent_quarter_id',
-            field=models.ManyToManyField(to='umm_app.Quarter'),
+            field=models.ForeignKey(to='umm_app.Quarter'),
         ),
         migrations.AddField(
             model_name='budgetband',
@@ -158,5 +158,9 @@ class Migration(migrations.Migration):
         migrations.AlterUniqueTogether(
             name='task',
             unique_together=set([('task_name', 'parent_category_id')]),
+        ),
+        migrations.AlterUniqueTogether(
+            name='category',
+            unique_together=set([('category_name', 'parent_quarter_id')]),
         ),
     ]

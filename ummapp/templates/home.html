@@ -22,9 +22,8 @@
 				</div>
 				<div class="col-md-6">
 					
-					{% for q in quarters %}
-					<h1 class="text-left text-danger" >UMM Offerings {{q.quarter_name}} {{q.quarter_year}}</h1>
-					{% endfor %}
+					<h1 class="text-left text-danger" >UMM Offerings Q'{{quarter.quarter}} {{quarter.quarter_year}}</h1>
+					
 									
 					<div class="user">	
 						{{ user.get_full_name|default:user.username }}
@@ -38,10 +37,9 @@
 				<div class="container-fluid main-link">
 					
 					
-					{% for q in quarters %}
+					
 					<a href="/" > <h3 clas="adv "> Advertiser Goals </h3> </a>
-					<a href="/umm/" class="active"> <h3 clas="adv"> UMM offerings {{q.quarter_name}} {{q.quarter_year}} </h3> </a>
-					{% endfor %}
+					<a href="/umm/" class="active"> <h3 clas="adv"> UMM offerings Q'{{quarter.quarter}} {{quarter.quarter_year}} </h3> </a>
 					
 					<hr class="line2">
 				</div>
