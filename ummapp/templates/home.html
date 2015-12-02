@@ -22,9 +22,8 @@
 				</div>
 				<div class="col-md-6">
 					
-					{% for q in quarters %}
-					<h1 class="text-left text-danger" >UMM Offerings {{q.quarter_name}} {{q.quarter_year}}</h1>
-					{% endfor %}
+					<h1 class="text-left text-danger" >UMM Offerings Q{{quarter.quarter}}'{{quarter.quarter_year}}</h1>
+					
 									
 					<div class="user">	
 						{{ user.get_full_name|default:user.username }}
@@ -38,10 +37,9 @@
 				<div class="container-fluid main-link">
 					
 					
-					{% for q in quarters %}
+					
 					<a href="/" > <h3 clas="adv "> Advertiser Goals </h3> </a>
-					<a href="/umm/" class="active"> <h3 clas="adv"> UMM offerings {{q.quarter_name}} {{q.quarter_year}} </h3> </a>
-					{% endfor %}
+					<a href="/umm/" class="active"> <h3 clas="adv"> UMM Offerings Q{{quarter.quarter}}'{{quarter.quarter_year}} </h3> </a>
 					
 					<hr class="line2">
 				</div>
@@ -119,18 +117,18 @@
 			<div class="modal-body">
 				<div class="tabbable"> 
 					<ul class="nav nav-tabs">
-						<li><a href="#tab1"  data-toggle="tab">Eamil Pitch Guidelines</a></li>
-                        <li><a href="#tab2" data-toggle="tab">Implementation Guide</a></li>
-                        <li><a href="#tab3" data-toggle="tab">FAQ's</a></li>
+						<li><a href="#epitch"  data-toggle="tab">Email Pitch Guidelines</a></li>
+                        <li><a href="#impl" data-toggle="tab">Implementation Guide</a></li>
+                        <li><a href="#faq" data-toggle="tab">FAQ's</a></li>
                     </ul>
                     <div class="tab-content">
-                    	<div class="tab-pane " id="tab1">
+                    	<div class="tab-pane " id="epitch">
                     		
                     	</div>
-                    	<div class="tab-pane" id="tab2">
+                    	<div class="tab-pane" id="impl">
                     		
                     	</div>
-                        <div class="tab-pane " id="tab3">
+                        <div class="tab-pane " id="faq">
         	
                         </div>
                     </div>

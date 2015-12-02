@@ -5,9 +5,11 @@ from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
 from django.conf import settings
 import json
-
+import datetime
+from datetime import date
 
 # view for Advertiser Goals
+
 
 def home(request):
     goal_map = GoalTaskMap.objects.all()
@@ -55,25 +57,38 @@ def tasks(request):
 
 
 # view for UMM Offerings
+def get_quarter():
+    quarter_id = None
+    month = int(datetime.datetime.now().strftime("%m"))
+    current_quarter = (month + 2) / 3
+    current_year = date.today().year
+    quarters = Quarter.objects.all()
+    if len(quarters):
+        for q in quarters:
+            if q.quarter_year == current_year:
+                if int(q.quarter) == current_quarter:
+                    quarter_id = q.id
+    return quarter_id
+
+
 @login_required
 def home1(request):
+    quarter = None
     template = "home.html"
     categorys = list()
     tasks = list()
     lefttab = list()
     righttab = list()
-
-    quarters = Quarter.objects.filter(is_active=True)
-    if len(quarters):
-        for q in quarters:
-            quarter_id = q.id
-            categorys = Category.objects.filter(parent_quarter_id=quarter_id, is_disable=False)
-            if len(categorys):
-                tasks = Task.objects.filter(parent_category_id=categorys[0], is_disable=False)
-                if len(tasks):
-                    lefttab = ColumnData.objects.filter(parent_task_id=tasks[0], is_disable=False)
-                    righttab = AdditionData.objects.filter(parent_task_id=tasks[0], is_disable=False)
-    return render(request, template, {'tasks': tasks, 'lefttab': lefttab, 'righttab': righttab, 'categorys': categorys, 'quarters': quarters})
+    quarter_id = get_quarter()
+    if quarter_id:
+        quarter = Quarter.objects.get(pk=quarter_id)
+        categorys = Category.objects.filter(parent_quarter_id=quarter_id, is_disable=False)
+        if len(categorys):
+            tasks = Task.objects.filter(parent_category_id=categorys[0], is_disable=False)
+            if len(tasks):
+                lefttab = ColumnData.objects.filter(parent_task_id=tasks[0], is_disable=False)
+                righttab = AdditionData.objects.filter(parent_task_id=tasks[0], is_disable=False)
+    return render(request, template, {'tasks': tasks, 'lefttab': lefttab, 'righttab': righttab, 'categorys': categorys, 'quarter': quarter})
 
 
 @login_required
@@ -86,13 +101,10 @@ def task_list(request, cat_id):
 
 @login_required
 def combo_data(request):
-    quarters = Quarter.objects.filter(is_active=True)
+    quarter_id = get_quarter()
     data = dict()
-    if len(quarters):
-        for q in quarters:
-            quarter_id = q.id
-            combodata = ComboUpdate.objects.filter(parent_quarter_id_id=quarter_id)
-            data = serializers.serialize('json', combodata)
+    combodata = ComboUpdate.objects.filter(parent_quarter_id_id=quarter_id)
+    data = serializers.serialize('json', combodata)
     response = HttpResponse(data, content_type='application/json')
     return response
 
@@ -123,13 +135,10 @@ def elevator_pitch_data(request, task_id):
 
 @login_required
 def budget_band(request):
-    quarters = Quarter.objects.filter(is_active=True)
+    quarter_id = get_quarter()
     data = dict()
-    if len(quarters):
-        for q in quarters:
-            quarter_id = q.id
-            budgetbanddetail = BudgetBand.objects.filter(parent_quarter_id_id=quarter_id)
-            data = serializers.serialize('json', budgetbanddetail)
+    budgetbanddetail = BudgetBand.objects.filter(parent_quarter_id_id=quarter_id)
+    data = serializers.serialize('json', budgetbanddetail)
     response = HttpResponse(data, content_type='application/json')
     return response
 

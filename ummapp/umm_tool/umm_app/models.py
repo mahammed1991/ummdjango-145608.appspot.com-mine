@@ -3,22 +3,22 @@ from django.db import models
 
 class Quarter(models.Model):
     QUARTER_CHOICES = (
-        ('JAN-MAR', 'JAN-MAR'),
-        ('APR-JUN', 'APR-JUN'),
-        ('JUL-SEPT', 'JUL-SEPT'),
-        ('OCT-DEC', 'OCT-DEC'),
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
     )
-    quarter_name = models.CharField(max_length=250, choices=QUARTER_CHOICES, default=1)
+    quarter = models.IntegerField(choices=QUARTER_CHOICES, default=1)
     quarter_year = models.IntegerField()
     created_date = models.DateTimeField()
     modified_date = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ('quarter_name', 'quarter_year',)
+        unique_together = ('quarter', 'quarter_year',)
 
     def __unicode__(self):
-            return "%s-%s" % (self.quarter_name, self.quarter_year)
+            return u"%s-%d" % (self.quarter, self.quarter_year)
 
 
 class BudgetBand(models.Model):
