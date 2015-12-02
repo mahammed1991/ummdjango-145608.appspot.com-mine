@@ -266,7 +266,7 @@ text-decoration: none;}
 }
 .item{
         cursor: pointer; 
-        font-size: 15px !important;
+        font-size: 17px !important;
 
 }
 
@@ -345,4 +345,8 @@ text-decoration: none;}
 .user{float: right;
      padding-top: 15px;
      padding-right: 35px;
+}
+
+.table.mytable>tbody>tr>td{
+     border: 1px solid black !important;
 }
