@@ -27,7 +27,16 @@ $(document).ready(function(){
     {
         var parent_id = localStorage.getItem("parent_id");
         TableLoad(callback_id);
+        PitchDataLoad(callback_id);
+        RightTableLoad(callback_id);
         reload_tasks(parent_id, callback_id);
+        var main_tasks = $(".main-category");
+        $(".main-category").each(function(){
+            if ($(this).attr('id') == parent_id)
+            {
+                $(this).addClass("make-active");
+            }
+        });
         localStorage.setItem("id",' ');
     }
     else
@@ -270,7 +279,7 @@ function PitchDataLoad(taskid){
 
 function RightTableLoad(taskid){
 
-    document.getElementById("myModalLabel").innerHTML = document.getElementById("subtask_"+taskid).innerHTML;
+    $("#myModalLabel").html($("#subtask_"+taskid).html());
 
     $.ajax({
         type: 'GET',
