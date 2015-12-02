@@ -279,32 +279,33 @@ function RightTableLoad(taskid){
         success: function(data, response, xhr)
         {
             $('.tab-pane').text('');
-            $('.modal-body #tab1').append(data[0].fields.email_pitch_guidelines)
-            $('.modal-body #tab2').append(data[0].fields.implementation_guide)
-            $('.modal-body #tab3').append(data[0].fields.faq)
+            $('.modal-body #epitch').append(data[0].fields.email_pitch_guidelines)
+            $('.modal-body #impl').append(data[0].fields.implementation_guide)
+            $('.modal-body #faq').append(data[0].fields.faq)
 
             $('a#email_pitch').click(function(){
-                $('#tab2').removeClass('active');
-                $('#tab3').removeClass('active');
-                 $('#tab1').addClass('active');
+                $('#impl').removeClass('active');
+                $('#faq').removeClass('active');
+                $('#epitch').addClass('active');
+                
                 $('ul.nav.nav-tabs li:nth-child(3)').removeClass('active');
                 $('ul.nav.nav-tabs li:nth-child(2)').removeClass('active');
                 $('ul.nav.nav-tabs li:nth-child(1)').addClass('active');
             });
             $('a#implementation').click(function(){
-                $('#tab1').removeClass('active');
-                $('#tab3').removeClass('active');
-                $('#tab2').addClass('active');
+                $('#epitch').removeClass('active');
+                $('#faq').removeClass('active');
+                $('#impl').addClass('active');
+
                 $('ul.nav.nav-tabs li:nth-child(1)').removeClass('active');
                 $('ul.nav.nav-tabs li:nth-child(3)').removeClass('active');
                 $('ul.nav.nav-tabs li:nth-child(2)').addClass('active');
             });
 
             $('a#faq').click(function(){
-                
-                 $('#tab1').removeClass('active');
-                  $('#tab2').removeClass('active');
-                  $('#tab3').addClass('active');
+                $('#epitch').removeClass('active');
+                $('#impl').removeClass('active');
+                $('#faq').addClass('active');
 
                 $('ul.nav.nav-tabs li:nth-child(1)').removeClass('active');
                 $('ul.nav.nav-tabs li:nth-child(2)').removeClass('active');
