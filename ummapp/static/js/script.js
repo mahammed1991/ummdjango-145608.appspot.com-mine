@@ -4,11 +4,7 @@ $(document).ready(function(){
 
     BudgetBandTableLoad()
     
-    comboData()
-
-    elem_id = $('ul.main-option li:first-child a').attr('id');
-    taskList(elem_id);
-    $("#"+elem_id).addClass("make-active");
+    comboData();
 
     $('a.main-category').click(function () {
         taskList(this.id);
@@ -24,8 +20,84 @@ $(document).ready(function(){
             }
         }
     });
+
+    var callback_id = localStorage.getItem("id");
+
+    if (callback_id != ' ')
+    {
+        var parent_id = localStorage.getItem("parent_id");
+        TableLoad(callback_id);
+        reload_tasks(parent_id, callback_id);
+        localStorage.setItem("id",' ');
+    }
+    else
+    {
+        elem_id = $('ul.main-option li:first-child a').attr('id');
+        $("#"+elem_id).addClass("make-active");
+        taskList(elem_id);
+    }
 });
 
+function reload_tasks(parent_id, callback_id)
+{
+    $.ajax({
+        type: 'GET',
+        url: '/task_list/'+ parent_id ,
+        dataType: 'json',
+        success: function(data, response, xhr)
+        {
+           $(".sub-task").html('');
+           if(data!= null)
+            {
+                html = null
+                global_id = data[0].pk
+                cateSubTaskList = [];
+
+                for(i=0; i<data.length; i++)
+                {
+                    newlink=document.createElement('a');
+                    newlink.setAttribute('class',"sub-task-link")
+                    link = "subtask_"+data[i].pk
+                    newlink.setAttribute('id',link);
+                    newlink.innerHTML = data[i].fields.task_name;
+                    $('.sub-task').append(newlink);
+
+                    cateSubTaskList.push(link);
+                }
+
+                if(data.length >0){
+                    link = "subtask_"+callback_id;
+                    $("#"+link).addClass("make-active-subtask");
+                }
+
+                $('.sub-task-link').bind('click', function(event) {
+                    subtaskid = event.target.id.toString();
+                    subtaskid = subtaskid.replace("subtask_","");
+                    TableLoad(subtaskid);
+                    PitchDataLoad(subtaskid);
+                    RightTableLoad(subtaskid);
+
+                    for(i=0; i<cateSubTaskList.length; i++)
+                        {
+                            if(cateSubTaskList[i]==event.target.id)
+                            {
+                                $("#"+event.target.id).addClass("make-active-subtask");
+                            }
+                            else
+                            {
+                                $("#" + cateSubTaskList[i]).removeClass("make-active-subtask");
+                            }
+                        }
+                    });
+            }
+
+        },
+        error:function(error)
+        {
+            console.log(error);
+        }
+    });
+}
 
 function comboData(){
 $.ajax({
@@ -78,7 +150,6 @@ function taskList(id){
         dataType: 'json',
         success: function(data, response, xhr)
         {
-
             createSubTasks(data)
         },
         error:function(error)
@@ -146,9 +217,6 @@ $('.sub-task-link').bind('click', function(event) {
 
 
 function TableLoad(taskid){
-    taskid = taskid.toString();
-    taskid = taskid.replace("subtask_","");
-
     $('#key_row').empty()
     $('#value_row').empty()
     $.ajax({
@@ -157,13 +225,14 @@ function TableLoad(taskid){
         dataType: 'json',
         success: function(data, response, xhr)
         {
+            console.log(data);
             if(data!= null)
             {
                 for(i=0; i<data.length; i++)
                 {
                     newlink1=document.createElement('th');
                     newlink1.innerHTML = data[i].fields.column_name
-                    $('#key_row').append(newlink1)
+                    $('#key_row').append(newlink1);
                     newlink2=document.createElement('td');
                     newlink2.innerHTML = data[i].fields.column_value
                     $('#value_row').append(newlink2)
@@ -179,6 +248,7 @@ function TableLoad(taskid){
 
 
 function PitchDataLoad(taskid){
+
     $('#elevator_data').empty()
     
     $.ajax({
@@ -198,7 +268,7 @@ function PitchDataLoad(taskid){
 }
 
 
-function RightTableLoad(taskid){ 
+function RightTableLoad(taskid){
 
     document.getElementById("myModalLabel").innerHTML = document.getElementById("subtask_"+taskid).innerHTML;
 
@@ -269,3 +339,4 @@ function BudgetBandTableLoad(){
         }
     });
 }
+

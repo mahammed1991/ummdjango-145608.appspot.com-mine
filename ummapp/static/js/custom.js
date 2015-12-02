@@ -12,7 +12,7 @@ $(".sbtn").click(function (e){
 		}
 	}	
 	$(".taskrecommend").html('');
-	$(".taskrecommend2").html('');
+	$(".taskrecommend2").html('<b><i><p>More Recommendations:</p></i></b>');
 	$(".advertiser-goal").html('');
 	if (checked.length >0)
 	{	var k = 1;
@@ -27,24 +27,30 @@ $(".sbtn").click(function (e){
 				    datatype: "json",
 				    data : data_sent,
 				    success: function(data, response, xhr){
-				    	console.log(data);
+
 					    for (var i =0;i<data['goals'].length;i++)
 				    	{
-				    		$(".taskrecommend").append('<a class="sub-task-link " href="/" >'+ data['goals'][i] +'</a>');
+				    		$(".taskrecommend").prepend('<a class="sub-task-link " parent='+  data['goals'][i]['parent_id'] +' id="'+ data['goals'][i]['id'] +'">'+ data['goals'][i]['name'] +'</a>');
 				    	}
-				    	if(data['extra_tasks'].length > 0)
+				    	$(".sub-task-link").click(function (e){
+				    		localStorage.setItem("id",$(this).attr('id'));
+				    		localStorage.setItem("parent_id",$(this).attr('parent'));
+				    		window.open("/umm");
+				    	});
+				    	if (data['extra_tasks'].length > 0)
 				    	{
-				    		$(".taskrecommend2").html('<br><br><br><p>More Recommendations:</p>');
+
 					    	for (var i =0;i<data['extra_tasks'].length;i++)
 					    	{
 					    		$(".taskrecommend2").append('<ul class="extra"><li>' + data['extra_tasks'][i] + '</li></ul>');
 					    	}
-					    }
+				    	}
+
 				    	for (var i =0;i<data['questions'].length;i++)
 				    	{
 				    		$(".advertiser-goal").append('<ol start="'+ k +'" class="extra"><li>' + data['questions'][i] + '</li></ol>');
 				    		k++;
-				    	}
+				    	} 
 					},
 
 					error:function(response){
@@ -61,7 +67,7 @@ $(".sbtn").click(function (e){
 		$(".taskrecommend2").html('');
 		$(".advertiser-goal").append('<h4 class="text-center"> <em class="text-danger"><br>Watch out this space for your advertiser goal better<br><br></em> </h4>');
 	}
-	setTimeout(function(){
+		setTimeout(function(){
 		var questions = $(".advertiser-goal").children();
 		console.log(questions);
 		for(var i=0;i<questions.length;i++)
@@ -75,6 +81,6 @@ $(".sbtn").click(function (e){
 		{
 			$(".advertiser-goal").append('<h4 class="text-center"> <em class="text-danger"><br>Watch out this space for your task recommendations<br><br></em> </h4>');
 		}
+		
 	}, 300);
 });
-

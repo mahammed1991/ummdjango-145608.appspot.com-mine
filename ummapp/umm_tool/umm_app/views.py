@@ -30,14 +30,18 @@ def tasks(request):
         goal_map = GoalTaskMap.objects.filter(parent_goal_id=goal[0])
         extra_tasks = ExtraTask.objects.filter(parent_goal_id=goal[0])
         questions = Question.objects.filter(parent_goal_id=goal[0])
-
     if goal_map:
         task_names = goal_map[0].parent_task_id.values()
     else:
         task_names = None
     if task_names is not None:
         for item in task_names:
-            goal_map_json.append(item['task_name'])
+            print item
+            temp = {}
+            temp['name'] = item['task_name']
+            temp['id'] = item['id']
+            temp['parent_id'] = item['parent_category_id_id']
+            goal_map_json.append(temp)
             result['goals'] = goal_map_json
     if extra_tasks is not None:
         for item in extra_tasks:
