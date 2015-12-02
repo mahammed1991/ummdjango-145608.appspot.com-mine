@@ -38,7 +38,6 @@ def tasks(request):
         task_names = None
     if task_names is not None:
         for item in task_names:
-            print item
             temp = {}
             temp['name'] = item['task_name']
             temp['id'] = item['id']
