@@ -15,7 +15,7 @@ from requests.packages.urllib3.poolmanager import PoolManager
 from social.exceptions import AuthCanceled, AuthUnreachableProvider
 from social.p3 import urlparse, urlunparse, urlencode, \
                       parse_qs as battery_parse_qs
-
+from django.shortcuts import redirect
 
 SETTING_PREFIX = 'SOCIAL_AUTH'
 
@@ -229,7 +229,8 @@ def handle_http_errors(func):
             return func(*args, **kwargs)
         except requests.HTTPError as err:
             if err.response.status_code == 400:
-                raise AuthCanceled(args[0])
+                return redirect('/')
+                #raise AuthCanceled(args[0])
             elif err.response.status_code == 503:
                 raise AuthUnreachableProvider(args[0])
             else:

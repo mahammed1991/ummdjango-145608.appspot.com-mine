@@ -9,6 +9,7 @@ from social.exceptions import AuthFailed, AuthCanceled, AuthUnknownError, \
                               AuthMissingParameter, AuthStateMissing, \
                               AuthStateForbidden, AuthTokenError
 from social.backends.base import BaseAuth
+from django.shortcuts import redirect
 
 
 class OAuthAuth(BaseAuth):
@@ -363,11 +364,14 @@ class BaseOAuth2(OAuthAuth):
     def process_error(self, data):
         if data.get('error'):
             if data['error'] == 'denied' or data['error'] == 'access_denied':
-                raise AuthCanceled(self, data.get('error_description', ''))
-            raise AuthFailed(self, data.get('error_description') or
-                                   data['error'])
+                return redirect('/')
+                #raise AuthCanceled(self, data.get('error_description', ''))
+            #raise AuthFailed(self, data.get('error_description') or
+            #                       data['error'])
         elif 'denied' in data:
-            raise AuthCanceled(self, data['denied'])
+            return redirect('/')
+            #raise AuthCanceled(self, data['denied'])
+        return redirect('/')
 
     @handle_http_errors
     def auth_complete(self, *args, **kwargs):

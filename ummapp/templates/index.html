@@ -16,9 +16,8 @@
 					<div  class="img-responsive logo" ></div>
 				</div>
 				<div class="col-md-6" >
-					<div class="user">	
-						{{ user.get_full_name|default:user.username }}
-						<br>
+					<div class="user" id="username_login">	
+						{{ user.get_full_name|default:user.username }} |
 						<a href="{% url 'auth:logout' %}?next=/">Logout</a>
 					</div>
 				</div>
