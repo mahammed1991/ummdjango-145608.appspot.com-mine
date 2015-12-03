@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db import models
 from django import forms
 from .models import Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, Question, GoalTaskMap, ExtraTask
-
+from umm_app.forms import AdditionDataAdminForm
 
 class ComboInline(admin.TabularInline):
     model = ComboUpdate
@@ -96,6 +96,8 @@ class ColumnDataAdmin(admin.ModelAdmin):
 class AdditionDataAdmin(admin.ModelAdmin):
     list_display = ('email_pitch_guidelines', 'implementation_guide', 'faq', 'elevator_pitch')
     formfield_overrides = {models.TextField: {'widget': forms.Textarea(attrs={'class':'ckeditor'})}, }
+
+    form = AdditionDataAdminForm
 
     class Media:
         js = ('ckeditor/ckeditor.js',)
