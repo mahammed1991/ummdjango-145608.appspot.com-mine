@@ -1,6 +1,6 @@
 $(".sbtn").click(function (e){
 	e.preventDefault();
-	var checked = [];
+	var checked_task = [];
 	var result =[];
 	var check_boxes = $(".task");
 	var task = $(".task_name");
@@ -8,29 +8,41 @@ $(".sbtn").click(function (e){
 	{
 		if ($(check_boxes[i]).is(':checked') == true)
 		{
-			checked[i] = $(task[i]).html();
+			checked_task.push($(task[i]).attr('id'));
 		}
 	}	
-	$(".taskrecommend").html('');
-	$(".taskrecommend2").html('<b><i><p>More Recommendations:</p></i></b>');
-	$(".advertiser-goal").html('');
-	if (checked.length >0)
-	{	var k = 1;
-		for(var j=0;j<checked.length;j++ )
+	if (checked_task.length >0)
+	{	
+		var k = 1;
+		$(".taskrecommend").css("opacity",0);
+		$(".taskrecommend").css("height","auto");
+		$(".taskrecommend2").css("opacity",0);
+		$(".taskrecommend2").css("height","auto");
+		$(".taskrecommend").html('');
+		$(".taskrecommend2").html('<p>More Recommendations:</p>');
+		$(".advertiser-goal").html('');
+		for(var j=0;j<checked_task.length;j++ )
 		{
-			if (checked[j] != undefined)
+			if (checked_task[j] != undefined)
 			{
 				var data_sent = {"data":checked[j]}
 				$.ajax({
-				    url: "/task/",
+				    url: "/task/" + checked_task[j],
 				    type: "GET",
 				    datatype: "json",
 				    data : data_sent,
 				    success: function(data, response, xhr){
-				    	
-					    for (var i =0;i<data['goals'].length;i++)
+				    	if (data['goals'])
 				    	{
-				    		$(".taskrecommend").prepend('<a class="sub-task-link " parent='+  data['goals'][i]['parent_id'] +' id="'+ data['goals'][i]['id'] +'">'+ data['goals'][i]['name'] +'</a>');
+						    for (var i =0;i<data['goals'].length;i++)
+					    	{
+					    		$(".taskrecommend").prepend('<a class="sub-task-link " parent='+  data['goals'][i]['parent_id'] +' id="'+ data['goals'][i]['id'] +'">'+ data['goals'][i]['name'] +'</a>');
+					    	}
+					    	$(".sub-task-link").click(function (e){
+					    		localStorage.setItem("id",$(this).attr('id'));
+					    		localStorage.setItem("parent_id",$(this).attr('parent'));
+					    		window.open("/umm");
+					    	});
 				    	}
 				    	$(".sub-task-link").click(function (e){
 				    		localStorage.setItem("id",$(this).attr('id'));
@@ -60,27 +72,44 @@ $(".sbtn").click(function (e){
 				});
 			}
 		}
-	}	
-	else
+	}
+	setTimeout(function(){
+	var questions = $(".advertiser-goal").children()
+	for(var i=0;i<questions.length;i++)
 	{
-		$(".taskrecommend").append('<h4 class="text-center"> <em class="text-danger"><br>Watch out this space for your task recommendations<br><br></em> </h4>');
-		$(".taskrecommend2").html('');
+		if($(questions[i]).attr('class') == "extra")
+		{
+			$("h4").remove();
+		}
+	}
+	if(questions.length ==0)
+	{
+		$(".advertiser-goal").html('');
 		$(".advertiser-goal").append('<h4 class="text-center"> <em class="text-danger"><br>Watch out this space for your advertiser goal better<br><br></em> </h4>');
 	}
-		setTimeout(function(){
-		var questions = $(".advertiser-goal").children();
-		console.log(questions);
-		for(var i=0;i<questions.length;i++)
-		{
-			if($(questions[i]).attr('class') == "extra")
-			{
-				$("h4").remove();
-			}
-		}
-		if(questions.length ==0)
-		{
-			$(".advertiser-goal").append('<h4 class="text-center"> <em class="text-danger"><br>Watch out this space for your task recommendations<br><br></em> </h4>');
-		}
-		
+
 	}, 300);
+	setTimeout(function(){
+		var seen = {};
+		$('.sub-task-link ').each(function() {
+		    var txt = $(this).text();
+		    if (seen[txt])
+		        $(this).remove();
+		    else
+		        seen[txt] = true;
+		});
+		var children_1= $(".taskrecommend").children();
+		var children_2= $(".taskrecommend2").children();
+		if (children_1.length == 0 & children_2.length ==1 )
+		{
+			$(".taskrecommend").append('<h4 class="text-center"> <em class="text-danger"><br>Watch out this space for your task recommendations<br><br></em> </h4>');
+			$(".taskrecommend2").html('');
+		}
+		$(".taskrecommend").css("opacity",1);
+		$(".taskrecommend2").css("opacity",1);
+	}, 300);
+});
+
+$(".refresh").click(function (e){
+	location.reload();
 });
