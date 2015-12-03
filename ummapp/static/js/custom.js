@@ -71,6 +71,12 @@ $(".sbtn").click(function (e){
 			}
 		}
 	}
+	else
+	{
+		$(".taskrecommend").html('<h4 class="text-center"> <em class="text-danger"><br>Watch out this space for your task recommendations<br><br></em> </h4>');
+		$(".taskrecommend2").html('');
+		$(".advertiser-goal").html('<h4 class="text-center"> <em class="text-danger"><br>Watch out this space for your advertiser goal better<br><br></em> </h4>');
+	}
 	setTimeout(function(){
 	var questions = $(".advertiser-goal").children()
 	for(var i=0;i<questions.length;i++)
