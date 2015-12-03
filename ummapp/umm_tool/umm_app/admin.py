@@ -94,7 +94,7 @@ class ColumnDataAdmin(admin.ModelAdmin):
 
 
 class AdditionDataAdmin(admin.ModelAdmin):
-    list_display = ('email_pitch_guidelines', 'implementation_guide', 'faq', 'elevator_pitch')
+    list_display = ('parent_task_id','email_pitch_guidelines', 'implementation_guide', 'faq', 'elevator_pitch')
     formfield_overrides = {models.TextField: {'widget': forms.Textarea(attrs={'class':'ckeditor'})}, }
 
     form = AdditionDataAdminForm
