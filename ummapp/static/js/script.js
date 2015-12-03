@@ -311,7 +311,7 @@ function RightTableLoad(taskid){
                 $('ul.nav.nav-tabs li:nth-child(2)').addClass('active');
             });
 
-            $('a#faq').click(function(){
+            $('a#faqns').click(function(){
                 $('#epitch').removeClass('active');
                 $('#impl').removeClass('active');
                 $('#faq').addClass('active');
