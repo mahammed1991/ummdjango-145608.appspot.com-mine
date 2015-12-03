@@ -4,6 +4,7 @@ $(".sbtn").click(function (e){
 	var result =[];
 	var check_boxes = $(".task");
 	var task = $(".task_name");
+	$(".taskrecommend").append('<h4 class="text-center"> <em class="text-danger"><br>Watch out this space for your task recommendations<br><br></em> </h4>');
 	for(var  i=0;i<check_boxes.length;i++)
 	{
 		if ($(check_boxes[i]).is(':checked') == true)
@@ -19,7 +20,7 @@ $(".sbtn").click(function (e){
 		$(".taskrecommend2").css("opacity",0);
 		$(".taskrecommend2").css("height","auto");
 		$(".taskrecommend").html('');
-		$(".taskrecommend2").html('<p>More Recommendations:</p>');
+		//$(".taskrecommend2").append('<p>More Recommendations:</p>');
 		$(".advertiser-goal").html('');
 		for(var j=0;j<checked_task.length;j++ )
 		{
@@ -41,6 +42,7 @@ $(".sbtn").click(function (e){
 					    		localStorage.setItem("parent_id",$(this).attr('parent'));
 					    		window.open("/umm");
 					    	});
+					    	$(".taskrecommend ").find('h4').remove();
 				    	}
 				    	$(".sub-task-link").click(function (e){
 				    		localStorage.setItem("id",$(this).attr('id'));
@@ -49,13 +51,17 @@ $(".sbtn").click(function (e){
 				    	});
 				    	if (data['extra_tasks'].length > 0)
 				    	{
-
-					    	for (var i =0;i<data['extra_tasks'].length;i++)
-					    	{
-					    		$(".taskrecommend2").append('<ul class="extra"><li>' + data['extra_tasks'][i] + '</li></ul>');
-					    	}
+				    		$(".taskrecommend2").html('<p>More Recommendations:</p>')
+				    	}	
+				    	for (var i =0;i<data['extra_tasks'].length;i++)
+				    	{
+				    		$(".taskrecommend2").append('<ul class="extra"><li>' + data['extra_tasks'][i] + '</li></ul>');
 				    	}
-
+					    	//$(".taskrecommend2").html('<p>More Recommendations:</p>');
+				    	
+				    	if (data['questions'].length > 0){
+				    		$(".advertiser-goal").find('h4').remove(); 
+				    	}
 				    	for (var i =0;i<data['questions'].length;i++)
 				    	{
 				    		$(".advertiser-goal").append('<ol start="'+ k +'" class="extra"><li>' + data['questions'][i] + '</li></ol>');
