@@ -1,3 +1,5 @@
+body{min-height: 750px;}
+
 .main-top-bar{
     background: #ffffff;
     padding: 18px 0 14px 0;
@@ -199,7 +201,7 @@ hr.line2 {
         border-bottom: 1px solid #cfcfcf;
          margin-bottom: 6px }
 
-.taskwrap{background:#f2f2f2;padding:10px}
+.taskwrap{background:#f2f2f2;padding:10px;min-height: 165px;}
 #goalform{font-size:16px;margin:20px 0 0 0}
 #goalform label{float:left;width:90%;font-weight:normal}
 #goalform input{float:left;width:10%}

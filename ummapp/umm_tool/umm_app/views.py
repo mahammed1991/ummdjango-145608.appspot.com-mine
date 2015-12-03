@@ -12,15 +12,14 @@ from datetime import date
 
 
 def home(request):
-    goal_map = GoalTaskMap.objects.all()
-    context = RequestContext(request, {'request': request, 'user': request.user, 'goal_map': goal_map})
+    goal_map = Goal.objects.all()
+    context = RequestContext(request, {'request': request, 'user': request.user,'goal_map': goal_map})
     return render(request, "index.html", context_instance=context)
 
 
 @login_required
-def tasks(request):
-    task_name = request.GET['data']
-    goal = Goal.objects.filter(goal_name=task_name)
+def tasks(request, task_id):
+    goal = Goal.objects.get(pk=task_id)
     goal_map = None
     extra_tasks = None
     questions = None
@@ -28,22 +27,27 @@ def tasks(request):
     goal_map_json = []
     addition_task_list = []
     questions_list = []
+    task_names = []
     if goal:
-        goal_map = GoalTaskMap.objects.filter(parent_goal_id=goal[0])
-        extra_tasks = ExtraTask.objects.filter(parent_goal_id=goal[0])
-        questions = Question.objects.filter(parent_goal_id=goal[0])
+        goal_map = GoalTaskMap.objects.filter(parent_goal_id=goal)
+        extra_tasks = ExtraTask.objects.filter(parent_goal_id=goal)
+        questions = Question.objects.filter(parent_goal_id=goal)
     if goal_map:
-        task_names = goal_map[0].parent_task_id.values()
+        for item in goal_map:
+            task_items = item.parent_task_id.values()
+            for item in task_items:
+                task_names.append(item)
+        if task_names is not None:
+            for item in task_names:
+                temp = {}
+                temp['name'] = item['task_name']
+                temp['id'] = item['id']
+                temp['parent_id'] = item['parent_category_id_id']
+                goal_map_json.append(temp)
+        result['goals'] = goal_map_json
+        result['goals'] = [dict(t) for t in set([tuple(d.items()) for d in result['goals']])]
     else:
         task_names = None
-    if task_names is not None:
-        for item in task_names:
-            temp = {}
-            temp['name'] = item['task_name']
-            temp['id'] = item['id']
-            temp['parent_id'] = item['parent_category_id_id']
-            goal_map_json.append(temp)
-            result['goals'] = goal_map_json
     if extra_tasks is not None:
         for item in extra_tasks:
             addition_task_list.append(item.extra_task_name)
