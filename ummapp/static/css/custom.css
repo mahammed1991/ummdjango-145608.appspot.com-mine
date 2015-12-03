@@ -352,3 +352,11 @@ text-decoration: none;}
 .table.mytable>tbody>tr>td{
      border: 1px solid black !important;
 }
+.ummheading, .user{
+
+     float: right;
+}
+
+#username_login{
+    padding-top: 30px;
+}

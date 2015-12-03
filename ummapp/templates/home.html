@@ -21,15 +21,17 @@
 					<div  class="img-responsive logo" ></div>
 				</div>
 				<div class="col-md-6">
-					
+					<div class="row">
+						<div class="col-md-8">
 					<h1 class="text-left text-danger" >UMM Offerings Q{{quarter.quarter}}'{{quarter.quarter_year}}</h1>
-					
-									
-					<div class="user">	
-						{{ user.get_full_name|default:user.username }}
-						<br>
+						 </div>
+						 <div class="col-md-4">		
+					<div class="user" id='username_login'>	
+						{{ user.get_full_name|default:user.username }} | 
 						<a href="{% url 'auth:logout' %}?next=/">Logout</a>
 					</div>
+					  		</div>
+					  	</div>	
 					
 				</div>
 			</div>
