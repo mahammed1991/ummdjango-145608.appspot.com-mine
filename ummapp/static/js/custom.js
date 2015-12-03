@@ -25,12 +25,10 @@ $(".sbtn").click(function (e){
 		{
 			if (checked_task[j] != undefined)
 			{
-				var data_sent = {"data":checked[j]}
 				$.ajax({
 				    url: "/task/" + checked_task[j],
 				    type: "GET",
 				    datatype: "json",
-				    data : data_sent,
 				    success: function(data, response, xhr){
 				    	if (data['goals'])
 				    	{
