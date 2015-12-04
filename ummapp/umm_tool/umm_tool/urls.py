@@ -22,7 +22,7 @@ urlpatterns = [
     url('^auth/', include('django.contrib.auth.urls', namespace='auth')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'umm_app.views.home'),
-    url(r'^task/(?P<task_id>\d+)/', "umm_app.views.tasks", name="tasks"),
+    url(r'^task/', "umm_app.views.tasks", name="tasks"),
     url(r'^auth/error/', "umm_app.views.auth_error", name="error"),
     url(r'^login/', "umm_app.views.home", name=""),
     url(r'^umm/$', "umm_app.views.home1", name="home1"),
