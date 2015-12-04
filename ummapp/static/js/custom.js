@@ -9,7 +9,7 @@ $(".sbtn").click(function (e){
 	{
 		if ($(check_boxes[i]).is(':checked') == true)
 		{
-			checked_task.push($(task[i]).attr('id'));
+			checked_task.push(parseInt($(task[i]).attr('id')));
 		}
 	}	
 	if (checked_task.length >0)
@@ -20,62 +20,61 @@ $(".sbtn").click(function (e){
 		$(".taskrecommend2").css("opacity",0);
 		$(".taskrecommend2").css("height","auto");
 		$(".taskrecommend").html('');
-		//$(".taskrecommend2").append('<p>More Recommendations:</p>');
 		$(".advertiser-goal").html('');
-		for(var j=0;j<checked_task.length;j++ )
-		{
-			if (checked_task[j] != undefined)
-			{
-				$.ajax({
-				    url: "/task/" + checked_task[j],
-				    type: "GET",
-				    datatype: "json",
-				    success: function(data, response, xhr){
-				    	if (data['goals'])
-				    	{
-						    for (var i =0;i<data['goals'].length;i++)
-					    	{
-					    		$(".taskrecommend").prepend('<a class="sub-task-link " parent='+  data['goals'][i]['parent_id'] +' id="'+ data['goals'][i]['id'] +'">'+ data['goals'][i]['name'] +'</a>');
-					    	}
-					    	$(".sub-task-link").click(function (e){
-					    		localStorage.setItem("id",$(this).attr('id'));
-					    		localStorage.setItem("parent_id",$(this).attr('parent'));
-					    		window.open("/umm");
-					    	});
-					    	$(".taskrecommend ").find('h4').remove();
-				    	}
-				    	$(".sub-task-link").click(function (e){
-				    		localStorage.setItem("id",$(this).attr('id'));
-				    		localStorage.setItem("parent_id",$(this).attr('parent'));
-				    		window.open("/umm");
-				    	});
-				    	if (data['extra_tasks'].length > 0)
-				    	{
-				    		$(".taskrecommend2").html('<p>More Recommendations:</p>')
-				    	}	
-				    	for (var i =0;i<data['extra_tasks'].length;i++)
-				    	{
-				    		$(".taskrecommend2").append('<ul class="extra"><li>' + data['extra_tasks'][i] + '</li></ul>');
-				    	}
-					    	//$(".taskrecommend2").html('<p>More Recommendations:</p>');
-				    	
-				    	if (data['questions'].length > 0){
-				    		$(".advertiser-goal").find('h4').remove(); 
-				    	}
-				    	for (var i =0;i<data['questions'].length;i++)
-				    	{
-				    		$(".advertiser-goal").append('<ol start="'+ k +'" class="extra"><li>' + data['questions'][i] + '</li></ol>');
-				    		k++;
-				    	} 
-					},
+		checked_task = JSON.stringify(checked_task);
+		$.ajax({
+		    url: "/task/",
+		    type: "GET",
+		    datatype: "json",
+		    data:{'task_id_list':checked_task},
+		    success: function(data, response, xhr){
+		    	console.log(data['goals']);
+		    	var task_id_list=[];
+		    	if (data['goals'])
+		    	{
+				    for (var i =0;i<data['goals'].length;i++)
+			    	{	
+			    		if (task_id_list.indexOf(data['goals'][i]['id']) == -1) {
+			    			$(".taskrecommend").prepend('<a class="sub-task-link " parent='+  data['goals'][i]['parent_id'] +' id="'+ data['goals'][i]['id'] +'">'+ data['goals'][i]['name'] +'</a>');
+			    			task_id_list.push(data['goals'][i]['id']);
+			    		}
+			    	}
+			    	$(".sub-task-link").click(function (e){
+			    		localStorage.setItem("id",$(this).attr('id'));
+			    		localStorage.setItem("parent_id",$(this).attr('parent'));
+			    		window.open("/umm");
+			    	});
+			    	$(".taskrecommend ").find('h4').remove();
+		    	}
+		    	$(".sub-task-link").click(function (e){
+		    		localStorage.setItem("id",$(this).attr('id'));
+		    		localStorage.setItem("parent_id",$(this).attr('parent'));
+		    		window.open("/umm");
+		    	});
+		    	if (data['extra_tasks'].length > 0)
+		    	{
+		    		$(".taskrecommend2").html('<p>More Recommendations:</p>')
+		    	}	
+		    	for (var i =0;i<data['extra_tasks'].length;i++)
+		    	{
+		    		$(".taskrecommend2").append('<ul class="extra"><li>' + data['extra_tasks'][i] + '</li></ul>');
+		    	}
+		    	
+		    	if (data['questions'].length > 0){
+		    		$(".advertiser-goal").find('h4').remove(); 
+		    	}
+		    	for (var i =0;i<data['questions'].length;i++)
+		    	{
+		    		$(".advertiser-goal").append('<ol start="'+ k +'" class="extra"><li>' + data['questions'][i] + '</li></ol>');
+		    		k++;
+		    	} 
+			},
 
-					error:function(response){
-						console.log("Error");
-						console.log(response);
-					}
-				});
+			error:function(response){
+				console.log("Error");
+				console.log(response);
 			}
-		}
+		});
 	}
 	else
 	{

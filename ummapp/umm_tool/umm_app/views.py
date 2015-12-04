@@ -16,10 +16,12 @@ def home(request):
     context = RequestContext(request, {'request': request, 'user': request.user,'goal_map': goal_map})
     return render(request, "index.html", context_instance=context)
 
-
+    
 @login_required
-def tasks(request, task_id):
-    goal = Goal.objects.get(pk=task_id)
+def tasks(request):
+    goal_id_list = json.loads(request.GET.get('task_id_list'))
+    goal = Goal.objects.filter(id__in=goal_id_list)
+
     goal_map = None
     extra_tasks = None
     questions = None
@@ -28,10 +30,12 @@ def tasks(request, task_id):
     addition_task_list = []
     questions_list = []
     task_names = []
+
     if goal:
-        goal_map = GoalTaskMap.objects.filter(parent_goal_id=goal)
-        extra_tasks = ExtraTask.objects.filter(parent_goal_id=goal)
-        questions = Question.objects.filter(parent_goal_id=goal)
+        goal_map = GoalTaskMap.objects.filter(parent_goal_id__in=goal_id_list).distinct()
+        extra_tasks = ExtraTask.objects.filter(parent_goal_id__in=goal_id_list).distinct()
+        questions = Question.objects.filter(parent_goal_id__in=goal_id_list).distinct()
+    
     if goal_map:
         for item in goal_map:
             task_items = item.parent_task_id.values()
