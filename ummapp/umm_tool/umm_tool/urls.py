@@ -32,4 +32,5 @@ urlpatterns = [
     url(r'^right_column_list/(?P<task_id>\d+)/', 'umm_app.views.right_column_list', name='right_column_list'),
     url(r'^combodata/$', 'umm_app.views.combo_data', name='combo_data'),
     url(r'^budget_band/$', 'umm_app.views.budget_band', name='budget_band'),
+    url(r'^_ah/', include('djangae.urls')),
 ]

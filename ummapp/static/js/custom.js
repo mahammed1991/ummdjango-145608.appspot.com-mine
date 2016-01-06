@@ -42,14 +42,14 @@ $(".sbtn").click(function (e){
 			    	$(".sub-task-link").click(function (e){
 			    		localStorage.setItem("id",$(this).attr('id'));
 			    		localStorage.setItem("parent_id",$(this).attr('parent'));
-			    		window.open("/umm");
+			    		window.open("/umm","_self");
 			    	});
 			    	$(".taskrecommend ").find('h4').remove();
 		    	}
 		    	$(".sub-task-link").click(function (e){
 		    		localStorage.setItem("id",$(this).attr('id'));
 		    		localStorage.setItem("parent_id",$(this).attr('parent'));
-		    		window.open("/umm");
+		    		window.open("/umm","_self");
 		    	});
 		    	if (data['extra_tasks'].length > 0)
 		    	{

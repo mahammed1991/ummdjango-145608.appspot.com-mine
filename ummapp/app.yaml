@@ -19,7 +19,12 @@ handlers:
   login: admin
 - url: /static
   static_dir: static
+- url: /_ah/(mapreduce|queue|warmup).*
+  script: umm_tool.wsgi.application
+  login: admin
 
+- url: /.*
+  script: umm_tool.wsgi.application
 # App Engine serves and caches static files contained in the listed directories
 # (and subdirectories). Uncomment and set the directory as needed.
 #- url: /client
