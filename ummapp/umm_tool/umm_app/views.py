@@ -13,7 +13,9 @@ from datetime import date
 
 def home(request):
     goal_map = Goal.objects.all()
-    context = RequestContext(request, {'request': request, 'user': request.user,'goal_map': goal_map})
+    quarter = None
+    quarter_id = get_quarter()
+    context = RequestContext(request, {'request': request, 'user': request.user,'goal_map': goal_map, 'quarter':quarter_id})
     return render(request, "index.html", context_instance=context)
 
     
@@ -75,7 +77,7 @@ def get_quarter():
             if q.quarter_year == current_year:
                 if int(q.quarter) == current_quarter:
                     quarter_id = q.id
-    return quarter_id
+    return [quarter_id,current_quarter,current_year]
 
 
 @login_required
@@ -87,15 +89,15 @@ def home1(request):
     lefttab = list()
     righttab = list()
     quarter_id = get_quarter()
-    if quarter_id:
-        quarter = Quarter.objects.get(pk=quarter_id)
-        categorys = Category.objects.filter(parent_quarter_id=quarter_id, is_disable=False)
+    if quarter_id[0]:
+        quarter = Quarter.objects.get(pk=quarter_id[0])
+        categorys = Category.objects.filter(parent_quarter_id=quarter_id[0], is_disable=False)
         if len(categorys):
             tasks = Task.objects.filter(parent_category_id=categorys[0], is_disable=False)
             if len(tasks):
                 lefttab = ColumnData.objects.filter(parent_task_id=tasks[0], is_disable=False)
                 righttab = AdditionData.objects.filter(parent_task_id=tasks[0], is_disable=False)
-    return render(request, template, {'tasks': tasks, 'lefttab': lefttab, 'righttab': righttab, 'categorys': categorys, 'quarter': quarter})
+    return render(request, template, {'tasks': tasks, 'lefttab': lefttab, 'righttab': righttab, 'categorys': categorys, 'quarter': quarter_id})
 
 
 @login_required
@@ -110,7 +112,7 @@ def task_list(request, cat_id):
 def combo_data(request):
     quarter_id = get_quarter()
     data = dict()
-    combodata = ComboUpdate.objects.filter(parent_quarter_id_id=quarter_id)
+    combodata = ComboUpdate.objects.filter(parent_quarter_id_id=quarter_id[0])
     data = serializers.serialize('json', combodata)
     response = HttpResponse(data, content_type='application/json')
     return response
@@ -144,7 +146,7 @@ def elevator_pitch_data(request, task_id):
 def budget_band(request):
     quarter_id = get_quarter()
     data = dict()
-    budgetbanddetail = BudgetBand.objects.filter(parent_quarter_id_id=quarter_id)
+    budgetbanddetail = BudgetBand.objects.filter(parent_quarter_id_id=quarter_id[0])
     data = serializers.serialize('json', budgetbanddetail)
     response = HttpResponse(data, content_type='application/json')
     return response
