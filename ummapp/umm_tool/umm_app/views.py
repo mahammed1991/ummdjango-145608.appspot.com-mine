@@ -69,8 +69,8 @@ def tasks(request):
 def get_quarter():
     quarter_id = None
     month = int(datetime.datetime.now().strftime("%m"))
-    current_quarter = (month + 2) / 3
-    current_year = date.today().year
+    current_quarter = 4
+    current_year = 2015
     quarters = Quarter.objects.all()
     if len(quarters):
         for q in quarters:

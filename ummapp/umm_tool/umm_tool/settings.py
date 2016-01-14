@@ -24,7 +24,10 @@ SECRET_KEY = '!zi17==vxh)n@lrbdz_d3yc(#y#as-3qt4=u+^uawsa&rxga59'
 
 #AUTH_USER_MODEL = 'djangae.GaeDatastoreUser'
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if os.getenv('SETTINGS_MODE') == 'prod':
+    DEBUG = False
+else:
+    DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -103,7 +106,14 @@ elif os.getenv('SETTINGS_MODE') == 'prod':
             'HOST': '173.194.242.139',
             'NAME': 'umm_tool',
             'USER': 'arun',
-            'PASSWORD': 'password',
+            'PASSWORD': '5hfJguceAbT4?347',
+            'OPTIONS':  {
+                'ssl': {
+                    'ca': 'server-ca.pem',
+                    'cert': 'client-cert.pem',
+                    'key': 'client-key.pem'
+                }
+            }
         }
     }
 else:
