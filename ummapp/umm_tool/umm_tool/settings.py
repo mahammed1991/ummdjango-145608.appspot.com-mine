@@ -35,10 +35,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
-    'djangae.contrib.gauth',
+    #'djangae.contrib.gauth',
     'djangae',
     'django.contrib.admin',
     'django.contrib.auth',
+    'djangae.contrib.gauth.sql',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -98,8 +99,7 @@ if os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine'):
         }
     }
 elif os.getenv('SETTINGS_MODE') == 'prod':
-    # Running in development, but want to access the Google Cloud SQL instance
-    # in production.
+    # Running in production, but want to access the Google Cloud SQL instance in production.
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -214,3 +214,10 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.load_extra_data',
     'social.pipeline.user.user_details'
 )
+
+if os.getenv('SETTINGS_MODE') == 'prod':
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+else:
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
