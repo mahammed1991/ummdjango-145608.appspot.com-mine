@@ -1,4 +1,4 @@
-{% extends 'manage_admin/admin-home.html' %}
+{% extends 'manage_admin/admin_home.html' %}
 {% load staticfiles %}
 {% block content %}
 {% if messages %}
@@ -42,7 +42,7 @@
     <div class="form-group">
         <label for="is-disabled" class="control-label col-sm-2">Is disabled</label> 
         <div class="col-sm-10">
-            <input id="is-disabled" name="is_disabled" type="checkbox" "{% if form.is_disabled.value %}checked{% endif %}">
+            <input id="is-disabled" name="is_disabled" type="checkbox" {% if form.is_disabled.value %}checked{% endif %}>
         </div>
     </div>
     <input type="submit" class="btn btn-primary add" ></input>
@@ -118,6 +118,7 @@
             contentType: false,
             processData: false,
             success: function (data) {
+                debugger
                 $('#process-form')[0].reset()
             },
             error: function(data){

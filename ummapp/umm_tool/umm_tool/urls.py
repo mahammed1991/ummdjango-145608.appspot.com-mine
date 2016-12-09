@@ -37,5 +37,6 @@ urlpatterns = [
     url(r'^umm/manage-admin/','umm_app.views.manage_admin', name='manage_admin'),
     url(r'^umm/create-process/','umm_app.views.create_process', name='create_process'),
     url(r'^umm/view-process/','umm_app.views.view_process', name='view_process'),
-    url(r'^umm/update-process/(?P<pk>[0-9]+)$','umm_app.views.update_process', name='update_process')
-]
+    url(r'^umm/update-process/(?P<pk>[0-9]+)$','umm_app.views.update_process', name='update_process'),
+    url(r'^umm/create-program-type/','umm_app.views.create_program_type', name='create_program_type')
+]   

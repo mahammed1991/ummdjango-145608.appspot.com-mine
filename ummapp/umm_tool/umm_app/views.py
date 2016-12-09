@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponse, redirect
-from .models import ExtraTask, Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, GoalTaskMap, Question, Process
+from .models import ExtraTask, Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, GoalTaskMap, Question, Process, ProgramType
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
@@ -7,7 +7,7 @@ from django.conf import settings
 import json
 import datetime
 from datetime import date
-from .forms import ProcessForm
+from .forms import ProcessForm, ProgramTypeForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.forms.models import model_to_dict
@@ -28,7 +28,7 @@ def home(request):
         quarter_id = get_quarter()
         is_manager = True if request.user.groups.filter(name='CHAPERONE-MANAGER') else False
         context = RequestContext(request, {'request': request, 'user': request.user,'goal_map': goal_map, 'quarter':quarter_id, 'is_manager':is_manager})
-        return render(request, "apollo-index.html", context_instance=context)
+        return render(request, "apollo_index.html", context_instance=context)
 
     
 @login_required
@@ -205,7 +205,7 @@ def apollo_home(request):
 def manage_admin(request):
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         context = RequestContext(request, {'request': request, 'user': request.user})
-    return render(request, "manage_admin/admin-home.html", context_instance = context) 
+    return render(request, "manage_admin/admin_home.html", context_instance = context) 
 
 
 @login_required
@@ -214,7 +214,6 @@ def create_process(request):
     success = False
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         if request.method == 'POST':
-            print request.POST,'post'
             form = ProcessForm(request.POST)
             if form.is_valid():
                 process = form.save(commit=False)
@@ -230,14 +229,15 @@ def create_process(request):
                 process.created_by = User.objects.get(email=request.user.email)
                 process.modified_by =  User.objects.get(email=request.user.email)
                 process.save()
+                form = ProcessForm()
                 success = True
                 messages.success(request, 'Process created successfully')
-            print form.data
+            print form.data,'form.data'
             context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success})
         else:
             form = ProcessForm()
             context = RequestContext(request, {'request': request, 'user': request.user,'form':form,'success':success})
-    return render(request, "manage_admin/create-process.html", context_instance = context)  
+    return render(request, "manage_admin/create_process.html", context_instance = context)  
 
 
 @login_required
@@ -249,7 +249,7 @@ def view_process(request):
             processes = Process.objects.all()
             print processes,'processes'
             context = RequestContext(request, {'request': request, 'user': request.user,'processes':processes, 'update':False})
-    return render(request, "manage_admin/view-process.html", context_instance = context)   
+    return render(request, "manage_admin/view_process.html", context_instance = context)   
 
 
 @login_required
@@ -292,5 +292,50 @@ def update_process(request,pk):
             #pdb.set_trace()
             context = RequestContext(request, {'request': request, 'user': request.user,'form':form, 'update':update})
     
-    return render(request, "manage_admin/view-process.html", context_instance = context) 
+    return render(request, "manage_admin/view_process.html", context_instance = context) 
 
+
+@login_required
+def create_program_type(request):
+    context = {}
+    success = False
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        processes = [(int(process.id), process.name) for process in  Process.objects.all()]
+        quarters = [(int(q.id), str(q.quarter) + '-' + str(q.quarter_year)) for q in  Quarter.objects.all()]
+        if request.method == 'POST':
+            form = ProgramTypeForm(request.POST)
+            print form.data,'form.data',form.is_valid(),form.errors
+            if form.is_valid():
+                program_type = form.save(commit=False)
+                print request.POST,form.cleaned_data
+                if 'process' in form.cleaned_data:
+                    print form.cleaned_data['process'],'process'
+                    import pdb
+                    pdb.set_trace()
+                    #process = Process.objects.get(id=int(form.cleaned_data['process']))
+                    program_type.process = form.cleaned_data['process']
+                if 'quarter' in form.cleaned_data:
+                    print form.cleaned_data['quarter'],'quarter'
+                    #quarter = Quarter.objects.get(id=int(form.cleaned_data['quarter']))
+                    program_type.quarter = form.cleaned_data['quarter']
+                if 'is_disabled' in form.cleaned_data:
+                    print form.cleaned_data['is_disabled'],'is_disabled'
+                    program_type.is_disabled = form.cleaned_data['is_disabled']
+                program_type.created_by = User.objects.get(email=request.user.email)
+                program_type.modified_by =  User.objects.get(email=request.user.email)
+                program_type.save()
+                form = ProgramTypeForm()
+                success = True
+                messages.success(request, 'Process Type created successfully')
+            print form.data,'form.data'
+            #context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success})
+        else:
+            form = ProgramTypeForm()
+            #processes = [(int(process.id), process.name) for process in  Process.objects.all()]
+            #quarters = [(int(q.id), str(q.quarter) + '-' + str(q.quarter_year)) for q in  Quarter.objects.all()]
+            print quarters
+        print form.data
+        #import pdb
+        #pdb.set_trace()
+        context = RequestContext(request, {'request': request, 'user': request.user,'form':form,'success':success, 'processes':processes,'quarters':quarters})
+    return render(request, "manage_admin/program_type.html", context_instance = context)

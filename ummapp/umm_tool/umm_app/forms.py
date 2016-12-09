@@ -1,4 +1,4 @@
-from umm_app.models import AdditionData, Process
+from umm_app.models import AdditionData, Process, ProgramType
 from django import forms
 
 class AdditionDataAdminForm(forms.ModelForm):
@@ -40,3 +40,8 @@ class ProcessForm(forms.ModelForm):
                 raise forms.ValidationError(u"Process with this Name already exists")
         return cleaned_data
         """
+
+class ProgramTypeForm(forms.ModelForm):
+    class Meta:
+        model = ProgramType
+        fields = ('process','quarter','name','is_disabled')
