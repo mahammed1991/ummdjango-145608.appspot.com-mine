@@ -33,4 +33,9 @@ urlpatterns = [
     url(r'^combodata/$', 'umm_app.views.combo_data', name='combo_data'),
     url(r'^budget_band/$', 'umm_app.views.budget_band', name='budget_band'),
     url(r'^_ah/', include('djangae.urls')),
+    url(r'^apollo/$', "umm_app.views.apollo_home", name="apollo_home"),
+    url(r'^umm/manage-admin/','umm_app.views.manage_admin', name='manage_admin'),
+    url(r'^umm/create-process/','umm_app.views.create_process', name='create_process'),
+    url(r'^umm/view-process/','umm_app.views.view_process', name='view_process'),
+    url(r'^umm/update-process/(?P<pk>[0-9]+)$','umm_app.views.update_process', name='update_process')
 ]

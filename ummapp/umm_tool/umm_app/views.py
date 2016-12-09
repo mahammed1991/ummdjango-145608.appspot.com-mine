@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponse, redirect
-from .models import ExtraTask, Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, GoalTaskMap, Question
+from .models import ExtraTask, Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, GoalTaskMap, Question, Process
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
@@ -7,16 +7,28 @@ from django.conf import settings
 import json
 import datetime
 from datetime import date
-
+from .forms import ProcessForm
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.forms.models import model_to_dict
 # view for Advertiser Goals
 
 
 def home(request):
-    goal_map = Goal.objects.all()
-    quarter = None
-    quarter_id = get_quarter()
-    context = RequestContext(request, {'request': request, 'user': request.user,'goal_map': goal_map, 'quarter':quarter_id})
-    return render(request, "index.html", context_instance=context)
+    subdomain = request.META.get('HTTP_HOST').split(".")[0]
+    if subdomain == "ummtools":
+        goal_map = Goal.objects.all()
+        quarter = None
+        quarter_id = get_quarter()
+        context = RequestContext(request, {'request': request, 'user': request.user,'goal_map': goal_map, 'quarter':quarter_id})
+        return render(request, "index.html", context_instance=context)
+    elif subdomain == "apollotools":
+        goal_map = Goal.objects.all()
+        quarter = None
+        quarter_id = get_quarter()
+        is_manager = True if request.user.groups.filter(name='CHAPERONE-MANAGER') else False
+        context = RequestContext(request, {'request': request, 'user': request.user,'goal_map': goal_map, 'quarter':quarter_id, 'is_manager':is_manager})
+        return render(request, "apollo-index.html", context_instance=context)
 
     
 @login_required
@@ -164,3 +176,121 @@ def check_email(request, strategy, details, *args, **kwargs):
     if domain not in settings.SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS:
         if email not in settings.SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_EMAILS:
             return redirect('/auth/error')
+
+
+
+# All Appolo code
+@login_required
+def apollo_home(request):
+    quarter = None
+    template = "apollo-home.html"
+    categorys = list()
+    tasks = list()
+    lefttab = list()
+    righttab = list()
+    quarter_id = get_quarter()
+    if quarter_id[0]:
+        quarter = Quarter.objects.get(pk=quarter_id[0])
+        categorys = Category.objects.filter(parent_quarter_id=quarter_id[0], is_disable=False)
+        if len(categorys):
+            tasks = Task.objects.filter(parent_category_id=categorys[0], is_disable=False)
+            if len(tasks):
+                lefttab = ColumnData.objects.filter(parent_task_id=tasks[0], is_disable=False)
+                righttab = AdditionData.objects.filter(parent_task_id=tasks[0], is_disable=False)
+    return render(request, template, {'tasks': tasks, 'lefttab': lefttab, 'righttab': righttab, 'categorys': categorys, 'quarter': quarter_id})
+
+
+
+@login_required
+def manage_admin(request):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        context = RequestContext(request, {'request': request, 'user': request.user})
+    return render(request, "manage_admin/admin-home.html", context_instance = context) 
+
+
+@login_required
+def create_process(request):
+    context = {}
+    success = False
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.method == 'POST':
+            print request.POST,'post'
+            form = ProcessForm(request.POST)
+            if form.is_valid():
+                process = form.save(commit=False)
+                print request.POST,form.cleaned_data
+                if request.FILES:
+                    img_file = request.FILES['image_ref']
+                    process.image_ref = img_file
+
+                if 'is_disabled' in form.cleaned_data:
+                    print form.cleaned_data['is_disabled'],'is_disabled'
+                    process.is_disabled = form.cleaned_data['is_disabled']
+                process.url_name = form.cleaned_data['name'].lower().replace(' ','-')
+                process.created_by = User.objects.get(email=request.user.email)
+                process.modified_by =  User.objects.get(email=request.user.email)
+                process.save()
+                success = True
+                messages.success(request, 'Process created successfully')
+            print form.data
+            context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success})
+        else:
+            form = ProcessForm()
+            context = RequestContext(request, {'request': request, 'user': request.user,'form':form,'success':success})
+    return render(request, "manage_admin/create-process.html", context_instance = context)  
+
+
+@login_required
+def view_process(request):
+    print request,request.user.groups.filter(name='CHAPERONE-MANAGER')
+    context = {}
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.method == 'GET':
+            processes = Process.objects.all()
+            print processes,'processes'
+            context = RequestContext(request, {'request': request, 'user': request.user,'processes':processes, 'update':False})
+    return render(request, "manage_admin/view-process.html", context_instance = context)   
+
+
+@login_required
+def update_process(request,pk):
+    print request,request.user.groups.filter(name='CHAPERONE-MANAGER')
+    context = {}
+    success = False
+    update = True
+    process = Process.objects.get(id=pk)
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.method == 'POST':
+            print request.POST,'post'
+            process = Process.objects.get(id=pk)
+            form = ProcessForm(request.POST, instance=process)
+            if form.is_valid():
+                #process = form.save(commit=False)
+                print request.POST,form.cleaned_data
+                if request.FILES:
+                    img_file = request.FILES['image_ref']
+                    process.image_ref = img_file
+
+                if 'is_disabled' in form.cleaned_data:
+                    print form.cleaned_data['is_disabled'],'is_disabled'
+                    process.is_disabled = form.cleaned_data['is_disabled']
+                process.name = form.cleaned_data['name']
+                process.url_name = form.cleaned_data['name'].lower().replace(' ','-')
+                process.created_by = User.objects.get(email=request.user.email)
+                process.modified_by =  User.objects.get(email=request.user.email)
+                process.save()
+                success = True
+                messages.success(request, 'Process updated successfully')
+                context = RequestContext(request, {'request': request, 'user': request.user,'form':form, 'update':False})
+                return redirect('view_process')
+            else:
+                context = RequestContext(request, {'request': request, 'user': request.user,'form':form, 'update':True})
+        else:
+            print process,'process'
+            form = ProcessForm(instance=process)
+            #import pdb
+            #pdb.set_trace()
+            context = RequestContext(request, {'request': request, 'user': request.user,'form':form, 'update':update})
+    
+    return render(request, "manage_admin/view-process.html", context_instance = context) 
+

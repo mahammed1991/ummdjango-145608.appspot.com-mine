@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db import models
 from django import forms
-from .models import Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, Question, GoalTaskMap, ExtraTask
+from .models import Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, Question, GoalTaskMap, ExtraTask, Process, ProgramType, ProgramTask, TaskData, AdditionDataReference, ProgramAdditionData
 from umm_app.forms import AdditionDataAdminForm
 
 class ComboInline(admin.TabularInline):
@@ -106,6 +106,51 @@ class AdditionDataAdmin(admin.ModelAdmin):
         model = AdditionData
 
 
+# -------------- Apollo -------------------
+class ProcessAdmin(admin.ModelAdmin):
+    list_display = ('name', 'url_name', 'image_ref', 'is_disabled')
+
+    class Meta:
+        model = Process
+
+
+class ProgramTypeAdmin(admin.ModelAdmin):
+    list_display = ('process', 'quarter', 'name', 'is_disabled')
+
+    class Meta:
+        model = ProgramType
+
+
+class ProgramTaskAdmin(admin.ModelAdmin):
+    list_display = ('program_type', 'name', 'is_disabled')
+
+    class Meta:
+        model = ProgramTask 
+
+
+class TaskDataAdmin(admin.ModelAdmin):
+    list_display = ('program_task', 'column_name', 'data', 'is_disabled')
+
+    class Meta:
+        model = TaskData
+
+
+class AdditionDataReferenceAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_disabled')
+
+    class Meta:
+        model = AdditionDataReference
+
+
+class ProgramAdditionDataAdmin(admin.ModelAdmin):
+    list_display = ('program_task', 'additional_ref', 'quarter', 'data', 'is_disabled')
+
+    class Meta:
+        model = ProgramAdditionData            
+
+# -------------- Apollo -------------------
+
+
 admin.site.register(Quarter, QuarterAdmin)
 admin.site.register(BudgetBand, BudgetBandAdmin)
 admin.site.register(ComboUpdate, ComboUpdateAdmin)
@@ -117,3 +162,12 @@ admin.site.register(Question, QuestionAdmin)
 admin.site.register(GoalTaskMap, GoalTaskMapAdmin)
 admin.site.register(ColumnData, ColumnDataAdmin)
 admin.site.register(AdditionData, AdditionDataAdmin)
+
+
+# -------------- Apollo -------------------
+admin.site.register(Process, ProcessAdmin)
+admin.site.register(ProgramType, ProgramTypeAdmin)
+admin.site.register(ProgramTask, ProgramTaskAdmin)
+admin.site.register(TaskData, TaskDataAdmin)
+admin.site.register(AdditionDataReference, AdditionDataReferenceAdmin)
+admin.site.register(ProgramAdditionData, ProgramAdditionDataAdmin)

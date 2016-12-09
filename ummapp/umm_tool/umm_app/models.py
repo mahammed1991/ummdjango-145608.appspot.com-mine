@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 
 class Quarter(models.Model):
     QUARTER_CHOICES = (
@@ -130,3 +130,97 @@ class AdditionData(models.Model):
 
     def __unicode__(self):
         return "%s %s %s %s" % (self.email_pitch_guidelines, self.implementation_guide,self.faq,self.elevator_pitch)
+
+# -------------- Appolo -------------------
+class Process(models.Model):
+    # Convert url_name to lowercase and replace space by -
+    name = models.CharField(max_length=250, unique=True)
+    url_name = models.CharField(max_length=250, unique=True)
+    image_ref = models.ImageField(upload_to='processes/', null=True, blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+    is_disabled = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, related_name='process_created_by', null=False)
+    modified_by = models.ForeignKey(User, related_name='process_modified_by', null=False)
+
+    def __unicode__(self):
+        return "%s" % (self.name)
+
+
+
+class ProgramType(models.Model):
+    process = models.ForeignKey(Process)
+    quarter = models.ForeignKey(Quarter)
+    name = models.CharField(max_length=250, unique=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+    is_disabled = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, related_name='programtype_created_by', null=False)
+    modified_by = models.ForeignKey(User, related_name='programtype_modified_by', null=False)
+
+    class Meta:
+        unique_together = ('process', 'name', 'quarter',)
+
+    def __unicode__(self):
+        return "%s-%s" % (self.name, self.quarter)
+
+
+class ProgramTask(models.Model):
+    program_type = models.ForeignKey(ProgramType)
+    name = models.CharField(max_length=250)
+    created_date = models.DateField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+    is_disabled = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, related_name='programtask_created_by', null=False)
+    modified_by = models.ForeignKey(User, related_name='programtask_modified_by', null=False)
+
+    class Meta:
+        unique_together = ('name', 'program_type',)
+
+    def __unicode__(self):
+        return "%s|%s" % (self.name, self.program_type)
+
+
+class TaskData(models.Model):
+    program_task = models.ForeignKey(ProgramTask)
+    column_name = models.CharField(max_length=250)
+    data = models.TextField()
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+    is_disabled = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, related_name='taskdata_created_by', null=False)
+    modified_by = models.ForeignKey(User, related_name='taskdata_modified_by', null=False)
+
+    def __unicode__(self):
+        return "%s %s %s" % (self.program_task, self.column_name, self.data)
+
+
+class AdditionDataReference(models.Model):
+    # Convert Name to lowercase and replace space by -
+    name = models.CharField(max_length=250)
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+    is_disabled = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, related_name='dataref_created_by', null=False)
+    modified_by = models.ForeignKey(User, related_name='dataref_modified_by', null=False)
+
+    def __unicode__(self):
+        return "%s" % (self.name)
+
+
+class ProgramAdditionData(models.Model):
+    program_task = models.ForeignKey(ProgramTask)
+    additional_ref = models.ForeignKey(AdditionDataReference)
+    quarter = models.ForeignKey(Quarter)
+    data = models.TextField()
+    created_date = models.DateTimeField()
+    modified_date = models.DateTimeField(auto_now=True)
+    is_disabled = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, related_name='adddata_created_by', null=False)
+    modified_by = models.ForeignKey(User, related_name='adddata_modified_by', null=False)
+   
+    class Meta:
+        unique_together = ('program_task', 'additional_ref', 'quarter')
+
+    def __unicode__(self):
+        return "%s %s %s %s" % (self.program_task, self.additional_ref, self.quarter)
