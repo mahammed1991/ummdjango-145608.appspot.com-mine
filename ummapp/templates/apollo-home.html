@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<title>UMM - Tool</title>
+	{% load staticfiles %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.css'%}">
+    
+	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap.min.css'%}">
+	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap-theme.min.css'%}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/looper.css'%}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/custom.css'%}">
+</head>
+
+<body>
+	<div class="container-fluid">
+		<div class="container-fluid main-top-bar " >
+			<div class="row">
+				<div class="col-md-6" >
+					<div  class="img-responsive logo" ></div>
+				</div>
+				<div class="col-md-6">
+					<div class="row">
+						<div class="col-md-8">
+					<h1 class="text-left text-danger" >UMM Offerings
+							Q{{quarter.1}}'{{quarter.2}}</h1>
+						 </div>
+						 <div class="col-md-4">		
+					<div class="user" id='username_login'>	
+						{{ user.get_full_name|default:user.username }} | 
+						<a href="{% url 'auth:logout' %}?next=/">Logout</a><br>
+					{% if is_manager %}
+						<a href="/umm/manage-admin/"> Manage Admin</a>
+					{% endif %}
+					</div>
+					  		</div>
+					  	</div>	
+					
+				</div>
+			</div>
+			<div class="row">
+				<div class="container-fluid main-link">
+					
+					
+					
+					<a href="/" > <h3 clas="adv "> Advertiser Goals </h3> </a>
+					<a href="/apollo_home/" class="active"> <h3 clas="adv"> UMM Offerings 
+							Q{{quarter.1}}'{{quarter.2}}</h3> </a>
+					<hr class="line2">
+				</div>
+			</div>
+
+			    <script>
+			    	var cateList = [];
+			    </script>	
+
+		<div class="container-fluid main-category-bar" >
+			<ul class="main-option">
+				{% for category in categorys %}
+				<li ><a  class="main-category" id="{{ category.id }}">{{ category.category_name }}</a>
+				</li>
+				<script>
+			    	 cateList.push({{ category.id }});
+			     </script>	
+			    {% endfor %}
+
+			</ul>
+			 
+			<hr class="line">
+			<div class="row sub-task">
+				<a class="sub-task-link" id="{{ task.id }}"></a>
+			</div>
+		</div>
+		<div class="container-fluid" >
+			<div class="row">
+				<div class="col-xs-12 col-md-3 col-md-3 col-lg-2 sub-row1">Combos Update</div>
+				<div data-looper="go" class="looper">
+				<div class="col-xs-12 col-md-9 col-md-9 col-lg-10 sub-row2 myclass looper-inner" data-toggle="modal" data-target="#myModal2">
+					
+				</div>
+			</div>
+			</div>
+		</div>
+
+		<div class="container-fluid table-box " >
+			<div class="col-md-10 col-sm-9 table-setting">
+				<div class="table-responsive">
+					<table class="table">
+						<thead>
+							<tr id="key_row">
+							
+						    </tr>
+						</thead>
+						<tbody>
+							<tr id="value_row">
+							
+						    </tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="col-md-2 col-sm-3 right-box" >
+				<a id="budget_band" class ="sideclass" data-toggle="modal" data-target="#myModal3">Budget Bands</a>
+			    <a id="email_pitch" class ="sideclass" data-toggle="modal" data-target="#myModal">Email Pitch Guidelines</a>
+			    <a id="implementation" class ="sideclass" data-toggle="modal" data-target="#myModal">Implementation Guide</a>
+			    <a id="faqns" class ="sideclass" data-toggle="modal" data-target="#myModal">FAQ's</a>
+			</div>
+		</div>
+		<div class="container-fluid last-row" >
+			<div class="row"><h1>Elevator Pitch</h1></div>
+			<br><p id="elevator_data"></p><br>
+		</div>
+	</div >
+
+<div class="modal fade" id="myModal" >
+	<div role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel"></h4>
+			</div>
+			<div class="modal-body">
+				<div class="tabbable"> 
+					<ul class="nav nav-tabs">
+						<li><a href="#epitch"  data-toggle="tab">Email Pitch Guidelines</a></li>
+                        <li><a href="#impl" data-toggle="tab">Implementation Guide</a></li>
+                        <li><a href="#faq" data-toggle="tab">FAQ's</a></li>
+                    </ul>
+                    <div class="tab-content">
+                    	<div class="tab-pane " id="epitch">
+                    		
+                    	</div>
+                    	<div class="tab-pane" id="impl">
+                    		
+                    	</div>
+                        <div class="tab-pane " id="faq">
+        	
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal2" >
+	<div role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Combo Update</h4>
+			</div>
+			<div class="modal-body">
+				<div class="table-responsive">
+					<table class="table mytable">
+						
+					</table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="myModal3">
+	<div role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Budget Bands</h4>
+			</div>
+			<div class="modal-body budget-body">
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+</div>
+	<script type="text/javascript" src="{% static 'js/jquery-2.2.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/looper.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+</body>
+</html>
+
+
