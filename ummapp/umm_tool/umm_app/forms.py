@@ -1,4 +1,4 @@
-from umm_app.models import AdditionData, Process, ProgramType
+from umm_app.models import AdditionData, Process, ProgramType, ProgramTask, TaskData
 from django import forms
 
 class AdditionDataAdminForm(forms.ModelForm):
@@ -45,3 +45,15 @@ class ProgramTypeForm(forms.ModelForm):
     class Meta:
         model = ProgramType
         fields = ('process','quarter','name','is_disabled')
+
+
+class ProgramTaskForm(forms.ModelForm):
+    class Meta:
+        model = ProgramTask
+        fields = ('program_type','name', 'is_disabled')
+
+
+class TaskDataForm(forms.ModelForm):
+    class Meta:
+        model = TaskData
+        fields = ('program_task','column_name','data','is_disabled')
