@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponse, redirect
-from .models import ExtraTask, Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, GoalTaskMap, Question, Process, ProgramType
+from .models import ExtraTask, Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, GoalTaskMap, Question, Process, ProgramType, ProgramTask, TaskData
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
@@ -7,7 +7,7 @@ from django.conf import settings
 import json
 import datetime
 from datetime import date
-from .forms import ProcessForm, ProgramTypeForm
+from .forms import ProcessForm, ProgramTypeForm, ProgramTaskForm, TaskDataForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.forms.models import model_to_dict
@@ -288,8 +288,6 @@ def update_process(request,pk):
         else:
             print process,'process'
             form = ProcessForm(instance=process)
-            #import pdb
-            #pdb.set_trace()
             context = RequestContext(request, {'request': request, 'user': request.user,'form':form, 'update':update})
     
     return render(request, "manage_admin/view_process.html", context_instance = context) 
@@ -321,6 +319,7 @@ def create_program_type(request):
                 if 'is_disabled' in form.cleaned_data:
                     print form.cleaned_data['is_disabled'],'is_disabled'
                     program_type.is_disabled = form.cleaned_data['is_disabled']
+                program_type.name = form.cleaned_data['name']
                 program_type.created_by = User.objects.get(email=request.user.email)
                 program_type.modified_by =  User.objects.get(email=request.user.email)
                 program_type.save()
@@ -339,3 +338,159 @@ def create_program_type(request):
         #pdb.set_trace()
         context = RequestContext(request, {'request': request, 'user': request.user,'form':form,'success':success, 'processes':processes,'quarters':quarters})
     return render(request, "manage_admin/program_type.html", context_instance = context)
+
+
+def view_program_type(request):
+    print request,request.user.groups.filter(name='CHAPERONE-MANAGER')
+    context = {}
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.method == 'GET':
+            process_types = ProgramType.objects.all()
+            print process_types,'process_types'
+            context = RequestContext(request, {'request': request, 'user': request.user,'process_types':process_types, 'update':False})
+    return render(request, "manage_admin/view_process_types.html", context_instance = context)   
+
+
+@login_required
+def update_program_type(request,pk):
+    print request,request.user.groups.filter(name='CHAPERONE-MANAGER')
+    context = {}
+    success = False
+    update = True
+    program_type = ProgramType.objects.get(id=pk)
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        processes = [(int(process.id), process.name) for process in  Process.objects.all()]
+        quarters = [(int(q.id), str(q.quarter) + '-' + str(q.quarter_year)) for q in  Quarter.objects.all()]
+        if request.method == 'POST':
+            print request.POST,'post'
+            process_type = ProgramType.objects.get(id=pk)
+            form = ProgramTypeForm(request.POST, instance=program_type)
+            if form.is_valid():
+                #process = form.save(commit=False)
+                print request.POST,form.cleaned_data
+                if 'is_disabled' in form.cleaned_data:
+                    print form.cleaned_data['is_disabled'],'is_disabled'
+                    process_type.is_disabled = form.cleaned_data['is_disabled']
+                process_type.process = form.cleaned_data['process']
+                process_type.quarter = form.cleaned_data['quarter']
+                process_type.name = form.cleaned_data['name']
+                process_type.created_by = User.objects.get(email=request.user.email)
+                process_type.modified_by =  User.objects.get(email=request.user.email)
+                process_type.save()
+                success = True
+                messages.success(request, 'Process Type updated successfully')
+                context = RequestContext(request, {'request': request, 'user': request.user,'form':form, 'update':False, 'processes':processes,'quarters':quarters})
+                return redirect('view_program_type')
+            else:
+                context = RequestContext(request, {'request': request, 'user': request.user,'form':form, 'update':True, 'processes':processes,'quarters':quarters})
+        else:
+            form = ProgramTypeForm(instance=program_type)
+            context = RequestContext(request, {'request': request, 'user': request.user,'form':form, 'update':update, 'processes':processes,'quarters':quarters})
+    
+    return render(request, "manage_admin/view_process_types.html", context_instance = context) 
+
+
+@login_required
+def create_task_data(request):
+    context = {}
+    success = False
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        program_tasks = [(int(process.id), process.name) for process in  ProgramType.objects.all()]
+        if request.method == 'POST':
+            form = TaskDataForm(request.POST)
+            if form.is_valid():
+                process = form.save(commit=False)
+                print request.POST,form.cleaned_data
+                if 'is_disabled' in form.cleaned_data:
+                    print form.cleaned_data['is_disabled'],'is_disabled'
+                    process.is_disabled = form.cleaned_data['is_disabled']
+                process.url_name = form.cleaned_data['name'].lower().replace(' ','-')
+                process.created_by = User.objects.get(email=request.user.email)
+                process.modified_by =  User.objects.get(email=request.user.email)
+                process.save()
+                form = TaskDataForm()
+                success = True
+                messages.success(request, 'Process created successfully')
+            print form.data,'form.data'
+            context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success})
+        else:
+            form = TaskDataForm()
+            context = RequestContext(request, {'request': request, 'user': request.user,'form':form,'success':success})
+    return render(request, "manage_admin/task_data.html", context_instance = context) 
+
+
+@login_required
+def create_program_task(request):
+    context = {}
+    success = False
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        program_types = [(int(process.id), process.name) for process in  ProgramType.objects.all()]
+        if request.method == 'POST':
+            form = ProgramTaskForm(request.POST)
+            print form.is_valid()
+            if form.is_valid():
+                program_task = form.save(commit=False)
+                print request.POST,form.cleaned_data
+                if 'is_disabled' in form.cleaned_data:
+                    print form.cleaned_data['is_disabled'],'is_disabled'
+                    program_task.is_disabled = form.cleaned_data['is_disabled']
+                program_task.program_type = form.cleaned_data['program_type']
+                program_task.name = form.cleaned_data['name']
+                program_task.created_by = User.objects.get(email=request.user.email)
+                program_task.modified_by =  User.objects.get(email=request.user.email)
+                program_task.save()
+                form = ProgramTaskForm()
+                success = True
+                messages.success(request, 'Program Task created successfully')
+            print form.data,'form.data'
+            context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success, 'program_types':program_types})
+        else:
+            form = ProgramTaskForm()
+            context = RequestContext(request, {'request': request, 'user': request.user,'form':form,'success':success, 'program_types':program_types})
+    return render(request, "manage_admin/program_task.html", context_instance = context)  
+
+
+def view_program_task(request):
+    print request,request.user.groups.filter(name='CHAPERONE-MANAGER')
+    context = {}
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.method == 'GET':
+            program_tasks = ProgramTask.objects.all()
+            print program_tasks,'program_tasks'
+            context = RequestContext(request, {'request': request, 'user': request.user,'program_tasks':program_tasks, 'update':False})
+    return render(request, "manage_admin/view_program_tasks.html", context_instance = context)   
+
+
+@login_required
+def update_program_task(request,pk):
+    print request,request.user.groups.filter(name='CHAPERONE-MANAGER')
+    context = {}
+    success = False
+    update = True
+    program_task = ProgramTask.objects.get(id=pk)
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        program_types = [(int(process.id), process.name) for process in  ProgramType.objects.all()]
+        if request.method == 'POST':
+            print request.POST,'post'
+            form = ProgramTaskForm(request.POST, instance=program_task)
+            if form.is_valid():
+                print request.POST,form.cleaned_data
+                if 'is_disabled' in form.cleaned_data:
+                    print form.cleaned_data['is_disabled'],'is_disabled'
+                    program_task.is_disabled = form.cleaned_data['is_disabled']
+                program_task.program_type = form.cleaned_data['program_type']
+                program_task.name = form.cleaned_data['name']
+                program_task.created_by = User.objects.get(email=request.user.email)
+                program_task.modified_by =  User.objects.get(email=request.user.email)
+                program_task.save()
+                success = True
+                messages.success(request, 'Program Task updated successfully')
+                context = RequestContext(request, {'request': request, 'user': request.user,'form':form, 'update':False, 'program_types':program_types})
+                return redirect('view_program_task')
+            else:
+                context = RequestContext(request, {'request': request, 'user': request.user,'form':form, 'update':True, 'program_types':program_types})
+        else:
+            form = ProgramTaskForm(instance=program_task)
+            context = RequestContext(request, {'request': request, 'user': request.user,'form':form, 'update':update, 'program_types':program_types})
+    
+    return render(request, "manage_admin/view_program_tasks.html", context_instance = context)

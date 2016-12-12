@@ -38,5 +38,11 @@ urlpatterns = [
     url(r'^umm/create-process/','umm_app.views.create_process', name='create_process'),
     url(r'^umm/view-process/','umm_app.views.view_process', name='view_process'),
     url(r'^umm/update-process/(?P<pk>[0-9]+)$','umm_app.views.update_process', name='update_process'),
-    url(r'^umm/create-program-type/','umm_app.views.create_program_type', name='create_program_type')
+    url(r'^umm/create-program-type/','umm_app.views.create_program_type', name='create_program_type'),
+    url(r'^umm/view-program-type/','umm_app.views.view_program_type', name='view_program_type'),
+    url(r'^umm/update-program-type/(?P<pk>[0-9]+)$','umm_app.views.update_program_type', name='update_program_type'),
+    url(r'^umm/create-program-task/','umm_app.views.create_program_task', name='create_program_task'),
+    url(r'^umm/view-program-task/','umm_app.views.view_program_task', name='view_program_task'),
+    url(r'^umm/update-program-task/(?P<pk>[0-9]+)$','umm_app.views.update_program_task', name='update_program_task'),
+    url(r'^umm/create-task-data/','umm_app.views.create_task_data', name='create_task_data'),
 ]   

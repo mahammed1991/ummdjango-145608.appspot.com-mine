@@ -17,39 +17,27 @@
         <button type="button" class="close" onclick="hideMsg()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <span id="span-msg"></span>
     </div>
-{{form.non_field_errors}}
-<form action="" method="post" name="process" id="process-type-form" class="form-horizontal" enctype="multipart/form-data">
+<form action="" method="post" name="task-data" id="task-data-form" class="form-horizontal" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="form-group">
-        <label for="process-type" class="control-label col-sm-2">Process</label>
+        <label for="program-task" class="control-label col-sm-2">Program Task</label>
         <div class="col-sm-10">
-            <select class="form-control" id="process" name="process">
-            <option data-group='SHOW' value='0' id='0'>-- Select --</option>
-
-            {% for process in processes %}
-            <option id="{{ process.0 }}" value="{{ process.0 }}" {% if process.0  == form.process.value %}selected='selected'{% endif %} >{{ process.1 }}</option>
-            {% endfor %}
-            </select>
-            {{ form.errors.process }}
+            <input type="text" class="form-control" id="program-task" name="program_task">
+            {{ form.errors.program_task }}
         </div>
     </div>
     <div class="form-group">
-        <label for="process-type" class="control-label col-sm-2">Quarter</label>
+        <label for="column-name" class="control-label col-sm-2">Column name</label>
         <div class="col-sm-10">
-            <select class="form-control" id="quarter" name="quarter">
-            <option data-group='SHOW' value='0' id='0'>-- Select --</option>                     
-            {% for quarter in quarters %}
-            <option id="{{ quarter.0 }}" value="{{ quarter.0 }}" {% if quarter.1 == form.quarter.value %}selected='selected'{% endif %}>{{ quarter.1 }}</option>
-            {% endfor %}
-            </select>
-            {{ form.errors.quarter }}
+            <input type="text" class="form-control" id="column-name" name="column_name">
+            {{ form.errors.column_name }}
         </div>
     </div>
     <div class="form-group">
-        <label for="process-type" class="control-label col-sm-2">Name</label>
+        <label for="process-name" class="control-label col-sm-2">Data</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" id="program-type" name="name">
-            {{ form.errors.name }}
+            <input type="text" class="form-control" id="data" name="data">
+            {{ form.errors.data }}
         </div>
     </div>
     <div class="form-group">
@@ -66,35 +54,65 @@
   $(document).ready(function(){
     $('.sidebar-nav li').removeClass('active');
     debugger;
-    $('#create-program-type').attr('class','active');
+    $('#create-task-data').attr('class','active');
 
     });
-    var process_val = '{{form.process.value}}'
-    if (process_val != ''){
-        $("#process option[id=" + process_val + "]").attr("selected", "selected");
+
+    var validateFormFields = function(name,image_ref){
+        valid = false
+
+
+        return valid
+    }
+/*
+    function hideMsg(){
+        $('#msg-info').css('display','none')
     }
 
-    var quarter_val = '{{form.quarter.value}}'
-    if (quarter_val != ''){
-        $("#quarter option[id=" + quarter_val + "]").attr("selected", "selected");
+    $('input[type=file]').on('change', prepareUpload);
+
+    function prepareUpload(event)
+    {
+    files = event.target.files;
     }
-    debugger
-    $("form#process-type-form").submit(function (e) {
+
+    var fileChange = function(){
+      var files = $('input[name^="image_ref"]')[0].files
+      if(files){
+        for (var i=0;i<files.length;i++){
+          filename = files[i].name;
+          var allowedFiles = ["gif,jpg,jpeg,tiff,png,bmp"];
+          if (!(/\.(gif|jpg|jpeg|tiff|png|bmp)$/i).test(filename)) {
+            // inputted file path is not an image of one of the above types
+            $('#span-msg').text('Please upload image only with extension ' + allowedFiles.join(', '))
+            $('#msg-info').show();
+            $('input[name^="image_ref"]').val('');
+            $('.file-name').html('');
+            return false;
+          }
+          hideMsg();
+          $('.file-name').html(filename);
+          return true;
+        }
+      }
+    }*/
+
+
+    $("form#process-form").submit(function (e) {
+        debugger
         e.preventdefault();
         var formData = new FormData();
-        name = $('#program-type').val()
-        process_selected = $('#process').val()
-        quarter = $('#quarter').val()
-        formData.append('process', process_selected);
-        formData.append('quarter', quarter);
+        name = $('#process-name').val()
+
+        var file = $('input[name^="image_ref"]')[0].files;
+        formData.append('file', file);
         formData.append('name', name);
         //formData.append('image_ref', image_ref);
         
         formData.append('is_disabled', $('#is-disabled').val());
         formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
-        debugger;
         $.ajax({
-            url: '/umm/create-program-type/',
+            url: '/umm/create-process/',
             type: 'POST',
             data: formData,
             cache: false,
@@ -102,7 +120,7 @@
             processData: false,
             success: function (data) {
                 debugger
-                $('#process-type-form')[0].reset()
+                $('#process-form')[0].reset()
             },
             error: function(data){
               alert("Something went wrong, please try after some time");

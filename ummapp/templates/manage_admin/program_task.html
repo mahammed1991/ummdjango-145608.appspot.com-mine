@@ -1,0 +1,135 @@
+{% extends 'manage_admin/admin_home.html' %}
+{% load staticfiles %}
+{% block content %}
+{% if messages %}
+<ul class="messages">
+    {% for msg in messages %}       
+    
+        <div class="alert alert-{{msg.level_tag}}" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    {{msg.message}}
+    </div>
+    
+    {% endfor %}
+</ul>
+{% endif %}
+    <div class="alert alert-warning" role="alert" id="msg-info" style="display:none;">
+        <button type="button" class="close" onclick="hideMsg()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <span id="span-msg"></span>
+    </div>
+{{form.non_field_errors}}
+<form action="" method="post" name="task-data" id="program-task-form" class="form-horizontal" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+    <label for="program-type" class="control-label col-sm-2">Program Type</label>
+        <select class="form-control" id="program-type" name="program_type">
+        <option data-group='SHOW' value='0' id='0'>-- Select --</option>
+
+        {% for type in program_types %}
+        <option id="{{ type.0 }}" value="{{ type.0 }}" {% if type.0  == form.program_type.value %}selected='selected'{% endif %} >{{ type.1 }}</option>
+        {% endfor %}
+        </select>
+        {{ form.errors.program_type }}
+    </div>
+    <div class="form-group">
+        <label for="name" class="control-label col-sm-2">Name</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="name" name="name">
+            {{ form.errors.name }}
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="is-disabled" class="control-label col-sm-2">Is disabled</label> 
+        <div class="col-sm-10">
+            <input id="is-disabled" name="is_disabled" type="checkbox" {% if form.is_disabled.value %}checked{% endif %}>
+        </div>
+    </div>
+    <input type="submit" class="btn btn-primary add" ></input>
+</form>
+<script src="{% static 'manage_admin/js/jquery.min.js'%}"></script>
+<script src="{% static 'manage_admin/js/common.js'%}"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('.sidebar-nav li').removeClass('active');
+    debugger;
+    $('#create-program-task').attr('class','active');
+
+    });
+
+    var validateFormFields = function(name,image_ref){
+        valid = false
+
+
+        return valid
+    }
+    debugger
+    var program_type = '{{form.program_type.value}}'
+    if (program_type != ''){
+        $("#program-type option[id=" + program_type + "]").attr("selected", "selected");
+    }
+/*
+    function hideMsg(){
+        $('#msg-info').css('display','none')
+    }
+
+    $('input[type=file]').on('change', prepareUpload);
+
+    function prepareUpload(event)
+    {
+    files = event.target.files;
+    }
+
+    var fileChange = function(){
+      var files = $('input[name^="image_ref"]')[0].files
+      if(files){
+        for (var i=0;i<files.length;i++){
+          filename = files[i].name;
+          var allowedFiles = ["gif,jpg,jpeg,tiff,png,bmp"];
+          if (!(/\.(gif|jpg|jpeg|tiff|png|bmp)$/i).test(filename)) {
+            // inputted file path is not an image of one of the above types
+            $('#span-msg').text('Please upload image only with extension ' + allowedFiles.join(', '))
+            $('#msg-info').show();
+            $('input[name^="image_ref"]').val('');
+            $('.file-name').html('');
+            return false;
+          }
+          hideMsg();
+          $('.file-name').html(filename);
+          return true;
+        }
+      }
+    }*/
+
+
+    $("form#program-task-form").submit(function (e) {
+        debugger
+        e.preventdefault();
+        var formData = new FormData();
+        name = $('#process-name').val()
+
+        var file = $('input[name^="image_ref"]')[0].files;
+        formData.append('file', file);
+        formData.append('name', name);
+        //formData.append('image_ref', image_ref);
+        
+        formData.append('is_disabled', $('#is-disabled').val());
+        formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+        $.ajax({
+            url: '/umm/create-process/',
+            type: 'POST',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                debugger
+                $('#process-form')[0].reset()
+            },
+            error: function(data){
+              alert("Something went wrong, please try after some time");
+            }
+        })
+        //}
+    })
+</script>
+{% endblock %}
