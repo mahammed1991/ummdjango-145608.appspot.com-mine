@@ -45,4 +45,6 @@ urlpatterns = [
     url(r'^umm/view-program-task/','umm_app.views.view_program_task', name='view_program_task'),
     url(r'^umm/update-program-task/(?P<pk>[0-9]+)$','umm_app.views.update_program_task', name='update_program_task'),
     url(r'^umm/create-task-data/','umm_app.views.create_task_data', name='create_task_data'),
+
+    url(r'^create/','umm_app.views.create', name='create'),
 ]   

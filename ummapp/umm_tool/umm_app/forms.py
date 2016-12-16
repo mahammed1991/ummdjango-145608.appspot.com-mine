@@ -1,4 +1,4 @@
-from umm_app.models import AdditionData, Process, ProgramType, ProgramTask, TaskData
+from umm_app.models import AdditionData, Process, SubProcess, ProgramType, ProgramTask, TaskData
 from django import forms
 
 class AdditionDataAdminForm(forms.ModelForm):
@@ -41,16 +41,25 @@ class ProcessForm(forms.ModelForm):
         return cleaned_data
         """
 
+class SubProcessForm(forms.ModelForm):
+    class Meta:
+        model = SubProcess
+        fields = ('process','quarter','name','is_disabled')
+        exclude = ('process','quarter')
+
+
 class ProgramTypeForm(forms.ModelForm):
     class Meta:
         model = ProgramType
-        fields = ('process','quarter','name','is_disabled')
+        fields = ('subprocess', 'name','is_disabled')
+        exclude = ('subprocess',)
 
 
 class ProgramTaskForm(forms.ModelForm):
     class Meta:
         model = ProgramTask
         fields = ('program_type','name', 'is_disabled')
+        exclude = ('program_type',)
 
 
 class TaskDataForm(forms.ModelForm):

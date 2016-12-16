@@ -10,7 +10,7 @@ class Quarter(models.Model):
     )
     quarter = models.IntegerField(choices=QUARTER_CHOICES, default=1)
     quarter_year = models.IntegerField()
-    created_date = models.DateTimeField()
+    created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
 
@@ -132,6 +132,7 @@ class AdditionData(models.Model):
         return "%s %s %s %s" % (self.email_pitch_guidelines, self.implementation_guide,self.faq,self.elevator_pitch)
 
 # -------------- Appolo -------------------
+
 class Process(models.Model):
     # Convert url_name to lowercase and replace space by -
     name = models.CharField(max_length=250, unique=True)
@@ -147,10 +148,26 @@ class Process(models.Model):
         return "%s" % (self.name)
 
 
-
-class ProgramType(models.Model):
+class SubProcess(models.Model):
+    # Convert url_name to lowercase and replace space by 
     process = models.ForeignKey(Process)
     quarter = models.ForeignKey(Quarter)
+    name = models.CharField(max_length=250, unique=True)
+    url_name = models.CharField(max_length=250, unique=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+    is_disabled = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, related_name='subprocess_created_by', null=False)
+    modified_by = models.ForeignKey(User, related_name='subprocess_modified_by', null=False)
+
+    class Meta:
+        unique_together = ('process', 'name', 'quarter',)
+    def __unicode__(self):
+        return "%s" % (self.name)
+
+
+class ProgramType(models.Model):
+    subprocess = models.ForeignKey(SubProcess)
     name = models.CharField(max_length=250, unique=True)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
@@ -159,10 +176,10 @@ class ProgramType(models.Model):
     modified_by = models.ForeignKey(User, related_name='programtype_modified_by', null=False)
 
     class Meta:
-        unique_together = ('process', 'name', 'quarter',)
+        unique_together = ('subprocess', 'name')
 
     def __unicode__(self):
-        return "%s-%s" % (self.name, self.quarter)
+        return "%s-%s" % (self.name)
 
 
 class ProgramTask(models.Model):

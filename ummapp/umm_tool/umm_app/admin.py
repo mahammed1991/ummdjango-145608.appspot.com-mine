@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db import models
 from django import forms
-from .models import Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, Question, GoalTaskMap, ExtraTask, Process, ProgramType, ProgramTask, TaskData, AdditionDataReference, ProgramAdditionData
+from .models import Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, Question, GoalTaskMap, ExtraTask, Process, SubProcess, ProgramType, ProgramTask, TaskData, AdditionDataReference, ProgramAdditionData
 from umm_app.forms import AdditionDataAdminForm
 
 class ComboInline(admin.TabularInline):
@@ -114,8 +114,15 @@ class ProcessAdmin(admin.ModelAdmin):
         model = Process
 
 
-class ProgramTypeAdmin(admin.ModelAdmin):
+class SubProcessAdmin(admin.ModelAdmin):
     list_display = ('process', 'quarter', 'name', 'is_disabled')
+
+    class Meta:
+        model = SubProcess
+
+
+class ProgramTypeAdmin(admin.ModelAdmin):
+    list_display = ('subprocess', 'name', 'is_disabled')
 
     class Meta:
         model = ProgramType
@@ -166,6 +173,7 @@ admin.site.register(AdditionData, AdditionDataAdmin)
 
 # -------------- Apollo -------------------
 admin.site.register(Process, ProcessAdmin)
+admin.site.register(SubProcess, SubProcessAdmin)
 admin.site.register(ProgramType, ProgramTypeAdmin)
 admin.site.register(ProgramTask, ProgramTaskAdmin)
 admin.site.register(TaskData, TaskDataAdmin)
