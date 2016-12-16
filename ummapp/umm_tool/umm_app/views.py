@@ -7,7 +7,7 @@ from django.conf import settings
 import json
 import datetime
 from datetime import date
-from .forms import ProcessForm, ProgramTypeForm, ProgramTaskForm, TaskDataForm
+from .forms import ProcessForm, SubProcessForm, ProgramTypeForm, ProgramTaskForm, TaskDataForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.forms.models import model_to_dict
@@ -205,7 +205,7 @@ def apollo_home(request):
 def manage_admin(request):
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         context = RequestContext(request, {'request': request, 'user': request.user})
-    return render(request, "manage_admin/admin_home.html", context_instance = context) 
+    return render(request, "manage_admin/umm_admin.html", context_instance = context) 
 
 
 @login_required
@@ -233,10 +233,13 @@ def create_process(request):
                 success = True
                 messages.success(request, 'Process created successfully')
             print form.data,'form.data'
+            #import pdb
+            #pdb.set_trace()
             context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success})
         else:
             form = ProcessForm()
             context = RequestContext(request, {'request': request, 'user': request.user,'form':form,'success':success})
+    print context,'context'
     return render(request, "manage_admin/create_process.html", context_instance = context)  
 
 
@@ -494,3 +497,75 @@ def update_program_task(request,pk):
             context = RequestContext(request, {'request': request, 'user': request.user,'form':form, 'update':update, 'program_types':program_types})
     
     return render(request, "manage_admin/view_program_tasks.html", context_instance = context)
+
+@login_required
+def create(request):
+    context = {}
+    success = False
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.POST:
+            form = ProcessForm(request.POST)
+            print request.POST
+            """
+            try:
+                quarter = Quarter.objects.get(quarter=request.POST.get('quarter'),quarter_year=request.POST.get('quarter_year'))
+            except Exception as e:
+                quarter = Quarter()
+                quarter.quarter = request.POST.get('quarter')
+                quarter.quarter_year = request.POST.get('quarter_year')
+                quarter.save()
+            """
+            sub_process_form = SubProcessForm({'name':request.POST.get('sub-process-name')})
+            print sub_process_form.data,'sub form data',form.is_valid() and sub_process_form.is_valid()
+            program_type_name = request.POST.getlist('program-type-name')
+            program_task_name = request.POST.getlist('program-task-name')
+            if program_type_name:
+                import pdb
+                pdb.set_trace()
+                program_type_forms = [ProgramTypeForm({'name':name}, prefix=str(indx)) for indx,name in program_type_name]
+            else:
+                program_type_forms = ProgramTypeForm()
+            if program_task_name:
+                program_task_forms = [ProgramTaskForm({'name':name}, prefix=str(indx)) for indx,name in program_task_name]
+            else:
+                program_task_forms = ProgramTaskForm()
+            program_type_is_valid = all([ty.is_valid() for ty in program_type_forms])
+            program_task_is_valid = all([ta.is_valid() for ta in program_task_forms])
+            print form.is_valid(),'form'
+            print sub_process_form.is_valid(),'sub process'
+            print program_type_is_valid,'program_type_is_valid'
+            print program_task_is_valid,'program_task_is_valid'
+            if form.is_valid() and sub_process_form.is_valid():
+                print form,'form'
+                process_e = Process.objects.filter(name=form.cleaned_data['name'])
+                print process_e,'process_e'
+                process = form.save(commit=False)
+                print request.POST,form.cleaned_data
+                if request.FILES:
+                    img_file = request.FILES['image_ref']
+                    process.image_ref = img_file
+
+                if 'is_disabled' in form.cleaned_data:
+                    print form.cleaned_data['is_disabled'],'is_disabled'
+                    process.is_disabled = form.cleaned_data['is_disabled']
+                process.url_name = form.cleaned_data['name'].lower().replace(' ','-')
+                process.created_by = User.objects.get(email=request.user.email)
+                process.modified_by =  User.objects.get(email=request.user.email)
+                process.save()
+                form = ProcessForm()
+                success = True
+                messages.success(request, 'Process created successfully')
+            print form.data,'form.data'
+            #import pdb
+            #pdb.set_trace()
+            context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success})
+        else:
+            form = ProcessForm()
+            context = RequestContext(request, {'request': request, 'user': request.user,'form':form,'success':success})
+    print context,'context'
+    """
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        form = ProcessForm(request.POST)
+        context = RequestContext(request, {'request': request, 'user': request.user, 'form':form})
+    """
+    return render(request, "manage_admin/create_page.html", context_instance = context) 

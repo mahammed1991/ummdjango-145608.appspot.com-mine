@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(unique=True, max_length=250)),
                 ('url_name', models.CharField(unique=True, max_length=250)),
-                ('image_ref', models.CharField(max_length=20)),
+                ('image_ref', models.ImageField(null=True, upload_to=b'processes/', blank=True)),
                 ('created_date', models.DateTimeField(auto_now_add=True)),
                 ('modified_date', models.DateTimeField(auto_now=True)),
                 ('is_disabled', models.BooleanField(default=False)),
@@ -74,6 +74,19 @@ class Migration(migrations.Migration):
                 ('is_disabled', models.BooleanField(default=False)),
                 ('created_by', models.ForeignKey(related_name='programtype_created_by', to=settings.AUTH_USER_MODEL)),
                 ('modified_by', models.ForeignKey(related_name='programtype_modified_by', to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='SubProcess',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(unique=True, max_length=250)),
+                ('url_name', models.CharField(unique=True, max_length=250)),
+                ('created_date', models.DateTimeField(auto_now_add=True)),
+                ('modified_date', models.DateTimeField(auto_now=True)),
+                ('is_disabled', models.BooleanField(default=False)),
+                ('created_by', models.ForeignKey(related_name='subprocess_created_by', to=settings.AUTH_USER_MODEL)),
+                ('modified_by', models.ForeignKey(related_name='subprocess_modified_by', to=settings.AUTH_USER_MODEL)),
                 ('process', models.ForeignKey(to='umm_app.Process')),
                 ('quarter', models.ForeignKey(to='umm_app.Quarter')),
             ],
@@ -93,6 +106,11 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.AddField(
+            model_name='programtype',
+            name='subprocess',
+            field=models.ForeignKey(to='umm_app.SubProcess'),
+        ),
+        migrations.AddField(
             model_name='programtask',
             name='program_type',
             field=models.ForeignKey(to='umm_app.ProgramType'),
@@ -108,8 +126,12 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(to='umm_app.Quarter'),
         ),
         migrations.AlterUniqueTogether(
-            name='programtype',
+            name='subprocess',
             unique_together=set([('process', 'name', 'quarter')]),
+        ),
+        migrations.AlterUniqueTogether(
+            name='programtype',
+            unique_together=set([('subprocess', 'name')]),
         ),
         migrations.AlterUniqueTogether(
             name='programtask',
