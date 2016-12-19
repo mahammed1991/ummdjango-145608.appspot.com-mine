@@ -95,7 +95,7 @@
 			</div>
 			<div class="clearfix"></div>
 			<div >
-				<div class="white-bg">
+				<div class="">
 					<div class="red-bg clearfix disabled" id="sub-process">
 						<div class="create-heading pull-left" id="sub-process-hdg">
 							<h2>Create SubProcess </h2>
@@ -106,6 +106,7 @@
 						        <div class="col-sm-10">
 						            <input type="text" class="form-control" id="sub-process-name" name="sub-process-name">
 						        </div>
+						        {{ sub_process_form.errors.name }}
 						    </div>
 						    <div class="form-group">
 						        <label for="quarter" class="control-label col-sm-2">Sub Process Quarter</label>
@@ -120,6 +121,7 @@
 						        <label for="quarter" class="control-label col-sm-2">Sub Process Year</label>
 						        <input  type="text" placeholder=""  id="quarter-year" name="quarter_year">
 
+
 					        </div>
 					    </div>
 						<div class="edit-white pull-right">
@@ -127,7 +129,7 @@
 						</div>
 					</div>
 					<!--<div class="padding-15 disabled">-->
-						<div class="program-type clearfix disabled" id="program-type">
+						<div class="red-bg clearfix disabled program-type" id="program-type">
 							<div class="create-heading pull-left" id="program-type-hdg">
 							<h3>Create Program Type and Tasks</h3>
 						    </div>
@@ -198,7 +200,7 @@
 								<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
 							</div>
 						</div>	
-						<div class="gray-bg">
+						<!--<div class="gray-bg">
 							<div class="sub-text clearfix disabled">
 								<div class="create-heading pull-left">
 								<h3>Create Table </h3>
@@ -223,7 +225,7 @@
 									<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
 								</div>
 							</div>
-						</div>
+						</div>-->
 					<!--</div>-->
 				</div>
 			</div>
@@ -349,10 +351,12 @@
 		                $('#program-type').removeClass('disabled');
 		                $('#program-type-hdg').css('display', 'none');
 		                $('.process-type-rows').css('display', 'block');
+		                $('#program-type').removeClass('red-bg');
 		            } else {
 		                $('#program-type').addClass('disabled');
 		                $('#program-type-hdg').css('display', 'block');
 		                $('.process-type-rows').css('display', 'none');
+		                $('#program-type').addClass('red-bg');
 		            }
 		        }
 		    });
