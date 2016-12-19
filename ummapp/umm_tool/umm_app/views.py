@@ -506,7 +506,7 @@ def create(request):
         if request.POST:
             form = ProcessForm(request.POST)
             print request.POST
-            """
+            
             try:
                 quarter = Quarter.objects.get(quarter=request.POST.get('quarter'),quarter_year=request.POST.get('quarter_year'))
             except Exception as e:
@@ -514,23 +514,29 @@ def create(request):
                 quarter.quarter = request.POST.get('quarter')
                 quarter.quarter_year = request.POST.get('quarter_year')
                 quarter.save()
-            """
-            sub_process_form = SubProcessForm({'name':request.POST.get('sub-process-name')})
+            
+            sub_process_form = SubProcessForm({'name':request.POST.get('sub-process-name'), 'quarter':quarter})
             print sub_process_form.data,'sub form data',form.is_valid() and sub_process_form.is_valid()
             program_type_name = request.POST.getlist('program-type-name')
             program_task_name = request.POST.getlist('program-task-name')
+            
+            program_type_forms = ProgramTypeForm()
+            program_task_forms = ProgramTaskForm()
+            print program_type_name,'program_type_name'
             if program_type_name:
-                import pdb
-                pdb.set_trace()
-                program_type_forms = [ProgramTypeForm({'name':name}, prefix=str(indx)) for indx,name in program_type_name]
-            else:
-                program_type_forms = ProgramTypeForm()
+                program_type_forms = [ProgramTypeForm({'name':name}, prefix=str(indx)) for indx,name in enumerate(program_type_name)]
+            #else:
+            #    program_type_forms = ProgramTypeForm()
             if program_task_name:
-                program_task_forms = [ProgramTaskForm({'name':name}, prefix=str(indx)) for indx,name in program_task_name]
-            else:
-                program_task_forms = ProgramTaskForm()
+                program_task_forms = [ProgramTaskForm({'name':name}, prefix=str(indx)) for indx,name in enumerate(program_task_name)]
+            #else:
+            #    program_task_forms = ProgramTaskForm()
+
+            import pdb
+            pdb.set_trace()
             program_type_is_valid = all([ty.is_valid() for ty in program_type_forms])
             program_task_is_valid = all([ta.is_valid() for ta in program_task_forms])
+            
             print form.is_valid(),'form'
             print sub_process_form.is_valid(),'sub process'
             print program_type_is_valid,'program_type_is_valid'
@@ -552,16 +558,30 @@ def create(request):
                 process.created_by = User.objects.get(email=request.user.email)
                 process.modified_by =  User.objects.get(email=request.user.email)
                 process.save()
+                print process.id
+                sub_process = sub_process_form.save(commit=False)
+                sub_process.process = Process.objects.get(id=process.id)
+                sub_process.quarter = quarter
+                sub_process.name = sub_process_form.cleaned_data['name']
+                sub_process.url_name = sub_process_form.cleaned_data['name'].lower().replace(' ','-')
+                sub_process.created_by = User.objects.get(email=request.user.email)
+                sub_process.modified_by =  User.objects.get(email=request.user.email)
+                sub_process.save()
                 form = ProcessForm()
+                sub_process = SubProcessForm()
                 success = True
                 messages.success(request, 'Process created successfully')
             print form.data,'form.data'
             #import pdb
             #pdb.set_trace()
-            context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success})
+            context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success, 'sub_process_form':sub_process_form})
         else:
             form = ProcessForm()
-            context = RequestContext(request, {'request': request, 'user': request.user,'form':form,'success':success})
+            sub_process_form = SubProcessForm()
+            print form.errors,sub_process_form.errors
+            context = RequestContext(request, {'request': request, 'user': request.user,'form':form,'success':success, 'sub_process_form':sub_process_form})
+    #import pdb
+    #pdb.set_trace()
     print context,'context'
     """
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
