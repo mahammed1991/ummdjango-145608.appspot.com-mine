@@ -45,7 +45,7 @@ class SubProcessForm(forms.ModelForm):
     class Meta:
         model = SubProcess
         fields = ('process','quarter','name','is_disabled')
-        exclude = ('process','quarter',)
+        exclude = ('process', 'quarter', )
 
 
 class ProgramTypeForm(forms.ModelForm):

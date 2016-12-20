@@ -64,14 +64,15 @@
 			    {% csrf_token %}
 			    <div class="form-group">
 			        <label for="process-name" class="control-label col-sm-2">Name</label>
-			        <div class="col-sm-10">
+			        <div class="col-sm-5">
 			            <input type="text" class="form-control" id="process-name" name="name">
 			            {{ form.errors.name }}
+			            {{form.non_field_errors}}
 			        </div>
 			    </div>
 			    <div class="form-group">
 			        <label for="image-ref" class="control-label col-sm-2">Image reference</label>
-			        <div class="col-sm-10">
+			        <div class="col-sm-5">
 			            <label class="input-group-btn upload-file">
 			                <span class="btn btn-primary load-file">
 			                <i class="fa fa-file-text" aria-hidden="true"></i>&nbsp;
@@ -103,14 +104,15 @@
 						<div class="process-rows" style="display: none">
 						    <div class="form-group">
 						        <label for="sub-process-name" class="control-label col-sm-2">Sub Process Name</label>
-						        <div class="col-sm-10">
+						        <div class="col-sm-5">
 						            <input type="text" class="form-control" id="sub-process-name" name="sub-process-name">
+						            {{ sub_process_form.errors.name }}
+						            {{sub_process_form.non_field_errors}}
 						        </div>
-						        {{ sub_process_form.errors.name }}
 						    </div>
 						    <div class="form-group">
 						        <label for="quarter" class="control-label col-sm-2">Sub Process Quarter</label>
-						        <div class="col-sm-10">
+						        <div class="col-sm-1">
 						            <select class="form-control" id="quarter" name="quarter">
 						            <option id="1" value="1" >1</option>
 						            <option id="2" value="2" >2</option>
@@ -304,6 +306,9 @@
 		        formData.append('sub-process-name',$('#sub-process-name').val());
 		        formData.append('quarter',$('#quarter').val())
 		        formData.append('quarter_year',$('#quarter-year').val())
+		        if ($('#quarter-year').val() == ''){
+		        	
+		        }
 		        $.ajax({
 		                url: '/create/',
 		                type: 'POST',
@@ -312,6 +317,7 @@
 		                contentType: false,
 		                processData: false,
 		                success: function(data) {
+		                	//debugger;
 		                    $('#process-form')[0].reset()
 		                },
 		                error: function(xhr, status, error) {
@@ -344,7 +350,7 @@
 		        //yearRange: '1950:2013', // Optional Year Range
 		        dateFormat: 'yy',
 		        onClose: function(dateText, inst) {
-		            debugger
+		            //debugger
 		            var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
 		            $(this).datepicker('setDate', new Date(year, 0, 1));
 		            if (!$('#sub-process-name').hasClass('disabled') && $('#sub-process-name').val() && $('#quarter').val()) {
@@ -448,6 +454,20 @@
 		            i--;
 		        }
 		    });
+
+		    error = '{{error}}'
+		    if (error != ''){
+		    	debugger
+	            $('#sub-process').removeClass('disabled');
+	            $('#sub-process').removeClass('red-bg');
+	            $('#sub-process-hdg').css('display', 'none');
+	            $('.process-rows').css('display', 'block');
+
+                $('#program-type').removeClass('disabled');
+                $('#program-type-hdg').css('display', 'none');
+                $('.process-type-rows').css('display', 'block');
+                $('#program-type').removeClass('red-bg');
+		    }
 		});
 	</script>
   </body>

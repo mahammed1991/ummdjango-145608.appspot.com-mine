@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponse, redirect
-from .models import ExtraTask, Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, GoalTaskMap, Question, Process, ProgramType, ProgramTask, TaskData
+from .models import ExtraTask, Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, GoalTaskMap, Question, Process, SubProcess, ProgramType, ProgramTask, TaskData
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
@@ -506,10 +506,9 @@ def create(request):
         if request.POST:
             form = ProcessForm(request.POST)
             print request.POST
-            
             try:
                 quarter = Quarter.objects.get(quarter=request.POST.get('quarter'),quarter_year=request.POST.get('quarter_year'))
-            except Exception as e:
+            except Quarter.DoesNotExist:
                 quarter = Quarter()
                 quarter.quarter = request.POST.get('quarter')
                 quarter.quarter_year = request.POST.get('quarter_year')
@@ -524,16 +523,22 @@ def create(request):
             program_task_forms = ProgramTaskForm()
             print program_type_name,'program_type_name'
             if program_type_name:
-                program_type_forms = [ProgramTypeForm({'name':name}, prefix=str(indx)) for indx,name in enumerate(program_type_name)]
+                program_type_forms = [ProgramTypeForm({'name':name}) for indx,name in enumerate(program_type_name)]
             #else:
             #    program_type_forms = ProgramTypeForm()
+            program_task_name_multiple = []
             if program_task_name:
-                program_task_forms = [ProgramTaskForm({'name':name}, prefix=str(indx)) for indx,name in enumerate(program_task_name)]
+                for p in program_task_name:
+                    if ',' in p:
+                        program_task_name_multiple += p.strip().split(',') 
+                    else:
+                        program_task_name_multiple.append(p)
+                program_task_forms = [ProgramTaskForm({'name':name}) for indx,name in enumerate(program_task_name_multiple)]
             #else:
             #    program_task_forms = ProgramTaskForm()
 
-            import pdb
-            pdb.set_trace()
+            #import pdb
+            #pdb.set_trace()
             program_type_is_valid = all([ty.is_valid() for ty in program_type_forms])
             program_task_is_valid = all([ta.is_valid() for ta in program_task_forms])
             
@@ -541,7 +546,7 @@ def create(request):
             print sub_process_form.is_valid(),'sub process'
             print program_type_is_valid,'program_type_is_valid'
             print program_task_is_valid,'program_task_is_valid'
-            if form.is_valid() and sub_process_form.is_valid():
+            if form.is_valid() and sub_process_form.is_valid() and program_type_is_valid and program_task_is_valid:
                 print form,'form'
                 process_e = Process.objects.filter(name=form.cleaned_data['name'])
                 print process_e,'process_e'
@@ -567,14 +572,43 @@ def create(request):
                 sub_process.created_by = User.objects.get(email=request.user.email)
                 sub_process.modified_by =  User.objects.get(email=request.user.email)
                 sub_process.save()
+                #import pdb
+                #pdb.set_trace()
+                print program_task_name_multiple,program_type_name
+                
+                for ptype in program_type_forms:
+                    for ptask in program_task_name:
+                        program_type = ptype.save(commit=False)
+                        program_type.subprocess = SubProcess.objects.get(id=sub_process.id)
+                        program_type.name = ptype.cleaned_data['name']
+                        program_type.created_by = User.objects.get(email=request.user.email)
+                        program_type.modified_by =  User.objects.get(email=request.user.email)
+                        program_type.save()
+
+                        program_task = ProgramTask()
+                        program_task.program_type = ProgramType.objects.get(id=program_type.id)
+                        if ',' in ptask:
+                            for task in ptask.strip().split(','):
+                                program_task.name = task
+                                program_task.created_by = User.objects.get(email=request.user.email)
+                                program_task.modified_by =  User.objects.get(email=request.user.email)
+                                program_task.save()
+                        else:
+                            program_task.name = ptask
+                        program_task.created_by = User.objects.get(email=request.user.email)
+                        program_task.modified_by =  User.objects.get(email=request.user.email)
+                        program_task.save()
+                
                 form = ProcessForm()
                 sub_process = SubProcessForm()
                 success = True
                 messages.success(request, 'Process created successfully')
-            print form.data,'form.data'
-            #import pdb
-            #pdb.set_trace()
-            context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success, 'sub_process_form':sub_process_form})
+                print form.data,'form.data'
+                #import pdb
+                #pdb.set_trace()
+                context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success, 'sub_process_form':sub_process_form})
+            else:
+                context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success, 'sub_process_form':sub_process_form, 'error':True})
         else:
             form = ProcessForm()
             sub_process_form = SubProcessForm()
