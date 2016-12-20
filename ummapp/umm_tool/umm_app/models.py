@@ -179,7 +179,7 @@ class ProgramType(models.Model):
         unique_together = ('subprocess', 'name')
 
     def __unicode__(self):
-        return "%s-%s" % (self.name)
+        return "%s" % (self.name)
 
 
 class ProgramTask(models.Model):
