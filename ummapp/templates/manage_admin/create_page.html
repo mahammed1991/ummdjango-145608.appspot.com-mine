@@ -12,7 +12,9 @@
     <link href="{% static 'manage_admin/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'manage_admin/css/font-awesome.min.css' %}" rel="stylesheet">
     <link href="{% static 'manage_admin/css/style.css' %}" rel="stylesheet">
-    <link href="{% static 'manage_admin/css/jquery-ui.css' %}" rel="stylesheet">
+    <!--<link href="{% static 'manage_admin/css/jquery-ui.css' %}" rel="stylesheet">-->
+    <link href="{% static 'manage_admin/css/datepicker.min.css' %}" rel="stylesheet">
+    <link href="{% static 'manage_admin/css/formValidation.min.css' %}" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -20,9 +22,9 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <style type="text/css">
+    <!--<style type="text/css">
     	.ui-datepicker-calendar,.ui-datepicker-month { display: none; }
-    </style>
+    </style>-->
   </head>
   <body>
     <section class="top-white-bg">
@@ -66,6 +68,7 @@
 			        <label for="process-name" class="control-label col-sm-2">Name</label>
 			        <div class="col-sm-5">
 			            <input type="text" class="form-control" id="process-name" name="name" value="{{form.data.name}}">
+			            <p id="process-name-error" style="color:red"></p>
 			            {{ form.errors.name }}
 			            {{form.non_field_errors}}
 			        </div>
@@ -105,7 +108,8 @@
 						    <div class="form-group">
 						        <label for="sub-process-name" class="control-label col-sm-2">Sub Process Name</label>
 						        <div class="col-sm-5">
-						            <input type="text" class="form-control" id="sub-process-name" name="sub-process-name" value="{{sub_process_form.data.name}}">
+						            <input type="text" class="form-control" id="sub-process-name" name="sub_process_name" value="{{sub_process_form.data.name}}">
+						            <p id="sub-process-name-error" style="color:red"></p>
 						            {{ sub_process_form.errors.name }}
 						            {{sub_process_form.non_field_errors}}
 						        </div>
@@ -119,12 +123,20 @@
 						            <option id="3" value="3" >3</option>
 						            <option id="4" value="4" >4</option>
 						            </select>
+						    	</div>
+						    </div>
+						    <div class="form-group">
+						        <label for="quarter-year" class="control-label col-sm-2">Sub Process Year</label>
+						        <div class="col-sm-3">
+						        	<div class="input-group input-append date" id="quarter-year" >
+								        <input  type="text"  name="quarter_year" class="form-control" >
+								        <span class="input-group-addon add-on"><span class="glyphicon glyphicon-calendar"></span></span>
+								        <p id="quarter-year-error" style="color:red"></p>
+								    </div>
 						        </div>
-						        <label for="quarter" class="control-label col-sm-2">Sub Process Year</label>
-						        <input  type="text" placeholder=""  id="quarter-year" name="quarter_year" value="{{sub_process_form.data.quarter.quarter_year}}">
+						    </div>
 
 
-					        </div>
 					    </div>
 						<div class="edit-white pull-right">
 							<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
@@ -190,10 +202,12 @@
 								                <tbody>
 								                    <tr id='addr0'>
 								                        <td class="col-xs-5">
-								                        <input type="text" name='program-type-0-name'  placeholder='Program Type' class="form-control"/>
+								                        <input type="text" name='program_type_0_name'  placeholder='Program Type' class="form-control"/>
+								                        <p id="process-type-0-error" style="color:red"></p>
 								                        </td>
 								                        <td class="col-xs-5">
-								                        <input type="text" name='program-task-0-name' placeholder='Program Task' class="form-control"/>
+								                        <input type="text" name='program_task_0_name' placeholder='Program Task' class="form-control"/>
+								                        <p id="process-task-0-error" style="color:red"></p>								                        
 								                        </td>
 								                        <td><button type="button" class="btn btn-default" id="add_row"><i class="fa fa-plus"></i></button></td>
 
@@ -262,10 +276,12 @@
    
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="{% static 'manage_admin/js/jquery.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/bootstrap-datepicker.min.js' %}"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="{% static 'manage_admin/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'manage_admin/js/jquery-ui.min.js' %}"></script>
     <script src="{% static 'manage_admin/js/formValidation.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/form_bootstrap.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/bootstrap.min.js' %}"></script>
+    <!--<script src="{% static 'manage_admin/js/jquery-ui.min.js' %}"></script>-->
 	<script type="text/javascript">
 		$(document).ready(function() {
 		    function hideMsg() {
@@ -298,7 +314,124 @@
 		            }
 		        }
 		    }
-		    $("form#process-form").submit(function(e) {
+
+		    function check_required_fields(){
+		    	text = 'This field is required'
+		    	if ($('#process-name').val() == ''){
+		    		$('#process-name-error').text(text)
+		    	} 
+		    	if ($('#sub-process-name').val() == '' || $('#quarter_year').val() == '' || $('#program-type-0-name').val() == '' ||  $('#program-task-0-name').val() == ''){
+
+					}
+
+		    }
+
+	    var typeValidators = {
+	        validators: {
+	            notEmpty: {
+	                message: 'Program Type is required'
+	            },
+
+	        }
+	    },
+	    taskValidators = {
+	        validators: {
+	            notEmpty: {
+	                message: 'Program Task is required'
+	            },
+
+	        }
+	    }
+     $('#process-form')
+         .formValidation({
+            fields: {
+                name: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Name is required'
+                        },
+
+                    }
+                },
+                sub_process_name:{
+                    validators: {
+                        notEmpty: {
+                            message: 'Sub Process Name is required'
+                        },
+
+                    }
+
+                },
+                quarter_year:{
+                    validators: {
+                        notEmpty: {
+                            message: 'Sub Process Year is required'
+                        },
+
+                    }
+
+                },
+                /*program_type_0_name:{
+                    validators: {
+                        notEmpty: {
+                            message: 'Program Type is required'
+                        },
+
+                    }
+                },
+                program_task_0_name:{
+                    validators: {
+                        notEmpty: {
+                            message: 'Program Task is required'
+                        },
+
+                    }
+                },*/
+                'program_type_0_name': typeValidators,
+                'program_task_0_name': taskValidators,
+            }
+         })
+         .on('success.form.fv', function(e) {
+             // Save the form data via an Ajax request
+             e.preventDefault();
+		        var formData = new FormData();
+		        name = $('#process-name').val()
+
+		        var file = $('input[name^="image_ref"]')[0].files;
+		        formData.append('file', file);
+		        formData.append('name', name);
+		        //formData.append('image_ref', image_ref);
+
+		        formData.append('is_disabled', $('#is-disabled').val());
+		        formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+		        formData.append('sub-process-name',$('#sub-process-name').val());
+		        formData.append('quarter',$('#quarter').val())
+		        formData.append('quarter_year',$('#quarter-year').val())
+		        if ($('#quarter-year').val() == ''){
+		        	
+		        }
+		        //check_required_fields()
+		        $.ajax({
+		                url: '/create/',
+		                type: 'POST',
+		                data: formData,
+		                cache: false,
+		                contentType: false,
+		                processData: false,
+		                success: function(data) {
+		                	debugger;
+		                    $('#process-form')[0].reset()
+		                },
+		                error: function(xhr, status, error) {
+		                    var err = eval("(" + xhr.responseText + ")");
+		                    alert(err.Message);
+		                    //alert("Something went wrong, please try after some time");
+		                }
+		            })
+
+         });
+
+		   /* $("form#process-form").submit(function(e) {
 		        debugger
 		        e.preventdefault();
 		        debugger;
@@ -318,6 +451,7 @@
 		        if ($('#quarter-year').val() == ''){
 		        	
 		        }
+		        //check_required_fields()
 		        $.ajax({
 		                url: '/create/',
 		                type: 'POST',
@@ -336,33 +470,41 @@
 		                }
 		            })
 		            //}
-		    })
+		    })*/
 
 		    $("#process-name").focusout(function() {
 		    	debugger
-		        $.ajax({
-		                url: '/get-process/',
-		                type: 'POST',
-		                data: {'name':$("#process-name").val()},
-		                cache: false,
-		                dataType: text,
-		                processData: false,
-		                success: function(data) {
-		                	debugger;
-		                    //$('#process-form')[0].reset()
-		                },
-		                error: function(xhr, status, error) {
-		                    var err = eval("(" + xhr.responseText + ")");
-		                    alert(err.Message);
-		                    //alert("Something went wrong, please try after some time");
-		                }
-		        })
 		        if ($(this).val()) {
-		            $('#sub-process').removeClass('disabled');
-		            $('#sub-process').removeClass('red-bg');
-		            $('#sub-process-hdg').css('display', 'none');
-		            $('.process-rows').css('display', 'block');
+			        $.ajax({
+			                url: '/get-process/',
+			                type: 'POST',
+			                data: {'name':$("#process-name").val()},
+			                success: function(data) {
+			                	debugger;
+			                	if (data['process_error'] != ''){
+			                		$('#process-name-error').text(data['process_error']);
+						            $('#sub-process').addClass('disabled');
+						            $('#sub-process').addClass('red-bg');
+						            $('#sub-process-hdg').css('display', 'block');
+						            $('.process-rows').css('display', 'none')
+			                	}
+			                	else{
+			                		$('#process-name-error').text('');
+						            $('#sub-process').removeClass('disabled');
+						            $('#sub-process').removeClass('red-bg');
+						            $('#sub-process-hdg').css('display', 'none');
+						            $('.process-rows').css('display', 'block');
+			                	}
+			                    //$('#process-form')[0].reset()
+			                },
+			                error: function(xhr, status, error) {
+			                    var err = eval("(" + xhr.responseText + ")");
+			                    alert(err.Message);
+			                    //alert("Something went wrong, please try after some time");
+			                }
+			        })
 		        } else {
+		        	$('#process-name-error').text('');
 		            $('#sub-process').addClass('disabled');
 		            $('#sub-process').addClass('red-bg');
 		            $('#sub-process-hdg').css('display', 'block');
@@ -370,16 +512,17 @@
 		        }
 		    })
 
-		    $('#quarter-year').datepicker({
-		        changeMonth: false,
-		        changeYear: true,
-		        showButtonPanel: true,
-		        //yearRange: '1950:2013', // Optional Year Range
-		        dateFormat: 'yy',
-		        onClose: function(dateText, inst) {
-		            //debugger
-		            var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
-		            $(this).datepicker('setDate', new Date(year, 0, 1));
+		    $('#quarter-year')
+		        .datepicker({
+		            format: "yyyy",
+    				viewMode: "years", 
+    				minViewMode: "years"
+		        })
+		        .on('changeDate', function(e) {
+		            // Revalidate the date field
+		            debugger;
+		            $('#quarter-year').val(e.date.getFullYear());
+		            $('#process-form').formValidation('revalidateField', 'quarter_year');
 		            if (!$('#sub-process-name').hasClass('disabled') && $('#sub-process-name').val() && $('#quarter').val()) {
 		                $('#program-type').removeClass('disabled');
 		                $('#program-type-hdg').css('display', 'none');
@@ -391,8 +534,30 @@
 		                $('.process-type-rows').css('display', 'none');
 		                $('#program-type').addClass('red-bg');
 		            }
-		        }
-		    });
+
+		        });
+		        //changeMonth: false,
+		        //changeYear: true,
+		        //showButtonPanel: true,
+		        //yearRange: '1950:2013', // Optional Year Range
+		        /*dateFormat: 'yy',
+		        onClose: function(dateText, inst) {
+		            //$('#quarter-year').val(inst.selectedYear);
+		            //var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+		            //$(this).datepicker('setDate', new Date(year, 0, 1));
+		            if (!$('#sub-process-name').hasClass('disabled') && $('#sub-process-name').val() && $('#quarter').val()) {
+		                $('#program-type').removeClass('disabled');
+		                $('#program-type-hdg').css('display', 'none');
+		                $('.process-type-rows').css('display', 'block');
+		                $('#program-type').removeClass('red-bg');
+		            } else {
+		                $('#program-type').addClass('disabled');
+		                $('#program-type-hdg').css('display', 'block');
+		                $('.process-type-rows').css('display', 'none');
+		                $('#program-type').addClass('red-bg');
+		            }
+		        }*/
+		    //});
 
 		    var programTypeValidators = {
 		            row: '.col-xs-4', // The title is placed inside a <div class="col-xs-4"> element
@@ -469,7 +634,7 @@
 		    var i = 1;
 		    $("#add_row").click(function() {
 		    	debugger;
-		        $('#addr' + i).html('<td><input name="program-type-'+i+'-name"' + 'type="text" placeholder="Program Type" class="form-control input-md"  /> </td><td><input  name="program-task-'+i+'-name"' + "type='text' placeholder='Program Task'  class='form-control input-md'></td><td><button type='button' class='btn btn-default' id='delete_row'><i class='fa fa-minus'></i></button></td>");
+		        $('#addr' + i).html('<td><input name="program_type_'+i+'_name"' + 'type="text" placeholder="Program Type" class="form-control input-md"  /> </td><td><input  name="program_task_'+i+'_name"' + "type='text' placeholder='Program Task'  class='form-control input-md'></td><td><button type='button' class='btn btn-default' id='delete_row'><i class='fa fa-minus'></i></button></td>");
 
 		        $('#tab_logic').append('<tr id="addr' + (i + 1) + '"></tr>');
 		        i++;
@@ -524,6 +689,9 @@
 		    		$('input[name='+key+']').parent().append('<ul class="errorlist"><li>'+program_task_errors[k][key]['name'] +'</li></ul>')
 		    	}
 		    }
+
+
+		    //$('#program-type-0-name')
 
 
 		});
