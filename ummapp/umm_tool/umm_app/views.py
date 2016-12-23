@@ -516,9 +516,13 @@ def create(request):
             
             sub_process_form = SubProcessForm({'name':request.POST.get('sub-process-name'), 'quarter':quarter})
             print sub_process_form.data,'sub form data',form.is_valid() and sub_process_form.is_valid()
+            program_type_name = [l for l in request.POST.keys() if l.startswith("program-type-")]
+            program_task_name = [l for l in request.POST.keys() if l.startswith("program-task-")]
+
+            """
             program_type_name = request.POST.getlist('program-type-name')
             program_task_name = request.POST.getlist('program-task-name')
-            
+            """
             program_type_forms = ProgramTypeForm()
             program_task_forms = ProgramTaskForm()
             print program_type_name,'program_type_name'
@@ -539,6 +543,8 @@ def create(request):
 
             #import pdb
             #pdb.set_trace()
+            print program_type_forms,'program_type_forms'
+            print program_task_forms,'program_task_forms'
             program_type_is_valid = all([ty.is_valid() for ty in program_type_forms])
             program_task_is_valid = all([ta.is_valid() for ta in program_task_forms])
             
@@ -546,6 +552,7 @@ def create(request):
             print sub_process_form.is_valid(),'sub process'
             print program_type_is_valid,'program_type_is_valid'
             print program_task_is_valid,'program_task_is_valid'
+            
             if form.is_valid() and sub_process_form.is_valid() and program_type_is_valid and program_task_is_valid:
                 print form,'form'
                 process_e = Process.objects.filter(name=form.cleaned_data['name'])
@@ -608,7 +615,19 @@ def create(request):
                 #pdb.set_trace()
                 context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success, 'sub_process_form':sub_process_form})
             else:
-                context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success, 'sub_process_form':sub_process_form, 'error':True})
+                #import pdb
+                #pdb.set_trace()
+                program_type_errors = json.dumps([{str(ty.data['name']):ty.errors} for ty in program_type_forms if not ty.is_valid()])
+                program_task_errors = json.dumps([{str(ta.data['name']):ta.errors} for ta in program_task_forms if not ta.is_valid()])
+                #import pdb
+                #pdb.set_trace()
+                #form_name['field_name'].value()
+                #[error.keys()[0] for error in program_type_errors]
+                print program_type_errors,'program_type_errors'
+                print program_task_errors,'program_task_errors'
+                #import pdb
+                #pdb.set_trace()                
+                context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success, 'sub_process_form':sub_process_form, 'error':True, 'program_type_errors':program_type_errors,'program_task_errors':program_task_errors})
         else:
             form = ProcessForm()
             sub_process_form = SubProcessForm()
@@ -623,3 +642,17 @@ def create(request):
         context = RequestContext(request, {'request': request, 'user': request.user, 'form':form})
     """
     return render(request, "manage_admin/create_page.html", context_instance = context) 
+
+
+@login_required
+def get_process(request):
+    context = {}
+    print request.POST.get('name'),'request.POST.get'
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.POST:
+            try:
+                process = Process.objects.get(name=request.POST.get('name'))
+                context['process_error'] = "Process with the name already exists"
+            except Process.DoesNotExist:
+                pass
+    return HttpResponse(json.dumps(context), content_type="application/json")
