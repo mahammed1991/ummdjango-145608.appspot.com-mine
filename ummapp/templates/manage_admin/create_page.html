@@ -65,7 +65,7 @@
 			    <div class="form-group">
 			        <label for="process-name" class="control-label col-sm-2">Name</label>
 			        <div class="col-sm-5">
-			            <input type="text" class="form-control" id="process-name" name="name">
+			            <input type="text" class="form-control" id="process-name" name="name" value="{{form.data.name}}">
 			            {{ form.errors.name }}
 			            {{form.non_field_errors}}
 			        </div>
@@ -105,13 +105,13 @@
 						    <div class="form-group">
 						        <label for="sub-process-name" class="control-label col-sm-2">Sub Process Name</label>
 						        <div class="col-sm-5">
-						            <input type="text" class="form-control" id="sub-process-name" name="sub-process-name">
+						            <input type="text" class="form-control" id="sub-process-name" name="sub-process-name" value="{{sub_process_form.data.name}}">
 						            {{ sub_process_form.errors.name }}
 						            {{sub_process_form.non_field_errors}}
 						        </div>
 						    </div>
 						    <div class="form-group">
-						        <label for="quarter" class="control-label col-sm-2">Sub Process Quarter</label>
+						        <label for="quarter" class="control-label col-sm-2">Sub Process Quarter </label>
 						        <div class="col-sm-1">
 						            <select class="form-control" id="quarter" name="quarter">
 						            <option id="1" value="1" >1</option>
@@ -121,7 +121,7 @@
 						            </select>
 						        </div>
 						        <label for="quarter" class="control-label col-sm-2">Sub Process Year</label>
-						        <input  type="text" placeholder=""  id="quarter-year" name="quarter_year">
+						        <input  type="text" placeholder=""  id="quarter-year" name="quarter_year" value="{{sub_process_form.data.quarter.quarter_year}}">
 
 
 					        </div>
@@ -163,7 +163,16 @@
 								        </div>
 								    </div>
 								</form>-->
-
+								{% if program_type_errors %}
+									{% for i in program_type_errors %}
+										{{i}}
+									{% endfor %}
+								{% endif %}
+								{% if program_task_errors %}
+									{% for j in program_task_errors %}
+										{{j}}
+									{% endfor %}
+								{% endif %}
 								<div class="container">
 								    <div class="row clearfix">
 								        <div class="col-xs-12 column">
@@ -181,10 +190,10 @@
 								                <tbody>
 								                    <tr id='addr0'>
 								                        <td class="col-xs-5">
-								                        <input type="text" name='program-type-name'  placeholder='Program Type' class="form-control"/>
+								                        <input type="text" name='program-type-0-name'  placeholder='Program Type' class="form-control"/>
 								                        </td>
 								                        <td class="col-xs-5">
-								                        <input type="text" name='program-task-name' placeholder='Program Task' class="form-control"/>
+								                        <input type="text" name='program-task-0-name' placeholder='Program Task' class="form-control"/>
 								                        </td>
 								                        <td><button type="button" class="btn btn-default" id="add_row"><i class="fa fa-plus"></i></button></td>
 
@@ -330,6 +339,24 @@
 		    })
 
 		    $("#process-name").focusout(function() {
+		    	debugger
+		        $.ajax({
+		                url: '/get-process/',
+		                type: 'POST',
+		                data: {'name':$("#process-name").val()},
+		                cache: false,
+		                dataType: text,
+		                processData: false,
+		                success: function(data) {
+		                	debugger;
+		                    //$('#process-form')[0].reset()
+		                },
+		                error: function(xhr, status, error) {
+		                    var err = eval("(" + xhr.responseText + ")");
+		                    alert(err.Message);
+		                    //alert("Something went wrong, please try after some time");
+		                }
+		        })
 		        if ($(this).val()) {
 		            $('#sub-process').removeClass('disabled');
 		            $('#sub-process').removeClass('red-bg');
@@ -441,7 +468,8 @@
 
 		    var i = 1;
 		    $("#add_row").click(function() {
-		        $('#addr' + i).html("<td><input name='program-type-name' type='text' placeholder='Program Type' class='form-control input-md'  /> </td><td><input  name='program-task-name' type='text' placeholder='Program Task'  class='form-control input-md'></td><td><button type='button' class='btn btn-default' id='delete_row'><i class='fa fa-minus'></i></button></td>");
+		    	debugger;
+		        $('#addr' + i).html('<td><input name="program-type-'+i+'-name"' + 'type="text" placeholder="Program Type" class="form-control input-md"  /> </td><td><input  name="program-task-'+i+'-name"' + "type='text' placeholder='Program Task'  class='form-control input-md'></td><td><button type='button' class='btn btn-default' id='delete_row'><i class='fa fa-minus'></i></button></td>");
 
 		        $('#tab_logic').append('<tr id="addr' + (i + 1) + '"></tr>');
 		        i++;
@@ -454,6 +482,12 @@
 		            i--;
 		        }
 		    });
+
+		    quarter = '{{sub_process_form.data.quarter.quarter}}'
+		    if (quarter){
+		    	$('#quarter').val(quarter)
+
+		    }
 
 		    error = '{{error}}'
 		    if (error != ''){
@@ -468,6 +502,30 @@
                 $('.process-type-rows').css('display', 'block');
                 $('#program-type').removeClass('red-bg');
 		    }
+
+		    program_type_errors = '{{program_type_errors}}'.replace(/&quot;/g,'"')
+		    if (program_type_errors){
+		    	program_type_errors = JSON.parse(program_type_errors)
+		    	for (var j=0;j<program_type_errors.length;j++){
+		    		console.log(Object.keys(program_type_errors[j])[0])
+		    		key = Object.keys(program_type_errors[j])[0]
+		    		$('input[name='+key+']').parent().append('<ul class="errorlist"><li>'+program_type_errors[j][key]['name'] +'</li></ul>')
+		    	}
+		    }
+		    var html = $('tbody').html()
+		    localStorage.setItem("dynamichtml", html);
+
+		    program_task_errors = '{{program_task_errors}}'.replace(/&quot;/g,'"')
+		    if (program_task_errors){
+		    	program_task_errors = JSON.parse(program_task_errors)
+		    	for (var k=0;k<program_task_errors.length;k++){
+		    		console.log(Object.keys(program_task_errors[k])[0])
+		    		key = Object.keys(program_task_errors[k])[0]
+		    		$('input[name='+key+']').parent().append('<ul class="errorlist"><li>'+program_task_errors[k][key]['name'] +'</li></ul>')
+		    	}
+		    }
+
+
 		});
 	</script>
   </body>

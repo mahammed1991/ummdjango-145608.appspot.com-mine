@@ -47,4 +47,5 @@ urlpatterns = [
     url(r'^umm/create-task-data/','umm_app.views.create_task_data', name='create_task_data'),
 
     url(r'^create/','umm_app.views.create', name='create'),
+    url(r'^get-process/','umm_app.views.get_process', name='get_process'),
 ]   
