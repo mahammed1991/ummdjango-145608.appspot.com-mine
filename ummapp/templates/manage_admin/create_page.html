@@ -148,22 +148,22 @@
 							<h3>Create Program Type and Tasks</h3>
 						    </div>
 						    <div class="process-type-rows" style="display: none">
-						    	<!--<form id="programTypeForm" method="post" class="form-horizontal">
+						    	<!--<form id="programTypeForm" method="post" class="form-horizontal">-->
 								    <div class="form-group">
 								        <label class="col-xs-1 control-label">Program Type</label>
 								        <div class="col-xs-4">
-								            <input type="text" class="form-control" name="progamType[0].program-type-name" placeholder="Program Type" />
+								            <input type="text" class="form-control" name="program_type_0_name" placeholder="Program Type" />
 								        </div>
 								        <div class="col-xs-4">
-								            <input type="text" class="form-control" name="progamType[0].program-task-name" placeholder="Program Task" />
+								            <input type="text" class="form-control" name="program_task_0_name" placeholder="Program Task" />
 								        </div>
 								        <div class="col-xs-1">
 								            <button type="button" class="btn btn-default addButton"><i class="fa fa-plus"></i></button>
 								        </div>
 								    </div>
 
-								    #The template for adding new field
-								    <div class="form-group hide" id="progamTypeTemplate">
+								    <!--The template for adding new field-->
+								    <div class="form-group hide" id="programTypeTemplate">
 								        <div class="col-xs-4 col-xs-offset-1">
 								            <input type="text" class="form-control" name="program-type-name" placeholder="Program Type" />
 								        </div>
@@ -174,7 +174,7 @@
 								            <button type="button" class="btn btn-default removeButton"><i class="fa fa-minus"></i></button>
 								        </div>
 								    </div>
-								</form>-->
+								<!--</form>-->
 								{% if program_type_errors %}
 									{% for i in program_type_errors %}
 										{{i}}
@@ -185,7 +185,7 @@
 										{{j}}
 									{% endfor %}
 								{% endif %}
-								<div class="container">
+								<!--<div class="container">
 								    <div class="row clearfix">
 								        <div class="col-xs-12 column">
 								            <table class="table" id="tab_logic">
@@ -203,11 +203,11 @@
 								                    <tr id='addr0'>
 								                        <td class="col-xs-5">
 								                        <input type="text" name='program_type_0_name'  placeholder='Program Type' class="form-control"/>
-								                        <p id="process-type-0-error" style="color:red"></p>
+								                       
 								                        </td>
 								                        <td class="col-xs-5">
 								                        <input type="text" name='program_task_0_name' placeholder='Program Task' class="form-control"/>
-								                        <p id="process-task-0-error" style="color:red"></p>								                        
+								                        						                        
 								                        </td>
 								                        <td><button type="button" class="btn btn-default" id="add_row"><i class="fa fa-plus"></i></button></td>
 
@@ -218,8 +218,8 @@
 								            </table>
 								        </div>
 								    </div>
-								   <!-- <a id='delete_row' class="pull-right btn btn-default">Delete Row</a>-->
-								</div>
+								   <!-- <a id='delete_row' class="pull-right btn btn-default">Delete Row</a>
+								</div>-->
 							</div>
 							<div class="edit2 pull-right">
 								<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
@@ -283,6 +283,7 @@
     <script src="{% static 'manage_admin/js/bootstrap.min.js' %}"></script>
     <!--<script src="{% static 'manage_admin/js/jquery-ui.min.js' %}"></script>-->
 	<script type="text/javascript">
+
 		$(document).ready(function() {
 		    function hideMsg() {
 		        $('#msg-info').css('display', 'none')
@@ -331,7 +332,17 @@
 	            notEmpty: {
 	                message: 'Program Type is required'
 	            },
-
+                callback: {
+                    message: 'Only one Program Type is allowed',
+                    callback: function(value, validator) {
+                        if (value.indexOf(',') > -1) {
+                            validator.updateStatus('typeValidators', 'INVALID');
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    }
+                }
 	        }
 	    },
 	    taskValidators = {
@@ -404,13 +415,20 @@
 
 		        formData.append('is_disabled', $('#is-disabled').val());
 		        formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
-		        formData.append('sub-process-name',$('#sub-process-name').val());
+		        formData.append('sub_process_name',$('#sub-process-name').val());
 		        formData.append('quarter',$('#quarter').val())
 		        formData.append('quarter_year',$('#quarter-year').val())
 		        if ($('#quarter-year').val() == ''){
 		        	
 		        }
-		        //check_required_fields()
+				$('input[name^=program_type_').each(function() {
+                	formData.append($(this).attr('name'),$(this).val())
+            	}); 
+
+				$('input[name^=program_task_').each(function() {
+                	formData.append($(this).attr('name'),$(this).val())
+            	});           
+
 		        $.ajax({
 		                url: '/create/',
 		                type: 'POST',
@@ -473,14 +491,14 @@
 		    })*/
 
 		    $("#process-name").focusout(function() {
-		    	debugger
+		    	
 		        if ($(this).val()) {
 			        $.ajax({
 			                url: '/get-process/',
 			                type: 'POST',
 			                data: {'name':$("#process-name").val()},
 			                success: function(data) {
-			                	debugger;
+			                	
 			                	if (data['process_error'] != ''){
 			                		$('#process-name-error').text(data['process_error']);
 						            $('#sub-process').addClass('disabled');
@@ -520,7 +538,7 @@
 		        })
 		        .on('changeDate', function(e) {
 		            // Revalidate the date field
-		            debugger;
+		            
 		            $('#quarter-year').val(e.date.getFullYear());
 		            $('#process-form').formValidation('revalidateField', 'quarter_year');
 		            if (!$('#sub-process-name').hasClass('disabled') && $('#sub-process-name').val() && $('#quarter').val()) {
@@ -559,7 +577,7 @@
 		        }*/
 		    //});
 
-		    var programTypeValidators = {
+		    /*var programTypeValidators = {
 		            row: '.col-xs-4', // The title is placed inside a <div class="col-xs-4"> element
 		            validators: {
 		                notEmpty: {
@@ -574,11 +592,10 @@
 		                    message: 'The program task is required'
 		                },
 		            }
-		        },
-		        prgramTypeIndex = 0;
+		        };*/
 
 
-		    $('#programTypeForm')
+		    /*$('#process-form')
 		        .formValidation({
 		            framework: 'bootstrap',
 		            icon: {
@@ -587,62 +604,72 @@
 		                validating: 'glyphicon glyphicon-refresh'
 		            },
 		            fields: {
-		                'progamType[0].program-type-name': programTypeValidators,
-		                'progamType[0].program-task-name': programTaskValidators,
+		                'program_type_0_name': programTypeValidators,
+		                'program_task_0_name': programTaskValidators,
 		            }
-		        })
+		        });*/
+
+			programTypeIndex = 0;
 
 		    // Add button click handler
-		    .on('click', '.addButton', function() {
-		        debugger;
-		        prgramTypeIndex++;
+		    $(".addButton").on('click', function() {
+		        programTypeIndex++;
 		        var $template = $('#programTypeTemplate'),
 		            $clone = $template
 		            .clone()
 		            .removeClass('hide')
 		            .removeAttr('id')
-		            .attr('data-progamType-index', progamTypeIndex)
+		            .attr('data-programType-index', programTypeIndex)
 		            .insertBefore($template);
 
 		        // Update the name attributes
 		        $clone
-		            .find('[name="program-type-name"]').attr('name', 'progamType[' + progamTypeIndex + '].program-type-name').end()
-		            .find('[name="program-task-name"]').attr('name', 'progamType[' + progamTypeIndex + '].program-task-name').end()
+		            .find('[name="program-type-name"]').attr('name', 'program_type_'+programTypeIndex+'_name').end()
+		            .find('[name="program-task-name"]').attr('name', 'program_task_'+programTypeIndex+'_name').end()
 
 		        // Add new fields
 		        // Note that we also pass the validator rules for new field as the third parameter
 
-		        $('#programTypeForm')
-		            .formValidation('addField', 'progamType[' + progamTypeIndex + '].program-type-name', programTypeValidators)
-		            .formValidation('addField', 'progamType[' + progamTypeIndex + '].program-task-name', programTaskValidators)
-		    })
+		        $('#process-form')
+		            .formValidation('addField', 'program_type_'+programTypeIndex+'_name', typeValidators)
+		            .formValidation('addField', 'program_task_'+programTypeIndex+'_name', taskValidators)
+		    });
 
 		    // Remove button click handler
-		    .on('click', '.removeButton', function() {
-		        var $row = $(this).parents('.form-group'),
-		            index = $row.attr('data-programType-index');
+		    $("body").on('click', '.removeButton', function() {
+		    	//debugger
+		        var $row  = $(this).parents('.form-group'),
+                index = $row.attr('data-programType-index');
 
 		        // Remove fields
-		        $('#programTypeForm')
-		            .formValidation('removeField', $row.find('[name="progamType[' + index + '].program-type-name"]'))
-		            .formValidation('removeField', $row.find('[name="progamType[' + index + '].program-task-nam"]'))
-
+		        $('#process-form')
+		            .formValidation('removeField', $row.find('program_type_'+index+'_name'))
+		            .formValidation('removeField', $row.find('program_task_'+index+'_name'))
+		    
 		        // Remove element containing the fields
-		        $row.remove();
+            	$row.remove();
 		    });
 
 		    var i = 1;
-		    $("#add_row").click(function() {
-		    	debugger;
-		        $('#addr' + i).html('<td><input name="program_type_'+i+'_name"' + 'type="text" placeholder="Program Type" class="form-control input-md"  /> </td><td><input  name="program_task_'+i+'_name"' + "type='text' placeholder='Program Task'  class='form-control input-md'></td><td><button type='button' class='btn btn-default' id='delete_row'><i class='fa fa-minus'></i></button></td>");
+		    /*$("#add_row").click(function() {
+
+		        $('#addr' + i).html('<td><input name="program_type_'+i+'_name"' + 'type="text" placeholder="Program Type" class="form-control input-md"  /> </td><td><input  name="program_task_'+i+'_name"' + "type='text' placeholder='Program Task'  class='form-control input-md'></td><td><button type='button' class='btn btn-default' id='delete_row'><i class='fa fa-minus'></i></button></td>");	        
 
 		        $('#tab_logic').append('<tr id="addr' + (i + 1) + '"></tr>');
+		        
+		         $('#process-form')
+		         	.formValidation('addField', "program_type_"+i+"_name", typeValidators)
+		         	.formValidation('addField', "program_task_"+i+"_name", taskValidators)
+				
 		        i++;
-		    });
+		    });*/
 
 
 		    $("#tab_logic").on('click','#delete_row',function() {
 		        if (i > 1) {
+            	$('#process-form')
+                	.formValidation('removeField', "program_type_"+i+"_name")
+                	.formValidation('removeField', "program_task_"+i+"_name")
 		            $("#addr" + (i - 1)).html('');
 		            i--;
 		        }
