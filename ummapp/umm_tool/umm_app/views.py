@@ -503,6 +503,8 @@ def update_program_task(request,pk):
 def create(request):
     context = {}
     success = False
+    #import pdb
+    #pdb.set_trace()
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         if request.POST:
             form = ProcessForm(request.POST)
@@ -556,7 +558,12 @@ def create(request):
             print program_type_is_valid,'program_type_is_valid'
             print program_task_is_valid,'program_task_is_valid'
             """
-            
+            program_type_forms = ProgramTypeForm()
+            program_task_forms = ProgramTaskForm()
+            program_type_errors = []
+            program_task_errors = []
+            program_task_is_valid = True
+            program_type_is_valid = True
             if form.is_valid():# and sub_process_form.is_valid() and program_type_is_valid and program_task_is_valid:
                 print form,'form'
                 process_e = Process.objects.filter(name=form.cleaned_data['name'])
@@ -574,87 +581,100 @@ def create(request):
                 process.created_by = User.objects.get(email=request.user.email)
                 process.modified_by =  User.objects.get(email=request.user.email)
                 process.save()
-                print process.id
+                print process.id,'process.id'
 
                 process_id = Process.objects.get(id=process.id)
-                sub_process_form = SubProcessForm({'name':request.POST.get('sub_process_name'), 'quarter':quarter, 'process':process_id})
+                sub_process_form = SubProcessForm({'name':request.POST.get('sub_process_name'), 'quarter':quarter.id, 'process':process.id})
                 print sub_process_form.data,'sub form data',form.is_valid() and sub_process_form.is_valid()
                 if sub_process_form.is_valid():
                     sub_process = sub_process_form.save(commit=False)
-                    sub_process.process = Process.objects.get(id=process.id)
-                    sub_process.quarter = quarter
-                    sub_process.name = sub_process_form.cleaned_data['name']
+                    #sub_process.process = process_id
+                    #sub_process.quarter = quarter
+                    #sub_process.name = sub_process_form.cleaned_data['name']
                     sub_process.url_name = sub_process_form.cleaned_data['name'].lower().replace(' ','-')
                     sub_process.created_by = User.objects.get(email=request.user.email)
                     sub_process.modified_by =  User.objects.get(email=request.user.email)
                     sub_process.save()
+
+                    print sub_process.id,'sub_process_id'
 
                     sub_process_id = SubProcess.objects.get(id=sub_process.id)
                     program_type_forms = ProgramTypeForm()
                     program_task_forms = ProgramTaskForm()
                     print program_type_name,'program_type_name'
                     if program_type_name:
-                        program_type_forms = [ProgramTypeForm({'name':name, 'subprocess':sub_process_id}) for indx,name in enumerate(program_type_name)]
+                        program_type_forms = [ProgramTypeForm({'name':name, 'subprocess':sub_process.id}) for indx,name in enumerate(program_type_name)]
                     #else:
                     #    program_type_forms = ProgramTypeForm()
                     program_type_is_valid = all([ty.is_valid() for ty in program_type_forms])
+                    program_type_errors = [{str(ty.data['name']):ty.errors} for ty in program_type_forms if not ty.is_valid()]
                     if program_type_is_valid:
 
-                        for ptype in program_type_forms:
+                        for ptype,index in enumerate(program_type_forms):
+                            print ptype,index,'ptype,index'
                             program_type = ptype.save(commit=False)
-                            program_type.subprocess = SubProcess.objects.get(id=sub_process.id)
-                            program_type.name = ptype.cleaned_data['name']
+                            #program_type.subprocess = SubProcess.objects.get(id=sub_process.id)
+                            #program_type.name = ptype.cleaned_data['name']
                             program_type.created_by = User.objects.get(email=request.user.email)
                             program_type.modified_by =  User.objects.get(email=request.user.email)
                             program_type.save()
 
+                            print program_type.id,'program_type'
+
                             program_task_name_multiple = []
                             if program_task_name:
-                                for p in program_task_name:
+                                for p in program_task_name[index]:
                                     if ',' in p:
                                         program_task_name_multiple += p.strip().split(',') 
                                     else:
                                         program_task_name_multiple.append(p)
                                 program_type_id = ProcessType.objects.get(id=program_type_id)
-                                program_task_forms = [ProgramTaskForm({'name':name, 'program_type':program_type_id}) for indx,name in enumerate(program_task_name_multiple)]
+                                print program_task_name_multiple,'program_task_name_multiple'
+                                program_task_forms = [ProgramTaskForm({'name':name, 'program_type':program_type.id}) for indx,name in enumerate(program_task_name_multiple)]
                                 program_task_is_valid = all([ta.is_valid() for ta in program_task_forms])
+                                program_task_errors = [{str(ta.data['name']):ta.errors} for ta in program_task_forms if not ta.is_valid()]
                                 if program_task_is_valid:
                                     program_task = ProgramTask()
-                                    program_task.program_type = program_type_id
-                                    if ',' in ptask:
-                                        for task in ptask.strip().split(','):
-                                            program_task.name = task
-                                            program_task.created_by = User.objects.get(email=request.user.email)
-                                            program_task.modified_by =  User.objects.get(email=request.user.email)
-                                            program_task.save()
-                                    else:
-                                        program_task.name = ptask
-                                    program_task.created_by = User.objects.get(email=request.user.email)
-                                    program_task.modified_by =  User.objects.get(email=request.user.email)
-                                    program_task.save()
-                form = ProcessForm()
-                sub_process = SubProcessForm()
-                success = True
-                messages.success(request, 'Process created successfully')
-                print form.data,'form.data'
+                                    #program_task.program_type = program_type_id
+                                    for task in ptask.strip().split(','):
+                                        program_task.name = task
+                                        program_task.created_by = User.objects.get(email=request.user.email)
+                                        program_task.modified_by =  User.objects.get(email=request.user.email)
+                                        program_task.save()
+                                        print program_task.id,'program_task'
+                                    #else:
+                                    #    program_task.name = ptask
+                                    #program_task.created_by = User.objects.get(email=request.user.email)
+                                    #program_task.modified_by =  User.objects.get(email=request.user.email)
+                                    #program_task.save()
+
+                                        print program_task.id,'program_task'
+                #form = ProcessForm()
+                #sub_process = SubProcessForm()
+                #success = True
+                #messages.success(request, 'Process created successfully')
+                #print form.data,'form.data'
                 #import pdb
                 #pdb.set_trace()
-                context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success, 'sub_process_form':sub_process_form})
-            else:
-                #import pdb
-                #pdb.set_trace()
-                program_type_errors = json.dumps([{str(ty.data['name']):ty.errors} for ty in program_type_forms if not ty.is_valid()])
-                program_task_errors = json.dumps([{str(ta.data['name']):ta.errors} for ta in program_task_forms if not ta.is_valid()])
-                #import pdb
-                #pdb.set_trace()
-                #form_name['field_name'].value()
-                #[error.keys()[0] for error in program_type_errors]
-                print program_type_errors,'program_type_errors'
-                print program_task_errors,'program_task_errors'
+                #context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success, 'sub_process_form':sub_process_form})
+            #else:
+            #import pdb
+            #pdb.set_trace()
+            #import pdb
+            #pdb.set_trace()
+            #form_name['field_name'].value()
+            #[error.keys()[0] for error in program_type_errors]
+            print program_type_errors,'program_type_errors'
+            print program_task_errors,'program_task_errors'
                 #import pdb
                 #pdb.set_trace()                
-                context = RequestContext(request, {'request': request, 'user': request.user, 'form':form, 'success':success, 'sub_process_form':sub_process_form, 'error':True, 'program_type_errors':program_type_errors,'program_task_errors':program_task_errors})
-                return HttpResponse(json.dumps(context), content_type="application/json")
+            context =  {'form':form.errors, 'success':success, 'sub_process_form':sub_process_form.errors, 'error':True, 'program_type_errors':program_type_errors,'program_task_errors':program_task_errors}
+            #context.update(form.cleaned_data)
+            #context.update(sub_process_form.cleaned_data)
+            import pdb
+            pdb.set_trace()
+            #res = serializers.serialize('json',context)
+            return HttpResponse(json.dumps(context), content_type="application/json")
         else:
             form = ProcessForm()
             sub_process_form = SubProcessForm()
