@@ -152,8 +152,8 @@ class SubProcess(models.Model):
     # Convert url_name to lowercase and replace space by 
     process = models.ForeignKey(Process)
     quarter = models.ForeignKey(Quarter)
-    name = models.CharField(max_length=250, unique=True)
-    url_name = models.CharField(max_length=250, unique=True)
+    name = models.CharField(max_length=250)
+    url_name = models.CharField(max_length=250)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     is_disabled = models.BooleanField(default=False)
@@ -168,7 +168,7 @@ class SubProcess(models.Model):
 
 class ProgramType(models.Model):
     subprocess = models.ForeignKey(SubProcess)
-    name = models.CharField(max_length=250, unique=True)
+    name = models.CharField(max_length=250)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     is_disabled = models.BooleanField(default=False)

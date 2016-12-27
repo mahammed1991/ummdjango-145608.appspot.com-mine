@@ -68,7 +68,7 @@
 			        <label for="process-name" class="control-label col-sm-2">Name</label>
 			        <div class="col-sm-5">
 			            <input type="text" class="form-control" id="process-name" name="name" value="{{form.data.name}}">
-			            <p id="process-name-error" style="color:red"></p>
+			            <p id="process-error" style="color:red"></p>
 			            {{ form.errors.name }}
 			            {{form.non_field_errors}}
 			        </div>
@@ -109,7 +109,7 @@
 						        <label for="sub-process-name" class="control-label col-sm-2">Sub Process Name</label>
 						        <div class="col-sm-5">
 						            <input type="text" class="form-control" id="sub-process-name" name="sub_process_name" value="{{sub_process_form.data.name}}">
-						            <p id="sub-process-name-error" style="color:red"></p>
+						            <p id="sub-process-error" style="color:red"></p>
 						            {{ sub_process_form.errors.name }}
 						            {{sub_process_form.non_field_errors}}
 						        </div>
@@ -149,7 +149,7 @@
 						    </div>
 						    <div class="process-type-rows" style="display: none">
 						    	<!--<form id="programTypeForm" method="post" class="form-horizontal">-->
-								    <div class="form-group">
+								    <div class="form-group progs">
 								        <label class="col-xs-1 control-label">Program Type</label>
 								        <div class="col-xs-4">
 								            <input type="text" class="form-control" name="program_type_0_name" placeholder="Program Type" />
@@ -165,10 +165,10 @@
 								    <!--The template for adding new field-->
 								    <div class="form-group hide" id="programTypeTemplate">
 								        <div class="col-xs-4 col-xs-offset-1">
-								            <input type="text" class="form-control" name="program-type-name" placeholder="Program Type" />
+								            <input type="text" class="form-control " name="program-type-name" placeholder="Program Type" />
 								        </div>
 								        <div class="col-xs-4">
-								            <input type="text" class="form-control" name="program-task-name" placeholder="Program Task" />
+								            <input type="text" class="form-control " name="program-task-name" placeholder="Program Task" />
 								        </div>
 								        <div class="col-xs-1">
 								            <button type="button" class="btn btn-default removeButton"><i class="fa fa-minus"></i></button>
@@ -254,7 +254,7 @@
 					<!--</div>-->
 				</div>
 			</div>
-						    <div class="form-group">
+				<div class="form-group">
 			        <label for="is-disabled" class="control-label col-sm-2">Is disabled</label> 
 			        <div class="col-sm-10">
 			            <input id="is-disabled" name="is_disabled" type="checkbox" {% if form.is_disabled.value %}checked{% endif %}>
@@ -262,12 +262,6 @@
 			    </div>
 			    <input type="submit" class="btn btn-primary add" ></input>
 			    </form>
-			
-			
-			
-			
-			
-			
 		</div>
 	  </section>
   
@@ -353,6 +347,17 @@
 
 	        }
 	    }
+
+
+	function get_errors(obj){
+		var vals = [];
+	    for( var key in obj ) {
+	        if ( obj.hasOwnProperty(key) ) {
+	            vals.push(obj[key]);
+	        }
+	    }
+	    return vals		
+	} 
      $('#process-form')
          .formValidation({
             fields: {
@@ -382,22 +387,6 @@
                     }
 
                 },
-                /*program_type_0_name:{
-                    validators: {
-                        notEmpty: {
-                            message: 'Program Type is required'
-                        },
-
-                    }
-                },
-                program_task_0_name:{
-                    validators: {
-                        notEmpty: {
-                            message: 'Program Task is required'
-                        },
-
-                    }
-                },*/
                 'program_type_0_name': typeValidators,
                 'program_task_0_name': taskValidators,
             }
@@ -406,29 +395,33 @@
              // Save the form data via an Ajax request
              e.preventDefault();
 		        var formData = new FormData();
-		        name = $('#process-name').val()
-
 		        var file = $('input[name^="image_ref"]')[0].files;
 		        formData.append('file', file);
-		        formData.append('name', name);
-		        //formData.append('image_ref', image_ref);
-
-		        formData.append('is_disabled', $('#is-disabled').val());
 		        formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
-		        formData.append('sub_process_name',$('#sub-process-name').val());
-		        formData.append('quarter',$('#quarter').val())
-		        formData.append('quarter_year',$('#quarter-year').val())
-		        if ($('#quarter-year').val() == ''){
-		        	
-		        }
-				$('input[name^=program_type_').each(function() {
-                	formData.append($(this).attr('name'),$(this).val())
-            	}); 
-
-				$('input[name^=program_task_').each(function() {
-                	formData.append($(this).attr('name'),$(this).val())
-            	});           
-
+		        
+		        var processData = {};
+		        processData['name'] = $('#process-name').val();
+		        processData['is_disabled'] = $('#is-disabled').val();
+		        processData['sub_process_name'] = $('#sub-process-name').val();
+		        processData['quarter'] = $('#quarter').val();
+		        processData['quarter_year'] = $('#quarter-year').val();
+		        programs = {}
+		        $(".progs").each(function(){
+		        	var prgName = $(this).find("div:eq(0) > input:eq(0)").val().toString();
+		        	if(!programs[prgName]){
+			        	var prgVals = $(this).find("div:eq(1) > input:eq(0)").val();
+			        	if(prgVals.endsWith(","))
+			        		prgVals = prgVals.slice(0,-1)
+			        	programs[prgName] = prgVals.split(",");
+			        }else{
+			        	$err = $(this).find("div:eq(0) > small:eq(0)");
+			        	$err.text(prgName + " already exists in programs.").css("color","#c92127").show();
+			        	return;
+			        }
+		        });
+				processData['programs'] = programs;
+				formData.append('processData', processData);
+				      
 		        $.ajax({
 		                url: '/create/',
 		                type: 'POST',
@@ -438,6 +431,26 @@
 		                processData: false,
 		                success: function(data) {
 		                	debugger;
+		                	if (data['process_errors']){
+		                		vals = get_errors(data['process_errors'])
+							    $('#process-error').text(vals);
+
+		                	}
+		                	if (data['sub_process_form_errors']){
+		                		vals = get_errors(data['sub_process_form_errors'])
+							    $('#sub-process-error').text(vals);
+
+		                	}
+		                	if (data['program_type_errors']){
+		                		vals = get_errors(data['program_type_errors'])
+							    //$('#sub-process-error').text(vals);
+
+		                	}
+		                	if (data['program_task_errors']){
+		                		vals = get_errors(data['program_task_errors'])
+							    //$('#sub-process-error').text(vals);
+
+		                	}
 		                    $('#process-form')[0].reset()
 		                },
 		                error: function(xhr, status, error) {
@@ -446,6 +459,7 @@
 		                    //alert("Something went wrong, please try after some time");
 		                }
 		            })
+		            */
 
          });
 
@@ -618,6 +632,7 @@
 		            $clone = $template
 		            .clone()
 		            .removeClass('hide')
+		            .addClass("progs")
 		            .removeAttr('id')
 		            .attr('data-programType-index', programTypeIndex)
 		            .insertBefore($template);
