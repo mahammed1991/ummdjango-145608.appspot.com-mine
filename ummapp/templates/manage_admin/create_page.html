@@ -59,7 +59,7 @@
 			</ul>
 			{% endif %}
 			    <div class="alert alert-warning" role="alert" id="msg-info" style="display:none;">
-			        <button type="button" class="close" onclick="hideMsg()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <button type="button" class="close"  aria-label="Close" id="btn-close"><span aria-hidden="true">&times;</span></button>
 			        <span id="span-msg"></span>
 			    </div>
 			<form action="" method="post" name="process" id="process-form" class="form-horizontal" enctype="multipart/form-data">
@@ -69,8 +69,7 @@
 			        <div class="col-sm-5">
 			            <input type="text" class="form-control" id="process-name" name="name" value="{{form.data.name}}">
 			            <p id="process-error" style="color:red"></p>
-			            {{ form.errors.name }}
-			            {{form.non_field_errors}}
+			            
 			        </div>
 			    </div>
 			    <div class="form-group">
@@ -79,7 +78,7 @@
 			            <label class="input-group-btn upload-file">
 			                <span class="btn btn-primary load-file">
 			                <i class="fa fa-file-text" aria-hidden="true"></i>&nbsp;
-			                  <input type="file" name="image_ref" onChange="fileChange();" style="display: none;">Upload Image
+			                  <input type="file" name="image_ref"  style="display: none;">Upload Image
 			                  <p class="file-name" style="color: black;"></p>
 			                </span>
 			                <div class="clearfix"></div>
@@ -95,7 +94,6 @@
 			    <input type="submit" class="btn btn-primary add" ></input>
 			</form>-->
 			<div class="edit pull-right">
-				<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
 			</div>
 			<div class="clearfix"></div>
 			<div >
@@ -110,8 +108,7 @@
 						        <div class="col-sm-5">
 						            <input type="text" class="form-control" id="sub-process-name" name="sub_process_name" value="{{sub_process_form.data.name}}">
 						            <p id="sub-process-error" style="color:red"></p>
-						            {{ sub_process_form.errors.name }}
-						            {{sub_process_form.non_field_errors}}
+						            
 						        </div>
 						    </div>
 						    <div class="form-group">
@@ -139,7 +136,6 @@
 
 					    </div>
 						<div class="edit-white pull-right">
-							<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
 						</div>
 					</div>
 					<!--<div class="padding-15 disabled">-->
@@ -175,16 +171,7 @@
 								        </div>
 								    </div>
 								<!--</form>-->
-								{% if program_type_errors %}
-									{% for i in program_type_errors %}
-										{{i}}
-									{% endfor %}
-								{% endif %}
-								{% if program_task_errors %}
-									{% for j in program_task_errors %}
-										{{j}}
-									{% endfor %}
-								{% endif %}
+
 								<!--<div class="container">
 								    <div class="row clearfix">
 								        <div class="col-xs-12 column">
@@ -222,7 +209,6 @@
 								</div>-->
 							</div>
 							<div class="edit2 pull-right">
-								<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
 							</div>
 						</div>	
 						<!--<div class="gray-bg">
@@ -254,12 +240,13 @@
 					<!--</div>-->
 				</div>
 			</div>
-				<div class="form-group">
+				<!--<div class="form-group">
 			        <label for="is-disabled" class="control-label col-sm-2">Is disabled</label> 
 			        <div class="col-sm-10">
 			            <input id="is-disabled" name="is_disabled" type="checkbox" {% if form.is_disabled.value %}checked{% endif %}>
 			        </div>
-			    </div>
+			    </div>-->
+			    <br /><br />
 			    <input type="submit" class="btn btn-primary add" ></input>
 			    </form>
 		</div>
@@ -279,21 +266,23 @@
 	<script type="text/javascript">
 
 		$(document).ready(function() {
-		    function hideMsg() {
-		        $('#msg-info').css('display', 'none')
-		    }
+
+			$('#btn-close').on('click', function(){
+				$('#msg-info').css('display', 'none')
+			});
 
 		    $('input[type=file]').on('change', prepareUpload);
 
 		    function prepareUpload(event) {
 		        files = event.target.files;
+		        fileChange();
 		    }
 
 		    var fileChange = function() {
-		        var files = $('input[name^="image_ref"]')[0].files
-		        if (files) {
-		            for (var i = 0; i < files.length; i++) {
-		                filename = files[i].name;
+		        var file = $('input[name^="image_ref"]')[0].files
+		        if (file) {
+		            for (var i = 0; i < file.length; i++) {
+		                filename = file[i].name;
 		                var allowedFiles = ["gif,jpg,jpeg,tiff,png,bmp"];
 		                if (!(/\.(gif|jpg|jpeg|tiff|png|bmp)$/i).test(filename)) {
 		                    // inputted file path is not an image of one of the above types
@@ -303,206 +292,151 @@
 		                    $('.file-name').html('');
 		                    return false;
 		                }
-		                hideMsg();
+		                $('#msg-info').css('display', 'none')
 		                $('.file-name').html(filename);
 		                return true;
 		            }
 		        }
 		    }
 
-		    function check_required_fields(){
-		    	text = 'This field is required'
-		    	if ($('#process-name').val() == ''){
-		    		$('#process-name-error').text(text)
-		    	} 
-		    	if ($('#sub-process-name').val() == '' || $('#quarter_year').val() == '' || $('#program-type-0-name').val() == '' ||  $('#program-task-0-name').val() == ''){
+		    var typeValidators = {
+		        validators: {
+		            notEmpty: {
+		                message: 'Program Type is required'
+		            },
+	                callback: {
+	                    message: 'Only one Program Type is allowed',
+	                    callback: function(value, validator) {
+	                        if (value.indexOf(',') > -1) {
+	                            validator.updateStatus('typeValidators', 'INVALID');
+	                            return false;
+	                        } else {
+	                            return true;
+	                        }
+	                    }
+	                }
+		        }
+		    },
+		    taskValidators = {
+		        validators: {
+		            notEmpty: {
+		                message: 'Program Task is required'
+		            },
 
-					}
-
+		        }
 		    }
 
-	    var typeValidators = {
-	        validators: {
-	            notEmpty: {
-	                message: 'Program Type is required'
-	            },
-                callback: {
-                    message: 'Only one Program Type is allowed',
-                    callback: function(value, validator) {
-                        if (value.indexOf(',') > -1) {
-                            validator.updateStatus('typeValidators', 'INVALID');
-                            return false;
-                        } else {
-                            return true;
-                        }
-                    }
-                }
-	        }
-	    },
-	    taskValidators = {
-	        validators: {
-	            notEmpty: {
-	                message: 'Program Task is required'
-	            },
+		     $('#process-form')
+		         .formValidation({
+		            fields: {
+		                name: {
+		                    validators: {
+		                        notEmpty: {
+		                            message: 'Name is required'
+		                        },
 
-	        }
-	    }
-
-
-	function get_errors(obj){
-		var vals = [];
-	    for( var key in obj ) {
-	        if ( obj.hasOwnProperty(key) ) {
-	            vals.push(obj[key]);
-	        }
-	    }
-	    return vals		
-	} 
-     $('#process-form')
-         .formValidation({
-            fields: {
-                name: {
-                    validators: {
-                        notEmpty: {
-                            message: 'Name is required'
-                        },
-
-                    }
-                },
-                sub_process_name:{
-                    validators: {
-                        notEmpty: {
-                            message: 'Sub Process Name is required'
-                        },
-
-                    }
-
-                },
-                quarter_year:{
-                    validators: {
-                        notEmpty: {
-                            message: 'Sub Process Year is required'
-                        },
-
-                    }
-
-                },
-                'program_type_0_name': typeValidators,
-                'program_task_0_name': taskValidators,
-            }
-         })
-         .on('success.form.fv', function(e) {
-             // Save the form data via an Ajax request
-             e.preventDefault();
-		        var formData = new FormData();
-		        var file = $('input[name^="image_ref"]')[0].files;
-		        formData.append('file', file);
-		        formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
-		        
-		        var processData = {};
-		        processData['name'] = $('#process-name').val();
-		        processData['is_disabled'] = $('#is-disabled').val();
-		        processData['sub_process_name'] = $('#sub-process-name').val();
-		        processData['quarter'] = $('#quarter').val();
-		        processData['quarter_year'] = $('#quarter-year').val();
-		        programs = {}
-		        $(".progs").each(function(){
-		        	var prgName = $(this).find("div:eq(0) > input:eq(0)").val().toString();
-		        	if(!programs[prgName]){
-			        	var prgVals = $(this).find("div:eq(1) > input:eq(0)").val();
-			        	if(prgVals.endsWith(","))
-			        		prgVals = prgVals.slice(0,-1)
-			        	programs[prgName] = prgVals.split(",");
-			        }else{
-			        	$err = $(this).find("div:eq(0) > small:eq(0)");
-			        	$err.text(prgName + " already exists in programs.").css("color","#c92127").show();
-			        	return;
-			        }
-		        });
-				processData['programs'] = programs;
-				formData.append('processData', processData);
-				      
-		        $.ajax({
-		                url: '/create/',
-		                type: 'POST',
-		                data: formData,
-		                cache: false,
-		                contentType: false,
-		                processData: false,
-		                success: function(data) {
-		                	debugger;
-		                	if (data['process_errors']){
-		                		vals = get_errors(data['process_errors'])
-							    $('#process-error').text(vals);
-
-		                	}
-		                	if (data['sub_process_form_errors']){
-		                		vals = get_errors(data['sub_process_form_errors'])
-							    $('#sub-process-error').text(vals);
-
-		                	}
-		                	if (data['program_type_errors']){
-		                		vals = get_errors(data['program_type_errors'])
-							    //$('#sub-process-error').text(vals);
-
-		                	}
-		                	if (data['program_task_errors']){
-		                		vals = get_errors(data['program_task_errors'])
-							    //$('#sub-process-error').text(vals);
-
-		                	}
-		                    $('#process-form')[0].reset()
+		                    }
 		                },
-		                error: function(xhr, status, error) {
-		                    var err = eval("(" + xhr.responseText + ")");
-		                    alert(err.Message);
-		                    //alert("Something went wrong, please try after some time");
-		                }
-		            })
-		            */
+		                sub_process_name:{
+		                    validators: {
+		                        notEmpty: {
+		                            message: 'Sub Process Name is required'
+		                        },
 
-         });
+		                    }
 
-		   /* $("form#process-form").submit(function(e) {
-		        debugger
-		        e.preventdefault();
-		        debugger;
-		        var formData = new FormData();
-		        name = $('#process-name').val()
-
-		        var file = $('input[name^="image_ref"]')[0].files;
-		        formData.append('file', file);
-		        formData.append('name', name);
-		        //formData.append('image_ref', image_ref);
-
-		        formData.append('is_disabled', $('#is-disabled').val());
-		        formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
-		        formData.append('sub-process-name',$('#sub-process-name').val());
-		        formData.append('quarter',$('#quarter').val())
-		        formData.append('quarter_year',$('#quarter-year').val())
-		        if ($('#quarter-year').val() == ''){
-		        	
-		        }
-		        //check_required_fields()
-		        $.ajax({
-		                url: '/create/',
-		                type: 'POST',
-		                data: formData,
-		                cache: false,
-		                contentType: false,
-		                processData: false,
-		                success: function(data) {
-		                	//debugger;
-		                    $('#process-form')[0].reset()
 		                },
-		                error: function(xhr, status, error) {
-		                    var err = eval("(" + xhr.responseText + ")");
-		                    alert(err.Message);
-		                    //alert("Something went wrong, please try after some time");
-		                }
-		            })
-		            //}
-		    })*/
+		                quarter_year:{
+		                    validators: {
+		                        notEmpty: {
+		                            message: 'Sub Process Year is required'
+		                        },
+
+		                    }
+
+		                },
+		                'program_type_0_name': typeValidators,
+		                'program_task_0_name': taskValidators,
+		            }
+		         })
+		         .on('success.form.fv', function(e) {
+		             // Save the form data via an Ajax request
+		             e.preventDefault();
+				        var formData = new FormData();
+				        var file = $('input[name^="image_ref"]')[0].files[0];
+				        formData.append('file', file);
+				        formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+				        
+				        var processData = {};
+				        processData['name'] = $('#process-name').val();
+				        processData['is_disabled'] = $('#is-disabled').val();
+				        processData['sub_process_name'] = $('#sub-process-name').val();
+				        processData['quarter'] = $('#quarter').val();
+				        processData['quarter_year'] = $('#quarter-year').val();
+				        programs = {}
+				        p_type_error = false
+				        $(".progs").each(function(){
+				        	var prgName = $(this).find("div:eq(0) > input:eq(0)").val().toString();
+				        	if(!programs[prgName]){
+					        	var prgVals = $(this).find("div:eq(1) > input:eq(0)").val();
+					        	if(prgVals.endsWith(","))
+					        		prgVals = prgVals.slice(0,-1)
+					        	programs[prgName] = prgVals.split(",");
+					        }else{
+					        	$err = $(this).find("div:eq(0) > small:eq(0)");
+					        	$err.text(prgName + " already exists in programs.").css("color","#c92127").show();
+					        	p_type_error = true
+					        	return;
+					        }
+				        });
+						processData['programs'] = programs;
+						formData.append('processData', JSON.stringify(processData));
+						 
+						if (!p_type_error){    
+					        $.ajax({
+					                url: '/create/',
+					                type: 'POST',
+					                data: formData,
+					                cache: false,
+					                contentType: false,
+					                processData: false,
+					                success: function(data) {
+					                	if (data['success']){
+					                		window.location='/process/'+ data['process_id']+'/'+data['sub_process_url_name']+'/'
+
+					                		/*$.ajax({
+			                					url: '/process/'+ data['process_id']+'/'+data['sub_process_url_name']+'/',
+			                					type: 'GET',
+			                					success: function(data) {
+			                						debugger
+			                					},
+								                error: function(xhr, status, error) {
+								                    var err = eval("(" + xhr.responseText + ")");
+								                    alert(err.Message);
+								                    //alert("Something went wrong, please try after some time");
+								                }	
+								                
+								            });	*/	                				
+
+					                		$('#process-form')[0].reset()
+
+					                	}
+					                	else{
+					                		$('#span-msg').text(data['msg']);
+					                		$('#msg-info').show();
+
+					                	}
+					                },
+					                error: function(xhr, status, error) {
+					                    var err = eval("(" + xhr.responseText + ")");
+					                    alert(err.Message);
+					                    //alert("Something went wrong, please try after some time");
+					                }
+					            })
+					    }
+
+
+		         });
 
 		    $("#process-name").focusout(function() {
 		    	
@@ -513,15 +447,17 @@
 			                data: {'name':$("#process-name").val()},
 			                success: function(data) {
 			                	
-			                	if (data['process_error'] != ''){
-			                		$('#process-name-error').text(data['process_error']);
+			                	if (data['msg'] != ''){
+			                		$('#process-error').text(data['msg']);
+			                		$('input[type="submit"]').prop('disabled', true);
 						            $('#sub-process').addClass('disabled');
 						            $('#sub-process').addClass('red-bg');
 						            $('#sub-process-hdg').css('display', 'block');
 						            $('.process-rows').css('display', 'none')
 			                	}
 			                	else{
-			                		$('#process-name-error').text('');
+			                		$('input[type="submit"]').prop('disabled', false);
+			                		$('#process-error').text('');
 						            $('#sub-process').removeClass('disabled');
 						            $('#sub-process').removeClass('red-bg');
 						            $('#sub-process-hdg').css('display', 'none');
@@ -568,60 +504,7 @@
 		            }
 
 		        });
-		        //changeMonth: false,
-		        //changeYear: true,
-		        //showButtonPanel: true,
-		        //yearRange: '1950:2013', // Optional Year Range
-		        /*dateFormat: 'yy',
-		        onClose: function(dateText, inst) {
-		            //$('#quarter-year').val(inst.selectedYear);
-		            //var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
-		            //$(this).datepicker('setDate', new Date(year, 0, 1));
-		            if (!$('#sub-process-name').hasClass('disabled') && $('#sub-process-name').val() && $('#quarter').val()) {
-		                $('#program-type').removeClass('disabled');
-		                $('#program-type-hdg').css('display', 'none');
-		                $('.process-type-rows').css('display', 'block');
-		                $('#program-type').removeClass('red-bg');
-		            } else {
-		                $('#program-type').addClass('disabled');
-		                $('#program-type-hdg').css('display', 'block');
-		                $('.process-type-rows').css('display', 'none');
-		                $('#program-type').addClass('red-bg');
-		            }
-		        }*/
-		    //});
 
-		    /*var programTypeValidators = {
-		            row: '.col-xs-4', // The title is placed inside a <div class="col-xs-4"> element
-		            validators: {
-		                notEmpty: {
-		                    message: 'The program type is required'
-		                }
-		            }
-		        },
-		        programTaskValidators = {
-		            row: '.col-xs-4',
-		            validators: {
-		                notEmpty: {
-		                    message: 'The program task is required'
-		                },
-		            }
-		        };*/
-
-
-		    /*$('#process-form')
-		        .formValidation({
-		            framework: 'bootstrap',
-		            icon: {
-		                valid: 'glyphicon glyphicon-ok',
-		                invalid: 'glyphicon glyphicon-remove',
-		                validating: 'glyphicon glyphicon-refresh'
-		            },
-		            fields: {
-		                'program_type_0_name': programTypeValidators,
-		                'program_task_0_name': programTaskValidators,
-		            }
-		        });*/
 
 			programTypeIndex = 0;
 
@@ -665,21 +548,6 @@
             	$row.remove();
 		    });
 
-		    var i = 1;
-		    /*$("#add_row").click(function() {
-
-		        $('#addr' + i).html('<td><input name="program_type_'+i+'_name"' + 'type="text" placeholder="Program Type" class="form-control input-md"  /> </td><td><input  name="program_task_'+i+'_name"' + "type='text' placeholder='Program Task'  class='form-control input-md'></td><td><button type='button' class='btn btn-default' id='delete_row'><i class='fa fa-minus'></i></button></td>");	        
-
-		        $('#tab_logic').append('<tr id="addr' + (i + 1) + '"></tr>');
-		        
-		         $('#process-form')
-		         	.formValidation('addField', "program_type_"+i+"_name", typeValidators)
-		         	.formValidation('addField', "program_task_"+i+"_name", taskValidators)
-				
-		        i++;
-		    });*/
-
-
 		    $("#tab_logic").on('click','#delete_row',function() {
 		        if (i > 1) {
             	$('#process-form')
@@ -690,15 +558,8 @@
 		        }
 		    });
 
-		    quarter = '{{sub_process_form.data.quarter.quarter}}'
-		    if (quarter){
-		    	$('#quarter').val(quarter)
-
-		    }
-
 		    error = '{{error}}'
 		    if (error != ''){
-		    	debugger
 	            $('#sub-process').removeClass('disabled');
 	            $('#sub-process').removeClass('red-bg');
 	            $('#sub-process-hdg').css('display', 'none');
@@ -709,33 +570,6 @@
                 $('.process-type-rows').css('display', 'block');
                 $('#program-type').removeClass('red-bg');
 		    }
-
-		    program_type_errors = '{{program_type_errors}}'.replace(/&quot;/g,'"')
-		    if (program_type_errors){
-		    	program_type_errors = JSON.parse(program_type_errors)
-		    	for (var j=0;j<program_type_errors.length;j++){
-		    		console.log(Object.keys(program_type_errors[j])[0])
-		    		key = Object.keys(program_type_errors[j])[0]
-		    		$('input[name='+key+']').parent().append('<ul class="errorlist"><li>'+program_type_errors[j][key]['name'] +'</li></ul>')
-		    	}
-		    }
-		    var html = $('tbody').html()
-		    localStorage.setItem("dynamichtml", html);
-
-		    program_task_errors = '{{program_task_errors}}'.replace(/&quot;/g,'"')
-		    if (program_task_errors){
-		    	program_task_errors = JSON.parse(program_task_errors)
-		    	for (var k=0;k<program_task_errors.length;k++){
-		    		console.log(Object.keys(program_task_errors[k])[0])
-		    		key = Object.keys(program_task_errors[k])[0]
-		    		$('input[name='+key+']').parent().append('<ul class="errorlist"><li>'+program_task_errors[k][key]['name'] +'</li></ul>')
-		    	}
-		    }
-
-
-		    //$('#program-type-0-name')
-
-
 		});
 	</script>
   </body>
