@@ -505,105 +505,79 @@ def create(request):
     success = False
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         if request.POST:
-            processData = request.POST.get("processData")
+            print request.POST
+            process_data = json.loads(request.POST.get("processData"))
+            print process_data
+            print type(process_data)
+            print process_data.get("quarter")
+            
             try:
-                quarter = Quarter.objects.get(quarter=processData.get("quarter"),quarter_year=processData.get("quarter_year"))
+                quarter = Quarter.objects.get(quarter=process_data.get("quarter"),quarter_year=process_data.get("quarter_year"))
             except Quarter.DoesNotExist:
                 quarter = Quarter()
-                quarter.quarter = processData.get("quarter")
-                quarter.quarter_year = processData.get("quarter_year")
+                quarter.quarter = process_data.get("quarter")
+                quarter.quarter_year = process_data.get("quarter_year")
                 quarter.save()
-            
-            process = Process()
-            if request.FILES:
-                img_file = request.FILES['image_ref']
-                process.image_ref = img_file
+            try:
+                process_objects = list()
+                process = Process()
+                if request.FILES:
+                    img_file = request.FILES['file']
+                    process.image_ref = img_file
+                process.name = process_data.get("name")
+                process.is_disabled = True
+                process.url_name = process_data.get("name").lower().replace(' ','-')
+                process.created_by = User.objects.get(email=request.user.email)
+                process.modified_by =  User.objects.get(email=request.user.email)
+                process.save()
+                process_objects.append(process)
+                print process.id,'process.id'
 
-            process.name = processData.get("name")
-            process.is_disabled = True
-            process.url_name = processData.get("name").lower().replace(' ','-')
-            process.created_by = User.objects.get(email=request.user.email)
-            process.modified_by =  User.objects.get(email=request.user.email)
-            process.save()
-            print process.id,'process.id'
+                sub_process = SubProcess()
+                sub_process.process = process
+                sub_process.quarter = quarter
+                sub_process.is_disabled = True
+                sub_process.name = process_data.get("sub_process_name")
+                sub_process.url_name = process_data.get("sub_process_name").lower().replace(' ','-')
+                sub_process.created_by = User.objects.get(email=request.user.email)
+                sub_process.modified_by =  User.objects.get(email=request.user.email)
+                sub_process.save()
+                process_objects.append(sub_process)
 
-            sub_process = SubProcess()
-            sub_process.process = process
-            sub_process.quarter = quarter
-            sub_process.name = processData.get("sub_process_name")
-            sub_process.created_by = User.objects.get(email=request.user.email)
-            sub_process.modified_by =  User.objects.get(email=request.user.email)
-            sub_process.save()
+                sub_process_url_name = process_data.get("sub_process_name").lower().replace(' ','-')
+                print sub_process.id,'sub_process_id'
 
-            print sub_process.id,'sub_process_id'
 
-            sub_process_id = SubProcess.objects.get(id=sub_process.id)
-            program_type_forms = ProgramTypeForm()
-            program_task_forms = ProgramTaskForm()
-            print program_type_name,'program_type_name'
-            if program_type_name:
-                program_type_forms = [ProgramTypeForm({'name':name, 'subprocess':sub_process.id}) for indx,name in enumerate(program_type_name)]
-            #else:
-            #    program_type_forms = ProgramTypeForm()
-            program_type_is_valid = all([ty.is_valid() for ty in program_type_forms])
-            program_type_errors = [{str(ty.data['name']):ty.errors} for ty in program_type_forms if not ty.is_valid()]
-            if program_type_is_valid:
-                for ptype in program_type_forms:
-                    index = program_type_forms.index(ptype)
-                    program_type = ptype.save(commit=False)
-                    #program_type.subprocess = SubProcess.objects.get(id=sub_process.id)
-                    #program_type.name = ptype.cleaned_data['name']
+                programs = process_data.get("programs")
+
+                for ptype,ptask in programs.iteritems():
+                    program_type = ProgramType()
+                    program_type.subprocess = sub_process
+                    program_type.name = ptype
+                    program_type.is_disabled = True
                     program_type.created_by = User.objects.get(email=request.user.email)
                     program_type.modified_by =  User.objects.get(email=request.user.email)
                     program_type.save()
+                    process_objects.append(program_type)
 
-                    print program_type.id,'program_type'
-
-                    program_task_name_multiple = []
-                    print program_type_name
-                    if program_task_name:
-                        if ',' in program_task_name[index]:
-                            program_task_name_multiple += program_task_name[index].strip().split(',') 
-                        else:
-                            program_task_name_multiple.append(program_task_name[index])
-                        #program_type_id = ProgramTask.objects.get(id=program_type.id)
-                        print program_task_name_multiple,'program_task_name_multiple'
-                        import pdb
-                        pdb.set_trace()
-                        program_task_forms = [ProgramTaskForm({'name':name, 'program_type':program_type.id}) for indx,name in enumerate(program_task_name_multiple)]
-                        program_task_is_valid = all([ta.is_valid() for ta in program_task_forms])
-                        program_task_errors = [{str(ta.data['name']):ta.errors} for ta in program_task_forms if not ta.is_valid()]
-                        
-                        if program_task_is_valid:
-                            program_task = ProgramTask()
-                            #program_task.program_type = program_type_id
-                            for task in program_task_forms:
-                                program_task.created_by = User.objects.get(email=request.user.email)
-                                program_task.modified_by =  User.objects.get(email=request.user.email)
-                                program_task.save()
-                                print program_task.id,'program_task'
-            print program_type_errors,'program_type_errors'
-            print program_task_errors,'program_task_errors'
-            context =  {'process_errors':form.errors, 'success':success, 'sub_process_errors':sub_process_form.errors, 'error':True, 'program_type_errors':program_type_errors,'program_task_errors':program_task_errors}
-            #context.update(form.cleaned_data)
-            #context.update(sub_process_form.cleaned_data)
-            import pdb
-            pdb.set_trace()
-            #res = serializers.serialize('json',context)
+                    for val in ptask:
+                        program_task = ProgramTask()
+                        program_task.program_type = program_type
+                        program_task.name = val
+                        program_type.is_disabled = True
+                        program_task.created_by = User.objects.get(email=request.user.email)
+                        program_task.modified_by =  User.objects.get(email=request.user.email)
+                        program_task.save()
+                        process_objects.append(program_task)
+                del process_objects
+                context = {'process_id':process.id,'sub_process_url_name':sub_process_url_name,'success':True, 'msg':'Process created successfully'}
+            except Exception as e:
+                for obj in process_objects:
+                    obj.delete()
+                context = {'success':False,'msg':'Something went wrong, please try after some time'}
             return HttpResponse(json.dumps(context), content_type="application/json")
         else:
-            form = ProcessForm()
-            sub_process_form = SubProcessForm()
-            print form.errors,sub_process_form.errors
-            context = RequestContext(request, {'request': request, 'user': request.user,'form':form,'success':success, 'sub_process_form':sub_process_form})
-    #import pdb
-    #pdb.set_trace()
-    print context,'context'
-    """
-    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
-        form = ProcessForm(request.POST)
-        context = RequestContext(request, {'request': request, 'user': request.user, 'form':form})
-    """
+            context = RequestContext(request, {'request': request, 'user': request.user, 'success':True})
     return render(request, "manage_admin/create_page.html", context_instance = context) 
 
 
@@ -616,7 +590,48 @@ def get_process(request):
         if request.POST:
             try:
                 process = Process.objects.get(name=request.POST.get('name'))
-                context['process_error'] = "Process with the name already exists"
+                context['msg'] = "Process with the name already exists"
             except Process.DoesNotExist:
-                context['process_error'] = ''
+                context['msg'] = ''
     return HttpResponse(json.dumps(context), content_type="application/json")
+
+
+@login_required
+@csrf_exempt
+def create_task_data(request, process_id, sub_process):
+    data = {}
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        process = Process.objects.get(id=process_id)
+        sub_process = SubProcess.objects.get(url_name=sub_process)
+        data["process_name"] = process.name
+        data["process_id"] = process.id
+        data["sub_process_name"] = sub_process.name
+        data["sub_process_id"] =  sub_process.id
+        programs = {}
+        program_types = ProgramType.objects.filter(subprocess=sub_process)
+        for prog in program_types:
+            tasks = []
+            program_task = ProgramTask.objects.filter(program_type=prog)
+            for task in program_task:
+                tasks.append({"task_name":task.name, "task_id":task.id})
+            programs[prog.name] = {"id":prog.id, "tasks":tasks}
+        data["programs"] = programs
+        context = RequestContext(request, {
+                        'request': request, 'user': request.user, 
+                        'success':True,
+                        'data':data
+                        })
+    return render(request, "manage_admin/additional_data.html", context_instance = context) 
+
+from django.core.exceptions import ObjectDoesNotExist
+
+@login_required
+def get_program_tasks(request, program_type_id):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.method == "GET":
+            try:
+                program_tasks = ProgramTask.objects.filter(program_type=program_type_id)
+                tasks = [{task.name: task.id} for task in program_tasks]
+            except ObjectDoesNotExist:
+                program_tasks = []
+    return HttpResponse(json.dumps({"data":tasks, "success":True, "msg":""}), content_type="application/json")    
