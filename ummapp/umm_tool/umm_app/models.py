@@ -216,23 +216,22 @@ class TaskData(models.Model):
         return "%s %s %s" % (self.program_task, self.column_name, self.data)
 
 
-class AdditionDataReference(models.Model):
-    # Convert Name to lowercase and replace space by -
+class SubProcessLevelUpdates(models.Model):
+    subprocess = models.ForeignKey(SubProcess)
     name = models.CharField(max_length=250)
-    created_date = models.DateTimeField(auto_now_add=True)
+    data = models.TextField()
+    created_date = models.DateTimeField()
     modified_date = models.DateTimeField(auto_now=True)
-    is_disabled = models.BooleanField(default=False)
-    created_by = models.ForeignKey(User, related_name='dataref_created_by', null=False)
-    modified_by = models.ForeignKey(User, related_name='dataref_modified_by', null=False)
+    created_by = models.ForeignKey(User, related_name='subprocessupdates_created_by', null=False)
+    modified_by = models.ForeignKey(User, related_name='subprocessupdates_modified_by', null=False)
 
     def __unicode__(self):
-        return "%s" % (self.name)
+        return "%s" % (self.band_details)
 
 
 class ProgramAdditionData(models.Model):
     program_task = models.ForeignKey(ProgramTask)
-    additional_ref = models.ForeignKey(AdditionDataReference)
-    quarter = models.ForeignKey(Quarter)
+    name = models.CharField(max_length=250)
     data = models.TextField()
     created_date = models.DateTimeField()
     modified_date = models.DateTimeField(auto_now=True)
@@ -241,7 +240,7 @@ class ProgramAdditionData(models.Model):
     modified_by = models.ForeignKey(User, related_name='adddata_modified_by', null=False)
    
     class Meta:
-        unique_together = ('program_task', 'additional_ref', 'quarter')
+        unique_together = ('program_task', 'name')
 
     def __unicode__(self):
-        return "%s %s %s %s" % (self.program_task, self.additional_ref, self.quarter)
+        return "%s %s %s %s" % (self.program_task, self.name)

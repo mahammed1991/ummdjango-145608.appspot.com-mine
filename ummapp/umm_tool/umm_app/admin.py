@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db import models
 from django import forms
-from .models import Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, Question, GoalTaskMap, ExtraTask, Process, SubProcess, ProgramType, ProgramTask, TaskData, AdditionDataReference, ProgramAdditionData
+from .models import Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, Question, GoalTaskMap, ExtraTask, Process, SubProcess, ProgramType, ProgramTask, TaskData, ProgramAdditionData
 from umm_app.forms import AdditionDataAdminForm
 
 class ComboInline(admin.TabularInline):
@@ -142,15 +142,8 @@ class TaskDataAdmin(admin.ModelAdmin):
         model = TaskData
 
 
-class AdditionDataReferenceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'is_disabled')
-
-    class Meta:
-        model = AdditionDataReference
-
-
 class ProgramAdditionDataAdmin(admin.ModelAdmin):
-    list_display = ('program_task', 'additional_ref', 'quarter', 'data', 'is_disabled')
+    list_display = ('program_task', 'name', 'data', 'is_disabled')
 
     class Meta:
         model = ProgramAdditionData            
@@ -177,5 +170,4 @@ admin.site.register(SubProcess, SubProcessAdmin)
 admin.site.register(ProgramType, ProgramTypeAdmin)
 admin.site.register(ProgramTask, ProgramTaskAdmin)
 admin.site.register(TaskData, TaskDataAdmin)
-admin.site.register(AdditionDataReference, AdditionDataReferenceAdmin)
 admin.site.register(ProgramAdditionData, ProgramAdditionDataAdmin)

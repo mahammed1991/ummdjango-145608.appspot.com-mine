@@ -29,7 +29,9 @@
 
 		<div class="container-fluid main-link">
 			<a href="/" class="active"> <h3 clas="adv "> Advertiser Goals </h3> </a>
-			<a href="/umm/"> <h3 clas="adv"> UMM apollo Q{{quarter.1}}'{{quarter.2}} </h3> </a>
+			{% for sub_process in sub_processs %}
+				<a href="/process/{{sub_process.process.name}}/{{sub_process.process.id}}" data-processid="{{sub_process.process.id}}" class="process"> <h3 clas="adv"> {{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</h3> </a>
+			{%endfor %}
 			<hr class="line2">
 		</div>
 
@@ -100,6 +102,23 @@
 			  
 			  <div class="footer"></div>
          {% endif %} 
-  
+<script src="{% static 'manage_admin/js/jquery.min.js' %}"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		/*$('.process').on('click', function(e) {
+			debugger;
+			e.preventDefault();
+			process_id = $(this).attr('data-processid')
+			$.ajax({
+	            url: '/process/'+ process_id,
+	            type: 'GET',
+	            success: function(data) {
+
+	            },
+	    	});
+	    });*/
+	});
+</script>  
 </body>
 </html>
+	
