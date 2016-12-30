@@ -393,7 +393,7 @@ def update_program_type(request,pk):
     
     return render(request, "manage_admin/view_process_types.html", context_instance = context) 
 
-
+"""
 @login_required
 def create_task_data(request):
     context = {}
@@ -421,7 +421,7 @@ def create_task_data(request):
             form = TaskDataForm()
             context = RequestContext(request, {'request': request, 'user': request.user,'form':form,'success':success})
     return render(request, "manage_admin/task_data.html", context_instance = context) 
-
+"""
 
 @login_required
 def create_program_task(request):
@@ -608,6 +608,7 @@ def create_task_data(request, process_id, sub_process):
         data["sub_process_name"] = sub_process.name
         data["sub_process_id"] =  sub_process.id
         programs = {}
+        program_task = None
         program_types = ProgramType.objects.filter(subprocess=sub_process)
         for prog in program_types:
             tasks = []
@@ -616,11 +617,22 @@ def create_task_data(request, process_id, sub_process):
                 tasks.append({"task_name":task.name, "task_id":task.id})
             programs[prog.name] = {"id":prog.id, "tasks":tasks}
         data["programs"] = programs
+
+        task_data_list = []
+        
+        '''if program_task:
+            for task in program_tasks:
+                
+                for d in task_data:
+                    task_data_list.append({'column_name':d.column_name,'task_data_id':d.id})
+            data['task_data'] = task_data_list
+        print data['task_data'],'task_data'''
         context = RequestContext(request, {
                         'request': request, 'user': request.user, 
                         'success':True,
                         'data':data
                         })
+        print data,'data'
     return render(request, "manage_admin/additional_data.html", context_instance = context) 
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -635,3 +647,67 @@ def get_program_tasks(request, program_type_id):
             except ObjectDoesNotExist:
                 program_tasks = []
     return HttpResponse(json.dumps({"data":tasks, "success":True, "msg":""}), content_type="application/json")    
+
+@login_required
+def get_task_data(request, task_id):
+    task_data = TaskData.objects.filter(program_task=task_id).order_by("column_number")
+    columns = []
+    for td in task_data:
+        tdata = {
+            'column_name':td.column_name,
+            'column_number':td.column_number,
+            'data':td.data,
+            'data_id':td.id
+        }
+        columns.append(tdata)
+    return HttpResponse(json.dumps({"data":columns, "success":True, "msg":""}), content_type="application/json")    
+
+
+@login_required
+@csrf_exempt
+def get_column_name(request):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.method == "POST":   
+            print request.POST
+            try:
+                program_task = ProgramTask.objects.get(id=request.POST.get('task_id'))
+                task_data = TaskData.objects.get(program_task=program_task,column_name=request.POST.get('column_name'))
+                msg = "Column with the name already exists"
+            except ObjectDoesNotExist:
+                task_data = []
+                msg = ''         
+    return HttpResponse(json.dumps({"data":'', "success":True, "msg":msg}), content_type="application/json")        
+
+
+
+@login_required
+@csrf_exempt
+def add_task_data(request):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.method == "POST":
+            print request.POST
+            try:
+                program_task = ProgramTask.objects.get(id=request.POST.get('program_task_id'))
+                task_datas = TaskData.objects.filter(program_task=program_task).order_by('-id')
+
+                if task_datas.count() != 0 :
+                    column_number = task_datas[0].column_number + 1
+                else:
+                    column_number = 0
+                task_data = TaskData()
+                task_data.program_task = program_task
+                task_data.column_name = request.POST.get('column_name')
+                task_data.column_number = column_number
+                task_data.data = request.POST.get('column_data')
+                task_data.is_disabled = True
+                task_data.created_by = User.objects.get(email=request.user.email)
+                task_data.modified_by =  User.objects.get(email=request.user.email)
+                task_data.save()
+                task_data_id = task_data.id
+                column_name = TaskData.objects.get(id=task_data.id).column_name
+                msg = 'Task data created successfully'
+            except Exception as e:
+                task_data_id = ''
+                column_name = ''
+                msg = 'Something went wrong, please try after some time'
+    return HttpResponse(json.dumps({'task_data_id':task_data_id,'column_name':column_name, "success":True, "msg":msg}), content_type="application/json")        
