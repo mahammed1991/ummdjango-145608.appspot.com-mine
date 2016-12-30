@@ -23,8 +23,7 @@
 				<div class="col-md-6">
 					<div class="row">
 						<div class="col-md-8">
-					<h1 class="text-left text-danger" >UMM Offerings
-							Q{{quarter.1}}'{{quarter.2}}</h1>
+					<h1 class="text-left text-danger" >{{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</h1>
 						 </div>
 						 <div class="col-md-4">		
 					<div class="user" id='username_login'>	
@@ -45,8 +44,7 @@
 					
 					
 					<a href="/" > <h3 clas="adv "> Advertiser Goals </h3> </a>
-					<a href="/apollo_home/" class="active"> <h3 clas="adv"> UMM Offerings 
-							Q{{quarter.1}}'{{quarter.2}}</h3> </a>
+					<a href="/apollo_home/" class="active"> <h3 clas="adv"> {{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}} {{sub_process.id}}</h3> </a>
 					<hr class="line2">
 				</div>
 			</div>
@@ -56,9 +54,9 @@
 			    </script>	
 
 		<div class="container-fluid main-category-bar" >
-			<ul class="main-option">
-				{% for category in categorys %}
-				<li ><a  class="main-category" id="{{ category.id }}">{{ category.category_name }}</a>
+			<ul class="prgrm-tab">
+				{% for ptype in program_types %}
+				<li ><a  data-programtype-id="{{ ptype.id }}" class="prg-type">{{ ptype.name }}</a>
 				</li>
 				<script>
 			    	 cateList.push({{ category.id }});
@@ -191,6 +189,47 @@
     <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+	    	if('.prg-type'){
+	    		debugger;
+	    		$('.prg-type:first').addClass('active').css('color','#ffb607');
+	    	}			
+			function updateTaskTypes(program_type_id){
+	    		$.ajax({
+		            url: '/get-program-tasks/'+program_type_id,
+		            type: 'GET',
+		            success: function(data) {
+		            	if (data['data']){
+		            		td_html = ''
+		            		tsk_id = data['data'][0][Object.keys(data['data'][0])[0]];
+		            		for(var i=0;i<data['data'].length;i++){
+		            			task_name = Object.keys(data['data'][i])[0]
+		            			task_id = data['data'][i][task_name]
+		            			debugger;
+		            			/*if (i == 0){
+		            				td_html += "<td><a href='#' class='prg-task active' data-programtype-id="+task_id +">" + task_name +"</a></td>";         			
+		            			}
+		            			else{
+		            				td_html += "<td><a href='#'  class='prg-task' data-programtype-id="+task_id +">" + task_name +"</a></td>"	            				
+		            			}
+		            		}
+		            		$('#program-tasks').append('<tr>' + td_html + '</tr>')
+		            		loadTaskData(tsk_id);*/
+		            	}
+		            	}
+		            },
+		            error: function(xhr, status, error) {
+		                var err = eval("(" + xhr.responseText + ")");
+		                alert(err.Message);
+		                //alert("Something went wrong, please try after some time");
+		            }
+	    		});
+			}
+	        updateTaskTypes($('.prgrm-tab > li > a:eq(0)').attr("data-programtype-id"));
+	    });	
+
+	</script>
 </body>
 </html>
 

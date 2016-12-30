@@ -755,7 +755,13 @@ def add_task_data(request):
 def show_process_data(request,process_name,process_id):
     context = {}
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
-        print request.GET
-        context = RequestContext(request, {'request': request, 'user': request.user})
-        #if request.method == "GET":        
+        print request.GET,process_name,process_id
+        process = Process.objects.get(id=process_id)
+        sub_process = SubProcess.objects.get(process=int(process_id))
+        print sub_process,'sub_processsss'
+        program_types = ProgramType.objects.filter(subprocess=sub_process)
+        print program_types,'program_types'
+        context = RequestContext(request, 
+                    {'request': request, 'user': request.user,'sub_process':sub_process,
+                    'program_types':program_types})
     return render(request, "apollo_home.html", context_instance=context)    
