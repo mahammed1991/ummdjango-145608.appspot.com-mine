@@ -201,12 +201,16 @@ class ProgramTask(models.Model):
 class TaskData(models.Model):
     program_task = models.ForeignKey(ProgramTask)
     column_name = models.CharField(max_length=250)
+    column_number = models.IntegerField(default=0,null=True, blank=True)
     data = models.TextField()
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     is_disabled = models.BooleanField(default=False)
     created_by = models.ForeignKey(User, related_name='taskdata_created_by', null=False)
     modified_by = models.ForeignKey(User, related_name='taskdata_modified_by', null=False)
+
+    class Meta:
+        unique_together = ('column_name', 'program_task',)
 
     def __unicode__(self):
         return "%s %s %s" % (self.program_task, self.column_name, self.data)

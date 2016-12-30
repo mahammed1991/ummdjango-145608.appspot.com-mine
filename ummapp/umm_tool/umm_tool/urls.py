@@ -44,11 +44,13 @@ urlpatterns = [
     url(r'^umm/create-program-task/','umm_app.views.create_program_task', name='create_program_task'),
     url(r'^umm/view-program-task/','umm_app.views.view_program_task', name='view_program_task'),
     url(r'^umm/update-program-task/(?P<pk>[0-9]+)$','umm_app.views.update_program_task', name='update_program_task'),
-    url(r'^umm/create-task-data/','umm_app.views.create_task_data', name='create_task_data'),
+    #url(r'^umm/create-task-data/','umm_app.views.create_task_data', name='create_task_data'),
 
     url(r'^create/','umm_app.views.create', name='create'),
     url(r'^get-process/','umm_app.views.get_process', name='get_process'),
     url(r'^process/(?P<process_id>[0-9]+)/(?P<sub_process>[A-Za-z0-9-]+)/','umm_app.views.create_task_data',name='create_task_data'),
     url(r'^get-program-tasks/(?P<program_type_id>[0-9]+)/','umm_app.views.get_program_tasks',name='get_program_tasks'),
-    url(r'^get-program-tasks/(?P<program_type_id>[0-9]+)/','umm_app.views.get_program_tasks',name='get_program_tasks')
+    url(r'^get-column-name/','umm_app.views.get_column_name',name='get_column_name'),
+    url(r'^add-task-data/','umm_app.views.add_task_data',name='add_task_data'),
+    url(r'^get-task-data/(?P<task_id>[0-9]+)','umm_app.views.get_task_data',name='get_task_data'),
 ]
