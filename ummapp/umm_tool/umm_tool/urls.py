@@ -53,4 +53,5 @@ urlpatterns = [
     url(r'^get-column-name/','umm_app.views.get_column_name',name='get_column_name'),
     url(r'^add-task-data/','umm_app.views.add_task_data',name='add_task_data'),
     url(r'^get-task-data/(?P<task_id>[0-9]+)','umm_app.views.get_task_data',name='get_task_data'),
+    url(r'^process/(?P<process_name>[A-Za-z0-9-]+)/(?P<process_id>[0-9]+)/$','umm_app.views.show_process_data',name='show_process_data'),
 ]

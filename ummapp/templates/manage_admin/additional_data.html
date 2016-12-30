@@ -78,26 +78,11 @@
 							</div>
 						</div>	
 						<table class="table table-style" id="program-tasks">
-							  <!--<tr>
-							  {% for key, val in data.programs.iteritems %}
-								  <td><a href="#" class="active" id="{{task.task_id}}">{{task.task_name}}</a></td>
-								{% endfor %}
-							  </tr>-->
-							   <!--<tr>
-								  <td><a href="#">Basic Optimization (Existing Campaign)</a></td>
-								  <td><a href="#">Export Optimization</a></td>
-								  <td><a href="#">Optimize Existing True-View ADS Campaign</a></td>
-							  </tr>
-							   <tr>
-								  <td><a href="#">Advanced Optimization (New Campaign)</a></td>
-								  <td><a href="#">Shopping Campaign Optimization (New Campaign)</a></td>
-								  <td><a href="#"></a></td>
-							  </tr>-->
-							</table>
-						<div class="gray-bg">
+						</table>
+						<div class="gray-bg" style="border-bottom: 1px solid #000;">
 							<div class="sub-text clearfix">
 								<div class="create-heading pull-left">
-								<h3>Table </h3>
+								<h3>Task Data </h3>
 								</div>
 								<div class="edit2 pull-right">
 									<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
@@ -106,30 +91,30 @@
 							</div>
 							<div class="white-bg">
 								<div class="padding-15" id="columns">
-									<a href="#" class="tbl-btn" data-taskdata-id="">Column Name	</a>
-									<a href="#" class="tbl-btn" data-taskdata-id=''>Column Name	</a>
-									<a href="#" class="tbl-btn" data-taskdata-id=''>Column Name	</a>
-									<a href="#" class="tbl-btn" data-taskdata-id=''>Column Name	</a>
-									<a href="#" class="tbl-btn" data-taskdata-id=''>Column Name </a>
-								</div>
-							</div>
-							<div class="sub-text clearfix">
-								<div class="create-heading pull-left">
-								<h3>Create Update</h3>
-								</div>
-								<div class="edit2 pull-right">
-									<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-								</div>
-							</div>
-							<div class="sub-text clearfix">
-								<div class="create-heading pull-left">
-								<h3>Create Key Words </h3>
-								</div>
-								<div class="edit2 pull-right">
-									<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+									<a href="#" class="task-column tbl-btn" data-number="1" data-taskdata-id="">Column Name	</a>
+									<a href="#" class="task-column tbl-btn" data-number="2" data-taskdata-id=''>Column Name	</a>
+									<a href="#" class="task-column tbl-btn" data-number="3" data-taskdata-id=''>Column Name	</a>
+									<a href="#" class="task-column tbl-btn" data-number="4" data-taskdata-id=''>Column Name	</a>
+									<a href="#" class="task-column tbl-btn" data-number="5" data-taskdata-id=''>Column Name </a>
 								</div>
 							</div>
 						</div>
+						<div class="sub-text clearfix">
+								<div class="create-heading pull-left">
+								<h3>Combo Update</h3>
+								</div>
+								<div class="edit2 pull-right">
+									<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+								</div>
+							</div>
+							<div class="sub-text clearfix">
+								<div class="create-heading pull-left">
+								<h3>Additional Task Data </h3>
+								</div>
+								<div class="edit2 pull-right">
+									<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+								</div>
+							</div>
 					</div>
 				</div>
 			</div>	
@@ -147,6 +132,8 @@
 		      <div class="modal-body">
 		        <form id="taskDataForm">
 		          <input type="hidden" class="form-control" name='program_task' value='' >
+		          <input type="hidden" class="form-control" name='task_data_id' value='' >
+		          <input type="hidden" class="form-control" name='column_number' value='' >
 		          <div class="form-group">
 		            <input type="text" class="form-control" name="column_name" id="column-name" placeholder="Task Definition	">
 		            <p id="column-name-error" style="color:red"></p>
@@ -189,18 +176,27 @@
 	    $("body").on("click", ".task-column", function(e){
 	    	e.preventDefault();
 	    	$that = $(this);
-	    	var data_id = $that.data("taskdata-id");
-	    	var data = $that.data("columndata");
+	    	var data_id = $that.attr("data-taskdata-id");
+	    	var data = $that.attr("data-columndata");
 	    	var column_name = $that.text();
+	    	var column_number = $that.data("number");
+	    	if (data_id)
+	    		$('input[name=task_data_id]').val(data_id);
+	    	$('.task-column').removeClass('active');
 	    	$that.addClass('active');
-	    	$("#column-name").val(column_name);
-	    	if(data.length > 0)
+	    	if (data && data.length > 0){
+	    		$("#column-name").val(column_name);
 	    		CKEDITOR.instances["message-text"].setData(data);
-	    	else
+	    	}else{
+	    		$("#column-name").val('');
 	    		CKEDITOR.instances["message-text"].setData('');
+	    	}
+	    	//if(column_number)
+	    	$('input[name=column_number]').val(column_number);
+	    	/*else
+	    		$('input[name=column_number]').val('');*/
   			$('#exampleModal').modal('show');
   			return false;
-
 	    });
 
 		var loadTaskData = function(task_id){
@@ -208,14 +204,13 @@
 	            url: '/get-task-data/'+task_id,
 	            type: 'GET',
 	            success: function(data) {
-	            	$col = $("#columns");
-	            	$col.html('');
+	            	
 	            	var data = data['data'];
-	            	if (data){
-	            		//
+	            	if (data.length > 0){
+	            		$col = $("#columns");
+	            		$col.html('');
 	            		for(var i=0;i<data.length;i++){
-	            			//column_name, column_number, data
-	      					$col.append('<a href="#" class="task-column tbl-btn" data-taskdata-id="'+data[i].data_id+'" data-columndata="'+data[i].data+'">'+ data[i].column_name+'</a>');
+	      					$col.append('<a href="#" data-number="'+data[i].column_number+'" class="task-column tbl-btn" data-taskdata-id="'+data[i].data_id+'" data-columndata="'+data[i].data+'">'+ data[i].column_name+'</a>');
 	            		}
 	            	}
 	            },
@@ -242,7 +237,8 @@
 
 	    $('#add-columns').on('click',function(e) {
 	    	e.preventDefault();
-	    	$('#columns').append('<a href="#" class="tbl-btn" data-taskdata-id="">Column Name</a>');
+	    	var column_number = parseInt($("#columns > a:last-child").data("number")) + 1;
+	    	$('#columns').append('<a href="#" data-number="'+column_number+'" class="task-column tbl-btn" data-taskdata-id="" data-columndata="">Column Name</a>');
 	    });
     	
     	function updateTaskTypes(program_type_id){
@@ -288,6 +284,10 @@
     		$("#cke_35").hide();
 		});
 
+		$('#exampleModal').on('hidden.bs.modal', function (e) {
+			$('#taskDataForm input').val('');
+		});
+
 
     	if('.prg-type'){
     		$('.prg-type:first').addClass('active');
@@ -300,14 +300,13 @@
 		$.ajax({
 			url: '/get-column-name/',
 			method: 'POST',
-			data: {'task_id':$("input[name=program_task]").val(), 'column_name':$('#column-name').val()},
+			data: {'task_id':$("input[name=program_task]").val(), 'column_name':$('#column-name').val(), 'task_data_id':$("input[name=task_data_id]").val()},
 			success : function(data) {
-				if(data['msg'] != ''){
+				if(!data['success']){
 					$('#column-name-error').text(data['msg']);
 					$('#taskFormSubmit').prop('disabled', true);
 					return false
-				}
-				else{
+				}else{
 					$('#column-name-error').text('');
 					$('#taskFormSubmit').prop('disabled', false);
 					return true
@@ -354,8 +353,10 @@
              	$('#taskFormSubmit').prop('disabled', false);
 	            var formData = new FormData(); 
 	            formData.append('program_task_id', $('input[name=program_task]').val());
+	            formData.append('task_data_id', $('input[name=task_data_id]').val());
 	            formData.append('column_name', $('#column-name').val());
 	            formData.append('column_data', data);
+	            formData.append('column_number', $('input[name=column_number]').val());
 
 				$.ajax({
 					url: '/add-task-data/',
@@ -365,19 +366,17 @@
 	                contentType: false,
 	                processData: false,
 					success : function(data) {
-						if(data['task_data_id'] != '' ){
+						if(data['success']){
 							$('.tbl-btn.active').attr('data-taskdata-id',data['task_data_id']);
 							$('.tbl-btn.active').text(data['column_name']);
+							$('.tbl-btn.active').attr('data-columndata',data['column_data']);
 							$('.tbl-btn.active').removeClass('active');
 							$('#exampleModal').modal('hide');
 							$('#taskDataForm')[0].reset();
 							$('#taskDataForm').data('formValidation').resetForm();
 							CKEDITOR.instances["message-text"].setData('');
+							loadTaskData(data["task_id"])
 						}
-						else{
-							$('#exampleModal').modal('show');
-						}
-
 					},
 	                error: function(xhr, status, error) {
 	                    var err = eval("(" + xhr.responseText + ")");

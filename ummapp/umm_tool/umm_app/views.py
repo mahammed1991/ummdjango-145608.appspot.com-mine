@@ -28,7 +28,15 @@ def home(request):
         quarter = None
         quarter_id = get_quarter()
         is_manager = True if request.user.groups.filter(name='CHAPERONE-MANAGER') else False
-        context = RequestContext(request, {'request': request, 'user': request.user,'goal_map': goal_map, 'quarter':quarter_id, 'is_manager':is_manager})
+        processes = Process.objects.filter(is_disabled=False)
+        sub_processs = SubProcess.objects.filter(process__in=processes)
+        print sub_processs,'sub_processs'
+        context = RequestContext(request, 
+                    {'request': request, 'user': request.user,
+                    'goal_map': goal_map, 'quarter':quarter_id, 
+                    'is_manager':is_manager,
+                    'sub_processs':sub_processs
+                })
         return render(request, "apollo_index.html", context_instance=context)
 
     
@@ -602,7 +610,7 @@ def create_task_data(request, process_id, sub_process):
     data = {}
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         process = Process.objects.get(id=process_id)
-        sub_process = SubProcess.objects.get(url_name=sub_process)
+        sub_process = SubProcess.objects.get(url_name=sub_process,process=process)
         data["process_name"] = process.name
         data["process_id"] = process.id
         data["sub_process_name"] = sub_process.name
@@ -650,7 +658,7 @@ def get_program_tasks(request, program_type_id):
 
 @login_required
 def get_task_data(request, task_id):
-    task_data = TaskData.objects.filter(program_task=task_id).order_by("column_number")
+    task_data = TaskData.objects.filter(program_task=int(task_id)).order_by("column_number")
     columns = []
     for td in task_data:
         tdata = {
@@ -667,47 +675,87 @@ def get_task_data(request, task_id):
 @csrf_exempt
 def get_column_name(request):
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
-        if request.method == "POST":   
-            print request.POST
-            try:
-                program_task = ProgramTask.objects.get(id=request.POST.get('task_id'))
-                task_data = TaskData.objects.get(program_task=program_task,column_name=request.POST.get('column_name'))
-                msg = "Column with the name already exists"
-            except ObjectDoesNotExist:
-                task_data = []
-                msg = ''         
-    return HttpResponse(json.dumps({"data":'', "success":True, "msg":msg}), content_type="application/json")        
+        if request.method == "POST":
+            task_id = request.POST.get("task_id")  
+            column_name = request.POST.get("column_name")
+            data_id = request.POST.get("task_data_id", None)
+            context = {}
+            task_data = TaskData.objects.filter(program_task=task_id, column_name=column_name)
+            if data_id:
+                columns = [clmn.column_name for clmn in task_data if clmn.id != int(data_id)]
+                print columns
+                if columns.count(column_name) > 0:
+                    context["success"] = False
+                    context["msg"] = "Column Name already exists, please try other."
+                else:
+                    context["success"] = True
+                    context["msg"] = ""
+            else:
+                if len(task_data) == 0:
+                    context["success"] = True
+                    context["msg"] = ""
+                else:
+                    context["success"] = False
+                    context["msg"] = "Column Name already exists, please try other."
+
+
+
+    return HttpResponse(json.dumps(context), content_type="application/json")        
 
 
 
 @login_required
 @csrf_exempt
 def add_task_data(request):
+    """
+        Add or update the task data
+    """
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         if request.method == "POST":
-            print request.POST
-            try:
-                program_task = ProgramTask.objects.get(id=request.POST.get('program_task_id'))
-                task_datas = TaskData.objects.filter(program_task=program_task).order_by('-id')
-
-                if task_datas.count() != 0 :
-                    column_number = task_datas[0].column_number + 1
-                else:
-                    column_number = 0
-                task_data = TaskData()
-                task_data.program_task = program_task
-                task_data.column_name = request.POST.get('column_name')
+            program_task_id = int(request.POST.get('program_task_id'))
+            task_data_id = request.POST.get('task_data_id')
+            column_number = int(request.POST.get('column_number'))
+            column_data = request.POST.get('column_data')
+            column_name = request.POST.get('column_name')
+            context = {
+                        'task_data_id':task_data_id,
+                        'task_id':program_task_id,
+                        'column_name':column_name, 
+                        'column_data':column_data, 
+                        'success':True, 
+                        'msg':'Updated successfully'
+             }
+            if task_data_id:
+                try:
+                    task_data = TaskData.objects.get(id=task_data_id)
+                except ObjectDoesNotExist:
+                    context = {'msg' : 'Something went wrong, please try after some time'}
+                task_data.column_name = column_name
                 task_data.column_number = column_number
-                task_data.data = request.POST.get('column_data')
+                task_data.data = column_data
+                task_data.modified_by =  User.objects.get(email=request.user.email)
+                task_data.save()
+            else:
+                task = ProgramTask.objects.get(id=program_task_id)
+                task_data = TaskData()
+                task_data.program_task = task
+                task_data.column_name = column_name
+                task_data.column_number = column_number
+                task_data.data = column_data
                 task_data.is_disabled = True
                 task_data.created_by = User.objects.get(email=request.user.email)
                 task_data.modified_by =  User.objects.get(email=request.user.email)
                 task_data.save()
-                task_data_id = task_data.id
-                column_name = TaskData.objects.get(id=task_data.id).column_name
-                msg = 'Task data created successfully'
-            except Exception as e:
-                task_data_id = ''
-                column_name = ''
-                msg = 'Something went wrong, please try after some time'
-    return HttpResponse(json.dumps({'task_data_id':task_data_id,'column_name':column_name, "success":True, "msg":msg}), content_type="application/json")        
+                context["task_data_id"] = task_data.pk
+                context["msg"] = "Column created successfully"
+    return HttpResponse(json.dumps(context), content_type="application/json")        
+
+
+@login_required
+def show_process_data(request,process_name,process_id):
+    context = {}
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        print request.GET
+        context = RequestContext(request, {'request': request, 'user': request.user})
+        #if request.method == "GET":        
+    return render(request, "apollo_home.html", context_instance=context)    
