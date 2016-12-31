@@ -18,7 +18,7 @@
 		<div class="container-fluid main-top-bar " >
 			<div class="row">
 				<div class="col-md-6" >
-					<div  class="img-responsive logo" ></div>
+					<div  class="" ><a href="/umm/manage-admin/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a></div>
 				</div>
 				<div class="col-md-6">
 					<div class="row">
@@ -54,9 +54,9 @@
 			    </script>	
 
 		<div class="container-fluid main-category-bar" >
-			<ul class="prgrm-tab">
+			<ul class="prgrm-tab main-option">
 				{% for ptype in program_types %}
-				<li ><a  data-programtype-id="{{ ptype.id }}" class="prg-type">{{ ptype.name }}</a>
+				<li ><a  data-programtype-id="{{ ptype.id }}" class="prg-type ">{{ ptype.name }}</a>
 				</li>
 				<script>
 			    	 cateList.push({{ category.id }});
@@ -66,17 +66,17 @@
 			</ul>
 			 
 			<hr class="line">
-			<div class="row sub-task">
-				<a class="sub-task-link" id="{{ task.id }}"></a>
+			<div class="row sub-task" id="program-tasks">
+				<!--<a class="sub-task-link" id="{{ task.id }}"></a>-->
 			</div>
 		</div>
 		<div class="container-fluid" >
 			<div class="row">
 				<div class="col-xs-12 col-md-3 col-md-3 col-lg-2 sub-row1">Combos Update</div>
-				<div data-looper="go" class="looper">
+				<!--<div data-looper="go" class="looper">
 				<div class="col-xs-12 col-md-9 col-md-9 col-lg-10 sub-row2 myclass looper-inner" data-toggle="modal" data-target="#myModal2">
 					
-				</div>
+				</div>-->
 			</div>
 			</div>
 		</div>
@@ -192,10 +192,52 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 	    	if('.prg-type'){
-	    		debugger;
-	    		$('.prg-type:first').addClass('active').css('color','#ffb607');
-	    	}			
+	    		$('.prg-type:first').addClass('make-active');
+	    	}
+
+		    $('.prg-type').click(function (e) {
+		    	e.preventDefault();
+		    	$('.prg-type').removeClass('make-active');
+		    	$(this).addClass('make-active');
+		    	updateTaskTypes($(this).attr('data-programtype-id'));
+		    });	
+
+		    $("body").on("click", ".prg-task", function(e){
+				e.preventDefault();
+		    	$('.prg-task').removeClass('active').css('background','#777777');
+		    	$(this).addClass('active').css('background','#009b59');
+		    	loadTaskData($(this).data('programtype-id'));
+		    });
+
+
+			var loadTaskData = function(task_id){
+				$.ajax({
+		            url: '/get-task-data/'+task_id,
+		            type: 'GET',
+		            success: function(data) {
+		            	$('#key_row').html('')
+		            	$('#value_row').html('')
+		            	var data = data['data'];
+		            	if (data.length > 0){
+		            		$column_name = $('#key_row');
+		            		$column_value = $('#value_row');
+		            		for(var i=0;i<data.length;i++){
+		            			$column_name.append('<th data-number="'+data[i].column_number+'" class="task-column tbl-btn" data-taskdata-id="'+data[i].data_id+'">'+ data[i].column_name+'</th>')
+		            			$column_value.append('<td data-number="'+data[i].column_number+'" class="task-column tbl-btn" data-taskdata-id="'+data[i].data_id+'">'+ data[i].data+'</td>');
+		            		}
+		            	}
+
+		            },
+		            error: function(xhr, status, error) {
+		                var err = eval("(" + xhr.responseText + ")");
+		                alert(err.Message);
+		                //alert("Something went wrong, please try after some time");
+		            }
+	    		});	
+			}
+
 			function updateTaskTypes(program_type_id){
+				$('#program-tasks').html("")
 	    		$.ajax({
 		            url: '/get-program-tasks/'+program_type_id,
 		            type: 'GET',
@@ -206,17 +248,15 @@
 		            		for(var i=0;i<data['data'].length;i++){
 		            			task_name = Object.keys(data['data'][i])[0]
 		            			task_id = data['data'][i][task_name]
-		            			debugger;
-		            			/*if (i == 0){
-		            				td_html += "<td><a href='#' class='prg-task active' data-programtype-id="+task_id +">" + task_name +"</a></td>";         			
+		            			if (i == 0){
+		            				td_html += "<a href='#' class='prg-task active sub-task-link' data-programtype-id="+task_id +">" + task_name +"</a>";         			
 		            			}
 		            			else{
-		            				td_html += "<td><a href='#'  class='prg-task' data-programtype-id="+task_id +">" + task_name +"</a></td>"	            				
+		            				td_html += "<a href='#'  class='prg-task sub-task-link' data-programtype-id="+task_id +">" + task_name +"</a>"	            				
 		            			}
 		            		}
-		            		$('#program-tasks').append('<tr>' + td_html + '</tr>')
-		            		loadTaskData(tsk_id);*/
-		            	}
+		            		$('#program-tasks').append(td_html)
+		            		loadTaskData(tsk_id);
 		            	}
 		            },
 		            error: function(xhr, status, error) {
