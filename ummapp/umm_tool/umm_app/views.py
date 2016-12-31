@@ -712,6 +712,7 @@ def add_task_data(request):
     """
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         if request.method == "POST":
+            print request.POST
             program_task_id = int(request.POST.get('program_task_id'))
             task_data_id = request.POST.get('task_data_id')
             column_number = int(request.POST.get('column_number'))

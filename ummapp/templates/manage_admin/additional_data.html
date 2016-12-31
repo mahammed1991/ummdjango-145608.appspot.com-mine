@@ -213,6 +213,12 @@
 	      					$col.append('<a href="#" data-number="'+data[i].column_number+'" class="task-column tbl-btn" data-taskdata-id="'+data[i].data_id+'" data-columndata="'+data[i].data+'">'+ data[i].column_name+'</a>');
 	            		}
 	            	}
+	            	else{
+	            		$col = $("#columns");
+	            		$col.html('');
+	      				$col.append('<a href="#" class="task-column tbl-btn" data-number="1" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="2" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="3" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="4" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="5" data-taskdata-id="">Column Name </a>');	          
+
+	            	}
 	            },
 	            error: function(xhr, status, error) {
 	                var err = eval("(" + xhr.responseText + ")");
@@ -229,10 +235,11 @@
 	    	updateTaskTypes($(this).attr('data-programtype-id'));
 	    });
 
-		$('.prg-task').on('click', function(e) {
+	    $("body").on("click", ".prg-task", function(e){
 			e.preventDefault();
 	    	$('.prg-task').removeClass('active');
 	    	$(this).addClass('active');
+	    	loadTaskData($(this).data('programtype-id'));
 	    });
 
 	    $('#add-columns').on('click',function(e) {
@@ -297,28 +304,30 @@
 
 	$("#column-name").focusout(function(e) {
 		e.preventDefault();
-		$.ajax({
-			url: '/get-column-name/',
-			method: 'POST',
-			data: {'task_id':$("input[name=program_task]").val(), 'column_name':$('#column-name').val(), 'task_data_id':$("input[name=task_data_id]").val()},
-			success : function(data) {
-				if(!data['success']){
-					$('#column-name-error').text(data['msg']);
-					$('#taskFormSubmit').prop('disabled', true);
-					return false
-				}else{
-					$('#column-name-error').text('');
-					$('#taskFormSubmit').prop('disabled', false);
-					return true
-				}
+		if ($(this).val()) {
+			$.ajax({
+				url: '/get-column-name/',
+				method: 'POST',
+				data: {'task_id':$("input[name=program_task]").val(), 'column_name':$('#column-name').val(), 'task_data_id':$("input[name=task_data_id]").val()},
+				success : function(data) {
+					if(!data['success']){
+						$('#column-name-error').text(data['msg']);
+						$('#taskFormSubmit').prop('disabled', true);
+						return false
+					}else{
+						$('#column-name-error').text('');
+						$('#taskFormSubmit').prop('disabled', false);
+						return true
+					}
 
-			},
-            error: function(xhr, status, error) {
-                var err = eval("(" + xhr.responseText + ")");
-                alert(err.Message);
-                //alert("Something went wrong, please try after some time");
-            }
-    	});		
+				},
+	            error: function(xhr, status, error) {
+	                var err = eval("(" + xhr.responseText + ")");
+	                alert(err.Message);
+	                //alert("Something went wrong, please try after some time");
+	            }
+	    	});
+	    }		
 	})
 
      $('#taskDataForm')

@@ -13,7 +13,7 @@
         <div class="container-fluid topbar noborder">
 			<div class="col-md-12 logo-img">
   				<div class="col-md-6" >
-					<div  class="img-responsive logo" ></div>
+					<div  class="" ><a href="/umm/manage-admin/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a></div>
 				</div>
 				<div class="col-md-6" >
 					<div class="user" id="username_login">	
@@ -30,7 +30,7 @@
 		<div class="container-fluid main-link">
 			<a href="/" class="active"> <h3 clas="adv "> Advertiser Goals </h3> </a>
 			{% for sub_process in sub_processs %}
-				<a href="/process/{{sub_process.process.name}}/{{sub_process.process.id}}" data-processid="{{sub_process.process.id}}" class="process"> <h3 clas="adv"> {{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</h3> </a>
+				<a href="/process/{{sub_process.process.url_name}}/{{sub_process.process.id}}" data-processid="{{sub_process.process.id}}" class="process"> <h3 clas="adv"> {{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</h3> </a>
 			{%endfor %}
 			<hr class="line2">
 		</div>
