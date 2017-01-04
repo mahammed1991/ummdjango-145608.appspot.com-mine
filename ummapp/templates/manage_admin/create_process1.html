@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Admin Panel</title>
+    <title>Create New Process</title>
 
     <!-- Bootstrap -->
     <link href="{% static 'manage_admin/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -31,11 +31,10 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-xs-4 col-md-6 col-sm-6">
-					<a href="/umm/manage-admin/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a>
+					<a href="/knowledgebase/admin/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a>
 				</div>
 				<div class="col-xs-8 col-md-6 col-sm-6">
 					<a href="{% url 'auth:logout' %}?next=/" class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
-					<a href="#" class="process-btn pull-right">Create New Process</a>
 				</div>
 			</div>
 		</div>
@@ -43,9 +42,6 @@
 	
 	  <section class="process-create">
 	  	<div class="container">
-			<!--<div class="create-heading text-uppercase pull-left">
-				<h1>Create Process Heading</h1>
-			</div>-->
 			{% if messages %}
 			<ul class="messages">
 			    {% for msg in messages %}       
@@ -67,46 +63,21 @@
 			    <div class="form-group">
 			        <label for="process-name" class="control-label col-sm-2">Name</label>
 			        <div class="col-sm-5">
-			            <input type="text" class="form-control" id="process-name" name="name" value="{{form.data.name}}">
+			            <input type="text" class="form-control req" id="process-name" name="name" value="{{form.data.name}}">
 			            <p id="process-error" style="color:red"></p>
 			            
 			        </div>
 			    </div>
-			    <div class="form-group">
-			        <label for="image-ref" class="control-label col-sm-2">Image reference</label>
-			        <div class="col-sm-5">
-			            <label class="input-group-btn upload-file">
-			                <span class="btn btn-primary load-file">
-			                <i class="fa fa-file-text" aria-hidden="true"></i>&nbsp;
-			                  <input type="file" name="image_ref"  style="display: none;">Upload Image
-			                  <p class="file-name" style="color: black;"></p>
-			                </span>
-			                <div class="clearfix"></div>
-			            </label>
-			        </div>
-			    </div>
-			    <!--<div class="form-group">
-			        <label for="is-disabled" class="control-label col-sm-2">Is disabled</label> 
-			        <div class="col-sm-10">
-			            <input id="is-disabled" name="is_disabled" type="checkbox" {% if form.is_disabled.value %}checked{% endif %}>
-			        </div>
-			    </div>
-			    <input type="submit" class="btn btn-primary add" ></input>
-			</form>-->
 			<div class="edit pull-right">
 			</div>
 			<div class="clearfix"></div>
 			<div >
 				<div class="">
-					<div class="red-bg clearfix disabled" id="sub-process">
-						<div class="create-heading pull-left" id="sub-process-hdg">
-							<h2>Create SubProcess </h2>
-						</div>
 						<div class="process-rows" style="display: none">
 						    <div class="form-group">
 						        <label for="sub-process-name" class="control-label col-sm-2">Sub Process Name</label>
 						        <div class="col-sm-5">
-						            <input type="text" class="form-control" id="sub-process-name" name="sub_process_name" value="{{sub_process_form.data.name}}">
+						            <input type="text" class="form-control req" id="sub-process-name" name="sub_process_name" value="{{sub_process_form.data.name}}">
 						            <p id="sub-process-error" style="color:red"></p>
 						            
 						        </div>
@@ -126,32 +97,23 @@
 						        <label for="quarter-year" class="control-label col-sm-2">Sub Process Year</label>
 						        <div class="col-sm-3">
 						        	<div class="input-group input-append date" id="quarter-year" >
-								        <input  type="text"  name="quarter_year" class="form-control" >
+								        <input  type="text"  name="quarter_year" class="form-control req" >
 								        <span class="input-group-addon add-on"><span class="glyphicon glyphicon-calendar"></span></span>
 								        <p id="quarter-year-error" style="color:red"></p>
 								    </div>
 						        </div>
 						    </div>
-
-
 					    </div>
 						<div class="edit-white pull-right">
 						</div>
-					</div>
-					<!--<div class="padding-15 disabled">-->
-						<div class="red-bg clearfix disabled program-type" id="program-type">
-							<div class="create-heading pull-left" id="program-type-hdg">
-							<h3>Create Program Type and Tasks</h3>
-						    </div>
 						    <div class="process-type-rows" style="display: none">
-						    	<!--<form id="programTypeForm" method="post" class="form-horizontal">-->
 								    <div class="form-group progs">
 								        <label class="col-xs-1 control-label">Program Type</label>
 								        <div class="col-xs-4">
-								            <input type="text" class="form-control" name="program_type_0_name" placeholder="Program Type" />
+								            <input type="text" class="form-control req" name="program_type_0_name" placeholder="Program Type" />
 								        </div>
 								        <div class="col-xs-4">
-								            <input type="text" class="form-control" name="program_task_0_name" placeholder="Program Task" />
+								            <input type="text" class="form-control req" name="program_task_0_name" placeholder="Program Task" />
 								        </div>
 								        <div class="col-xs-1">
 								            <button type="button" class="btn btn-default addButton"><i class="fa fa-plus"></i></button>
@@ -161,93 +123,23 @@
 								    <!--The template for adding new field-->
 								    <div class="form-group hide" id="programTypeTemplate">
 								        <div class="col-xs-4 col-xs-offset-1">
-								            <input type="text" class="form-control " name="program-type-name" placeholder="Program Type" />
+								            <input type="text" class="form-control" name="program-type-name" placeholder="Program Type" />
 								        </div>
 								        <div class="col-xs-4">
-								            <input type="text" class="form-control " name="program-task-name" placeholder="Program Task" />
+								            <input type="text" class="form-control" name="program-task-name" placeholder="Program Task" />
 								        </div>
 								        <div class="col-xs-1">
 								            <button type="button" class="btn btn-default removeButton"><i class="fa fa-minus"></i></button>
 								        </div>
 								    </div>
-								<!--</form>-->
-
-								<!--<div class="container">
-								    <div class="row clearfix">
-								        <div class="col-xs-12 column">
-								            <table class="table" id="tab_logic">
-								                <thead>
-								                    <tr >
-								                        <th class="text-center col-xs-6" >
-								                            Program Type
-								                        </th>
-								                        <th class="text-center col-xs-6">
-								                            Program Task
-								                        </th>
-								                    </tr>
-								                </thead>
-								                <tbody>
-								                    <tr id='addr0'>
-								                        <td class="col-xs-5">
-								                        <input type="text" name='program_type_0_name'  placeholder='Program Type' class="form-control"/>
-								                       
-								                        </td>
-								                        <td class="col-xs-5">
-								                        <input type="text" name='program_task_0_name' placeholder='Program Task' class="form-control"/>
-								                        						                        
-								                        </td>
-								                        <td><button type="button" class="btn btn-default" id="add_row"><i class="fa fa-plus"></i></button></td>
-
-								                    </tr>
-
-								                    <tr id='addr1'></tr>
-								                </tbody>
-								            </table>
-								        </div>
-								    </div>
-								   <!-- <a id='delete_row' class="pull-right btn btn-default">Delete Row</a>
-								</div>-->
 							</div>
 							<div class="edit2 pull-right">
 							</div>
-						</div>	
-						<!--<div class="gray-bg">
-							<div class="sub-text clearfix disabled">
-								<div class="create-heading pull-left">
-								<h3>Create Table </h3>
-								</div>
-								<div class="edit2 pull-right">
-									<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-								</div>
-							</div>
-							<div class="sub-text clearfix disabled">
-								<div class="create-heading pull-left">
-								<h3>Create Update</h3>
-								</div>
-								<div class="edit2 pull-right">
-									<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-								</div>
-							</div>
-							<div class="sub-text clearfix disabled">
-								<div class="create-heading pull-left">
-								<h3>Create Key Words </h3>
-								</div>
-								<div class="edit2 pull-right">
-									<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-								</div>
-							</div>
-						</div>-->
-					<!--</div>-->
+						
 				</div>
 			</div>
-				<!--<div class="form-group">
-			        <label for="is-disabled" class="control-label col-sm-2">Is disabled</label> 
-			        <div class="col-sm-10">
-			            <input id="is-disabled" name="is_disabled" type="checkbox" {% if form.is_disabled.value %}checked{% endif %}>
-			        </div>
-			    </div>-->
 			    <br /><br />
-			    <input type="submit" class="btn btn-primary add" ></input>
+			    <input type="submit" class="btn btn-primary add" id="process-submit"></input>
 			    </form>
 		</div>
 	  </section>
@@ -271,7 +163,7 @@
 				$('#msg-info').css('display', 'none')
 			});
 
-		    $('input[type=file]').on('change', prepareUpload);
+		    //$('input[type=file]').on('change', prepareUpload);
 
 		    function prepareUpload(event) {
 		        files = event.target.files;
@@ -363,8 +255,8 @@
 		             // Save the form data via an Ajax request
 		             e.preventDefault();
 				        var formData = new FormData();
-				        var file = $('input[name^="image_ref"]')[0].files[0];
-				        formData.append('file', file);
+				        //var file = $('input[name^="image_ref"]')[0].files[0];
+				        //formData.append('file', file);
 				        formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
 				        
 				        var processData = {};
@@ -394,7 +286,7 @@
 						 
 						if (!p_type_error){    
 					        $.ajax({
-					                url: '/create/',
+					                url: '/process/create/',
 					                type: 'POST',
 					                data: formData,
 					                cache: false,
@@ -402,24 +294,7 @@
 					                processData: false,
 					                success: function(data) {
 					                	if (data['success']){
-					                		window.location='/process/'+ data['process_id']+'/'+data['sub_process_url_name']+'/'
-
-					                		/*$.ajax({
-			                					url: '/process/'+ data['process_id']+'/'+data['sub_process_url_name']+'/',
-			                					type: 'GET',
-			                					success: function(data) {
-			                						debugger
-			                					},
-								                error: function(xhr, status, error) {
-								                    var err = eval("(" + xhr.responseText + ")");
-								                    alert(err.Message);
-								                    //alert("Something went wrong, please try after some time");
-								                }	
-								                
-								            });	*/	                				
-
-					                		$('#process-form')[0].reset()
-
+					                		window.location='/process/'+ data['process_id']+'/sp/'+data['sub_process_url_name']+'/edit'
 					                	}
 					                	else{
 					                		$('#span-msg').text(data['msg']);
@@ -456,7 +331,7 @@
 						            $('.process-rows').css('display', 'none')
 			                	}
 			                	else{
-			                		$('input[type="submit"]').prop('disabled', false);
+			                		//$('input[type="submit"]').prop('disabled', false);
 			                		$('#process-error').text('');
 						            $('#sub-process').removeClass('disabled');
 						            $('#sub-process').removeClass('red-bg');
@@ -570,6 +445,16 @@
                 $('.process-type-rows').css('display', 'block');
                 $('#program-type').removeClass('red-bg');
 		    }
+
+			function buttonState(){
+			    $('#process-form :input.req').each(function(){
+			        $('#process-submit').prop('disabled', true);
+			        if($(this).val() == "" ) return false;
+			        $('#process-submit').prop('disabled', false);
+			    })
+			}
+			$('#process-submit').prop('disabled', true);
+			$('#process-form :input.req').change(buttonState);
 		});
 	</script>
   </body>

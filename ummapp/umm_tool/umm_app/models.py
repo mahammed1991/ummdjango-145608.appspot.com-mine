@@ -216,7 +216,7 @@ class TaskData(models.Model):
         return "%s %s %s" % (self.program_task, self.column_name, self.data)
 
 
-class SubProcessLevelUpdates(models.Model):
+'''class SubProcessLevelUpdates(models.Model):
     subprocess = models.ForeignKey(SubProcess)
     name = models.CharField(max_length=250)
     data = models.TextField()
@@ -226,7 +226,7 @@ class SubProcessLevelUpdates(models.Model):
     modified_by = models.ForeignKey(User, related_name='subprocessupdates_modified_by', null=False)
 
     def __unicode__(self):
-        return "%s" % (self.band_details)
+        return "%s" % (self.band_details)'''
 
 
 class ProgramAdditionData(models.Model):

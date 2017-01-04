@@ -12,6 +12,8 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist
 # view for Advertiser Goals
 
 
@@ -28,9 +30,7 @@ def home(request):
         quarter = None
         quarter_id = get_quarter()
         is_manager = True if request.user.groups.filter(name='CHAPERONE-MANAGER') else False
-        processes = Process.objects.filter(is_disabled=False)
-        sub_processs = SubProcess.objects.filter(process__in=processes)
-        print sub_processs,'sub_processs'
+        sub_processs = SubProcess.objects.filter(is_disabled=False)
         context = RequestContext(request, 
                     {'request': request, 'user': request.user,
                     'goal_map': goal_map, 'quarter':quarter_id, 
@@ -192,7 +192,7 @@ def check_email(request, strategy, details, *args, **kwargs):
 @login_required
 def apollo_home(request):
     quarter = None
-    template = "apollo-home.html"
+    template = "apollo_home.html"
     categorys = list()
     tasks = list()
     lefttab = list()
@@ -212,8 +212,10 @@ def apollo_home(request):
 
 @login_required
 def manage_admin(request):
+    print request.user.groups
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
-        context = RequestContext(request, {'request': request, 'user': request.user})
+        processes = Process.objects.all()
+        context = RequestContext(request, {'request': request, 'user': request.user,'processes':processes})
     return render(request, "manage_admin/umm_admin.html", context_instance = context) 
 
 
@@ -248,7 +250,6 @@ def create_process(request):
         else:
             form = ProcessForm()
             context = RequestContext(request, {'request': request, 'user': request.user,'form':form,'success':success})
-    print context,'context'
     return render(request, "manage_admin/create_process.html", context_instance = context)  
 
 
@@ -508,17 +509,12 @@ def update_program_task(request,pk):
     return render(request, "manage_admin/view_program_tasks.html", context_instance = context)
 
 @login_required
-def create(request):
+def process_handler(request):
     context = {}
     success = False
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         if request.POST:
-            print request.POST
             process_data = json.loads(request.POST.get("processData"))
-            print process_data
-            print type(process_data)
-            print process_data.get("quarter")
-            
             try:
                 quarter = Quarter.objects.get(quarter=process_data.get("quarter"),quarter_year=process_data.get("quarter_year"))
             except Quarter.DoesNotExist:
@@ -533,36 +529,30 @@ def create(request):
                     img_file = request.FILES['file']
                     process.image_ref = img_file
                 process.name = process_data.get("name")
-                process.is_disabled = True
                 process.url_name = process_data.get("name").lower().replace(' ','-')
                 process.created_by = User.objects.get(email=request.user.email)
                 process.modified_by =  User.objects.get(email=request.user.email)
                 process.save()
                 process_objects.append(process)
-                print process.id,'process.id'
 
+                sub_process_url_name = process_data.get("sub_process_name").lower().replace(' ','-')
                 sub_process = SubProcess()
                 sub_process.process = process
                 sub_process.quarter = quarter
                 sub_process.is_disabled = True
                 sub_process.name = process_data.get("sub_process_name")
-                sub_process.url_name = process_data.get("sub_process_name").lower().replace(' ','-')
+                sub_process.url_name = sub_process_url_name
                 sub_process.created_by = User.objects.get(email=request.user.email)
                 sub_process.modified_by =  User.objects.get(email=request.user.email)
                 sub_process.save()
                 process_objects.append(sub_process)
 
-                sub_process_url_name = process_data.get("sub_process_name").lower().replace(' ','-')
-                print sub_process.id,'sub_process_id'
-
-
                 programs = process_data.get("programs")
-
                 for ptype,ptask in programs.iteritems():
                     program_type = ProgramType()
                     program_type.subprocess = sub_process
                     program_type.name = ptype
-                    program_type.is_disabled = True
+                    program_type.is_disabled = False
                     program_type.created_by = User.objects.get(email=request.user.email)
                     program_type.modified_by =  User.objects.get(email=request.user.email)
                     program_type.save()
@@ -572,7 +562,7 @@ def create(request):
                         program_task = ProgramTask()
                         program_task.program_type = program_type
                         program_task.name = val
-                        program_type.is_disabled = True
+                        program_type.is_disabled = False
                         program_task.created_by = User.objects.get(email=request.user.email)
                         program_task.modified_by =  User.objects.get(email=request.user.email)
                         program_task.save()
@@ -586,7 +576,7 @@ def create(request):
             return HttpResponse(json.dumps(context), content_type="application/json")
         else:
             context = RequestContext(request, {'request': request, 'user': request.user, 'success':True})
-    return render(request, "manage_admin/create_page.html", context_instance = context) 
+    return render(request, "manage_admin/create_process1.html", context_instance = context) 
 
 
 @login_required
@@ -606,11 +596,12 @@ def get_process(request):
 
 @login_required
 @csrf_exempt
-def create_task_data(request, process_id, sub_process):
+def create_task_data(request, process_id=None, sprocess_name=None):
     data = {}
+    context = {}
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         process = Process.objects.get(id=process_id)
-        sub_process = SubProcess.objects.get(url_name=sub_process,process=process)
+        sub_process = SubProcess.objects.get(url_name=sprocess_name, process=process)
         data["process_name"] = process.name
         data["process_id"] = process.id
         data["sub_process_name"] = sub_process.name
@@ -625,25 +616,15 @@ def create_task_data(request, process_id, sub_process):
                 tasks.append({"task_name":task.name, "task_id":task.id})
             programs[prog.name] = {"id":prog.id, "tasks":tasks}
         data["programs"] = programs
-
         task_data_list = []
-        
-        '''if program_task:
-            for task in program_tasks:
-                
-                for d in task_data:
-                    task_data_list.append({'column_name':d.column_name,'task_data_id':d.id})
-            data['task_data'] = task_data_list
-        print data['task_data'],'task_data'''
         context = RequestContext(request, {
                         'request': request, 'user': request.user, 
                         'success':True,
                         'data':data
                         })
-        print data,'data'
     return render(request, "manage_admin/additional_data.html", context_instance = context) 
 
-from django.core.exceptions import ObjectDoesNotExist
+
 
 @login_required
 def get_program_tasks(request, program_type_id):
@@ -660,6 +641,7 @@ def get_program_tasks(request, program_type_id):
 def get_task_data(request, task_id):
     task_data = TaskData.objects.filter(program_task=int(task_id)).order_by("column_number")
     columns = []
+    print task_data
     for td in task_data:
         tdata = {
             'column_name':td.column_name,
@@ -697,9 +679,6 @@ def get_column_name(request):
                 else:
                     context["success"] = False
                     context["msg"] = "Column Name already exists, please try other."
-
-
-
     return HttpResponse(json.dumps(context), content_type="application/json")        
 
 
@@ -712,7 +691,6 @@ def add_task_data(request):
     """
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         if request.method == "POST":
-            print request.POST
             program_task_id = int(request.POST.get('program_task_id'))
             task_data_id = request.POST.get('task_data_id')
             column_number = int(request.POST.get('column_number'))
@@ -743,7 +721,7 @@ def add_task_data(request):
                 task_data.column_name = column_name
                 task_data.column_number = column_number
                 task_data.data = column_data
-                task_data.is_disabled = True
+                task_data.is_disabled = False
                 task_data.created_by = User.objects.get(email=request.user.email)
                 task_data.modified_by =  User.objects.get(email=request.user.email)
                 task_data.save()
@@ -753,16 +731,75 @@ def add_task_data(request):
 
 
 @login_required
-def show_process_data(request,process_name,process_id):
-    context = {}
+def show_process_data(request, sprocess_name):
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
-        print request.GET,process_name,process_id
-        process = Process.objects.get(id=process_id)
-        sub_process = SubProcess.objects.get(process=int(process_id))
-        print sub_process,'sub_processsss'
-        program_types = ProgramType.objects.filter(subprocess=sub_process)
-        print program_types,'program_types'
-        context = RequestContext(request, 
-                    {'request': request, 'user': request.user,'sub_process':sub_process,
-                    'program_types':program_types})
-    return render(request, "apollo_home.html", context_instance=context)    
+        if request.method == "GET":
+            sub_process = SubProcess.objects.get(url_name=sprocess_name)
+            if sub_process:
+                program_types = ProgramType.objects.filter(subprocess=sub_process)
+                sub_processs = SubProcess.objects.filter(is_disabled=False)
+            context = RequestContext(request, 
+                        {'request': request, 'user': request.user,'sub_process':sub_process,
+                        'program_types':program_types,'sub_processs':sub_processs})
+            return render(request, "apollo_home.html", context_instance=context) 
+    else:
+        raise PermissionDenied
+
+
+@login_required
+def subprocess_handler(request, reference_id=None):
+    """
+        If get request returns all the sub processes of a given reference_id (here it is process id).
+        If post request, reference_id will act as sub process id and allows us to update the particulat record.
+    """
+    if request.method == "GET" and not request.is_ajax():
+        context = {}
+        sub_process = SubProcess.objects.filter(process=reference_id).order_by('-created_date')
+        if sub_process:
+            context["subprocess_name"] = sub_process[0].process.name
+        return render(request, "manage_admin/subprocess_list.html", context_instance=RequestContext(request,context)) 
+    if request.method == "GET" and request.is_ajax():
+        enableProcess = request.GET.get("enable", None)
+        if enableProcess:
+            stat = False if enableProcess == "true" else True
+            sub_process = SubProcess.objects.get(id=reference_id)
+            sub_process.is_disabled = stat
+            sub_process.save()
+            toggleStat = " Disabled " if stat else " Enabled "
+            return HttpResponse(json.dumps({"success":True, "msg": "Successfully" + toggleStat + sub_process.name}), content_type="application/json")
+        else:
+            sub_processes = []
+            sub_process = SubProcess.objects.filter(process=reference_id).order_by('-created_date')
+            for sub in sub_process:
+                resp = {
+                "process_name": sub.process.name,
+                "process_id":sub.process.id,
+                "sp_id": sub.id,
+                "name": sub.name,
+                "quarter": {
+                    "quarter": sub.quarter.quarter,
+                    "year": sub.quarter.quarter_year
+                    },
+                "url_name": sub.url_name,
+                "is_disabled": sub.is_disabled
+                }
+            sub_processes.append(resp)
+            return HttpResponse(json.dumps(sub_processes), content_type="application/json")
+    elif request.method == "POST":
+        if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+            print request.post
+        else:
+            raise PermissionDenied
+        
+
+@login_required
+def subprocess_data_handler(request, subprocess_id=None):
+    """
+        Returns/Updates the data of subprocess based on the subprocess id provided
+    """
+    if request.method == "GET":
+        pass
+    elif request.method == "POST":
+        pass
+
+

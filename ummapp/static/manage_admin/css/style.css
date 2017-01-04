@@ -18,8 +18,115 @@ a.logout{ font-size:16px; color: #000; margin-top: 5px}
 
 .process-box{ padding: 30px 0px;}
 .process-box .white-bg{background:#fff; border: 1px solid #e9e9e9; padding: 20px; height: 240px; margin-bottom: 30px}
-.process-box a img{position: absolute;top: 40%;left: 50%;margin-right: -50%;transform: translate(-50%, -50%)}
+.process-box a h1{position: absolute;top: 40%;left: 50%;margin-right: -50%;transform: translate(-50%, -50%); font-size:28px; color: #000; text-transform: uppercase; text-decoration: none; font-weight: 700}
 
+.process-box2{ padding: 30px 0px;}
+.process-box2 .white-bg{background:#fff; border: 1px solid #e9e9e9; padding: 20px; margin-bottom: 30px}
+.process-box2 .fa{color: #000; font-size: 18px; margin-bottom: 20px;}
+.process-box2 .form-control {
+    display: block;
+    width: 100%;
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #f2f2f2;
+    border-radius: 0px;
+    -webkit-box-shadow: inset 0 0px 0px rgba(0,0,0,.075);
+    box-shadow: inset 0 0px 0px rgba(0,0,0,.075);
+    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+.process-box2 .breadcrumb {
+    border-radius: 0px;
+}
+.process-box2 .btn-default.active.focus,.btn-default.active:focus,.btn-default.active:hover,.btn-default:active.focus,.btn-default:active:focus,.btn-default:active:hover,.open>.dropdown-toggle.btn-default.focus,.open>.dropdown-toggle.btn-default:focus,.open>.dropdown-toggle.btn-default:hover{color:#333;background-color:transparent;border-color:#8c8c8c}
+
+.process-box2 .btn-default:hover{color:#333;background-color:transparent;border-color:#adadad}
+
+.process-box2 .btn-primary {
+    color: #fff;
+    background-color: #4ed966;
+    border-color: #4ed966;
+}
+.process-box2 .btn-primary.active.focus,.btn-primary.active:focus,.btn-primary.active:hover,.btn-primary:active.focus,.btn-primary:active:focus,.btn-primary:active:hover,.open>.dropdown-toggle.btn-primary.focus,.open>.dropdown-toggle.btn-primary:focus,.open>.dropdown-toggle.btn-primary:hover{color:#fff;background-color:#4ed966;border-color:#4ed966}
+.checkbox label .toggle,
+.checkbox-inline .toggle {
+    margin-left: -20px;
+    margin-right: 5px;
+}
+
+.toggle {
+    position: relative;
+    overflow: hidden;
+}
+.toggle input[type="checkbox"] {
+    display: none;
+}
+.toggle-group {
+    position: absolute;
+    width: 200%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    transition: left 0.35s;
+    -webkit-transition: left 0.35s;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+.toggle.off .toggle-group {
+    left: -100%;
+}
+.toggle-on {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 50%;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+}
+.toggle-off {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    right: 0;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+}
+.toggle-handle {
+    position: relative;
+    margin: 0 auto;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    height: 100%;
+    width: 0px;
+    border-width: 0 1px;
+}
+
+.toggle.btn { min-width: 59px; min-height: 34px; }
+.toggle-on.btn { padding-right: 24px; }
+.toggle-off.btn { padding-left: 24px; }
+
+.toggle.btn-lg { min-width: 79px; min-height: 45px; }
+.toggle-on.btn-lg { padding-right: 31px; }
+.toggle-off.btn-lg { padding-left: 31px; }
+.toggle-handle.btn-lg { width: 40px; }
+
+.toggle.btn-sm { min-width: 50px; min-height: 30px;}
+.toggle-on.btn-sm { padding-right: 20px; }
+.toggle-off.btn-sm { padding-left: 20px; }
+
+.toggle.btn-xs { min-width: 35px; min-height: 22px;}
+.toggle-on.btn-xs { padding-right: 12px; }
+.toggle-off.btn-xs { padding-left: 12px; }
 .padding-15{ padding:15px}
 .process-create {padding: 30px 0px;}
 .edit{ width: 70px; text-align: right;margin-right: 20px;}
@@ -108,7 +215,7 @@ modal-style .btn {
 }
 /*Responsive Start*/
 @media only screen and (min-width: 992px) and (max-width: 1219px) {
-	
+    
 }
 @media only screen and (max-width: 1024px) {
 
@@ -118,7 +225,7 @@ modal-style .btn {
 and (min-device-width : 768px) 
 and (max-device-width : 1024px) 
 and (orientation : landscape) {
-	.process-box .white-bg img{ width:100%;}
+    .process-box .white-bg img{ width:100%;}
 }
 
 
@@ -126,15 +233,14 @@ and (orientation : landscape) {
 and (min-device-width : 768px) 
 and (max-device-width : 1024px) 
 and (orientation : portrait) { 
-	.process-box .white-bg { height:100px}
-	.process-box .white-bg img{ width:100%;top:0; position: inherit; left:0;margin-right:0; transform:none}
+    .process-box .white-bg { height:100px}
+    .process-box .white-bg img{ width:100%;top:0; position: inherit; left:0;margin-right:0; transform:none}
 }
 
 @media only screen and (max-width: 767px) {
-	a.logo img{ width: 100%}
-	a.process-btn{ margin-right:20px; text-transform:none; padding: 5px 10px}
-	.process-box .white-bg { height:100px}
-	.process-box .white-bg img{ width:100%;top:0; position: inherit;left:0;margin-right:0;transform:none}
-	.create-heading h1{ font-size:24px; }
+    a.logo img{ width: 100%}
+    a.process-btn{ margin-right:20px; text-transform:none; padding: 5px 10px}
+    .process-box .white-bg { height:100px}
+    .process-box .white-bg img{ width:100%;top:0; position: inherit;left:0;margin-right:0;transform:none}
+    .create-heading h1{ font-size:24px; }
 }
-
