@@ -31,7 +31,7 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-xs-4 col-md-6 col-sm-6">
-					<a href="/umm/manage-admin/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a>
+					<a href="/knowledgebase/admin/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a>
 				</div>
 				<div class="col-xs-8 col-md-6 col-sm-6">
 					<a href="{% url 'auth:logout' %}?next=/" class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
@@ -45,9 +45,6 @@
 			<div class="create-heading text-uppercase pull-left">
 				<h1 data-processid="{{data.process_id}}">{{data.process_name}}</h1>
 			</div>
-			<div class="edit pull-right">
-				<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-			</div>
 			<div class="clearfix"></div>
 			<div class="enabled">
 				<div class="white-bg">
@@ -57,9 +54,9 @@
 								<li><a href="#" data-subprocessid="{{data.sub_process_id}}" class="active">{{data.sub_process_name}}</a></li>
 							</ul>
 						</div>
-						<div class="edit-white pull-right">
+						<!--<div class="edit-white pull-right">
 							<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-						</div>
+						</div>-->
 					</div>
 
 					<div class="padding-15">
@@ -73,9 +70,9 @@
 
 								 </ul>
 						    </div>
-							<div class="edit2 pull-right">
+							<!--<div class="edit2 pull-right">
 								<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-							</div>
+							</div>-->
 						</div>	
 						<table class="table table-style" id="program-tasks">
 						</table>
@@ -85,7 +82,7 @@
 								<h3>Task Data </h3>
 								</div>
 								<div class="edit2 pull-right">
-									<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+									<!--<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>-->
 									<a href="#" id="add-columns"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
 								</div>
 							</div>
@@ -103,17 +100,17 @@
 								<div class="create-heading pull-left">
 								<h3>Combo Update</h3>
 								</div>
-								<div class="edit2 pull-right">
+								<!--<div class="edit2 pull-right">
 									<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-								</div>
+								</div>-->
 							</div>
 							<div class="sub-text clearfix">
 								<div class="create-heading pull-left">
 								<h3>Additional Task Data </h3>
 								</div>
-								<div class="edit2 pull-right">
+								<!--<div class="edit2 pull-right">
 									<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-								</div>
+								</div>-->
 							</div>
 					</div>
 				</div>
@@ -143,7 +140,7 @@
 		            <textarea class="form-control" name="column_data" id="message-text"></textarea>
 		          </div>
 			      <div class="modal-footer">
-			        <button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+			        <!--<button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>-->
 			        <button type="submit" class="btn btn-primary" id="taskFormSubmit">Save</button>
 			      </div>
 		        </form>
@@ -177,7 +174,8 @@
 	    	e.preventDefault();
 	    	$that = $(this);
 	    	var data_id = $that.attr("data-taskdata-id");
-	    	var data = $that.attr("data-columndata");
+	    	var data = taskDataIds[parseInt(data_id)]
+	    	console.log(data)
 	    	var column_name = $that.text();
 	    	var column_number = $that.data("number");
 	    	if (data_id)
@@ -199,21 +197,21 @@
   			return false;
 	    });
 
+	    taskDataIds = {}
 		var loadTaskData = function(task_id){
 			$.ajax({
 	            url: '/get-task-data/'+task_id,
 	            type: 'GET',
 	            success: function(data) {
-	            	
 	            	var data = data['data'];
 	            	if (data.length > 0){
 	            		$col = $("#columns");
 	            		$col.html('');
 	            		for(var i=0;i<data.length;i++){
-	      					$col.append('<a href="#" data-number="'+data[i].column_number+'" class="task-column tbl-btn" data-taskdata-id="'+data[i].data_id+'" data-columndata="'+data[i].data+'">'+ data[i].column_name+'</a>');
+	            			 taskDataIds[data[i].data_id] = data[i].data
+	      					$col.append('<a href="#" data-number="'+data[i].column_number+'" class="task-column tbl-btn" data-taskdata-id="'+data[i].data_id+'">'+ data[i].column_name+'</a>');
 	            		}
-	            	}
-	            	else{
+	            	}else{
 	            		$col = $("#columns");
 	            		$col.html('');
 	      				$col.append('<a href="#" class="task-column tbl-btn" data-number="1" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="2" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="3" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="4" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="5" data-taskdata-id="">Column Name </a>');	          

@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Admin Panel</title>
+    <title>Processes</title>
 
     <!-- Bootstrap -->
     <link href="{% static 'manage_admin/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -25,11 +25,11 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-xs-4 col-md-6 col-sm-6">
-					<a href="/umm/manage-admin/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a>
+					<a href="/knowledgebase/admin/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a>
 				</div>
 				<div class="col-xs-8 col-md-6 col-sm-6">
 					<a href="{% url 'auth:logout' %}?next=/" class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
-					<a href="/create/" class="process-btn pull-right">Create New Process</a>
+					<a href="/process/create/" class="process-btn pull-right">Create New Process</a>
 				</div>
 			</div>
 		</div>
@@ -38,35 +38,16 @@
 	  <section class="process-box">
 	  	<div class="container">
 			<div class="row">
+				{% for process in processes %}
 				<div class="col-xs-6 col-md-3 col-sm-3 ">
-					<a href="#">
+					<a href="/process/{{process.id}}/show">
 						<div class="white-bg">
-							<img src="{% static 'manage_admin/images/apollo.jpg' %}" alt="">
+							<h1>{{process.name}}</h1>
+							<!--img src="{% static 'manage_admin/images/apollo.jpg' %}" alt=""-->
 						</div>
 					</a>
 				</div>
-				<div class="col-xs-6 col-md-3 col-sm-3">
-					<a href="#">
-						<div class="white-bg">
-							<img src="{% static 'manage_admin/images/umm.jpg' %}" alt="">
-						</div>
-					</a>
-				</div>
-				<div class="col-xs-6 col-md-3 col-sm-3">
-					<a href="#">
-						<div class="white-bg">
-							<img src="{% static 'manage_admin/images/gls.jpg' %}" alt="">
-						</div>
-					</a>
-				</div>
-				<div class="col-xs-6 col-md-3 col-sm-3">
-					<a href="#">
-						<div class="white-bg">
-							<img src="{% static 'manage_admin/images/grn.jpg' %}" alt="">
-						</div>
-					</a>
-				</div>
-				
+				{% endfor %}
 			</div>
 		</div>
 	  </section>

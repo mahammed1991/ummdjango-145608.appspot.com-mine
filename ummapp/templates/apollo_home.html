@@ -9,28 +9,31 @@
     
 	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap.min.css'%}">
 	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap-theme.min.css'%}">
+	<link href="{% static 'manage_admin/css/font-awesome.min.css' %}" rel="stylesheet">
+
 	<link rel="stylesheet" type="text/css" href="{% static 'css/looper.css'%}">
 	<link rel="stylesheet" type="text/css" href="{% static 'css/custom.css'%}">
 </head>
 
 <body>
+
 	<div class="container-fluid">
 		<div class="container-fluid main-top-bar " >
 			<div class="row">
 				<div class="col-md-6" >
-					<div  class="" ><a href="/umm/manage-admin/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a></div>
+					<div  class="" ><a href="/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a></div>
 				</div>
 				<div class="col-md-6">
 					<div class="row">
 						<div class="col-md-8">
-					<h1 class="text-left text-danger" >{{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</h1>
+					<!--h1 class="text-left text-danger" >{{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</h1!-->
 						 </div>
 						 <div class="col-md-4">		
 					<div class="user" id='username_login'>	
 						{{ user.get_full_name|default:user.username }} | 
-						<a href="{% url 'auth:logout' %}?next=/">Logout</a><br>
+						<a href="{% url 'auth:logout' %}?next=/"  class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a><br>
 					{% if is_manager %}
-						<a href="/umm/manage-admin/"> Manage Admin</a>
+						<a href="/knowledgebase/admin"> Manage Admin</a>
 					{% endif %}
 					</div>
 					  		</div>
@@ -40,11 +43,12 @@
 			</div>
 			<div class="row">
 				<div class="container-fluid main-link">
-					
-					
-					
-					<a href="/" > <h3 clas="adv "> Advertiser Goals </h3> </a>
-					<a href="/apollo_home/" class="active"> <h3 clas="adv"> {{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}} {{sub_process.id}}</h3> </a>
+
+					<a href="/" > <h3 class="adv "> Advertiser Goals </h3> </a>
+					{% for sub_process in sub_processs %}
+						<a href="/sp/{{sub_process.url_name}}" target="_blank" data-processid="{{sub_process.id}}" class="process"> <h3 class="adv" > {{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</h3> </a>
+					{%endfor %}
+					<!--<a href="/apollo_home/" class="active"> <h3 clas="adv"> {{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</h3> </a>-->
 					<hr class="line2">
 				</div>
 			</div>
@@ -72,38 +76,62 @@
 		</div>
 		<div class="container-fluid" >
 			<div class="row">
-				<div class="col-xs-12 col-md-3 col-md-3 col-lg-2 sub-row1">Combos Update</div>
-				<!--<div data-looper="go" class="looper">
-				<div class="col-xs-12 col-md-9 col-md-9 col-lg-10 sub-row2 myclass looper-inner" data-toggle="modal" data-target="#myModal2">
-					
-				</div>-->
+				<!--<div class="col-xs-12 col-md-3 col-md-3 col-lg-2 sub-row1">Combos Update</div>-->
+				<div data-looper="go" class="looper" style="width:40%;">
+					<div class="col-xs-12 col-md-9 col-md-9 col-lg-10 sub-row2 myclass looper-inner" data-toggle="modal" data-target="#myModal2">
+						
+				</div>
+				</div>
+				<div class="col-md-7 col-sm-12 right-box2">
+				<!--<div class="col-xs-12 col-md-3 col-md-3 col-lg-2 sub-row3">-->
+						<a id="budget_band" class ="sideclass" data-toggle="modal" data-target="#myModal3" style="margin-top: 4px;">Budget Bands</a>
+				<!--</div>-->
+					<!--<div class="col-xs-12 col-md-3 col-md-3 col-lg-2 sub-row4">-->
+				    	<a id="email_pitch" class ="sideclass" data-toggle="modal" data-target="#myModal " style="margin-top: 4px;"></a>
+				    <!--</div>-->
+				    <!--div class="col-xs-12 col-md-3 col-md-3 col-lg-2 sub-row5">
+				    	<button><a id="implementation" class ="sideclass" data-toggle="modal" data-target="#myModal">Implementation Guide</a></button>
+				    </div>
+				    <div class="col-xs-12 col-md-3 col-md-3 col-lg-2 sub-row5">
+				    	<button><a id="faqns" class ="sideclass" data-toggle="modal" data-target="#myModal">FAQ's</a></button>
+				    </div-->
+				</div>
+				<!--<div class="col-md-7 col-sm-12 right-box2">
+				<a id="budget_band" class="sideclass" data-toggle="modal" data-target="#myModal3">Budget Bands</a>
+			    <a id="email_pitch" class="sideclass" data-toggle="modal" data-target="#myModal">Email Pitch Guidelines</a>
+			    <a id="implementation" class="sideclass" data-toggle="modal" data-target="#myModal">Implementation Guide</a>
+			    <a id="faqns" class="sideclass" data-toggle="modal" data-target="#myModal">FAQ's</a>
+			</div>-->
+				
 			</div>
 			</div>
 		</div>
 
-		<div class="container-fluid table-box " >
-			<div class="col-md-10 col-sm-9 table-setting">
-				<div class="table-responsive">
-					<table class="table">
-						<thead>
-							<tr id="key_row">
-							
-						    </tr>
-						</thead>
-						<tbody>
-							<tr id="value_row">
-							
-						    </tr>
-						</tbody>
-					</table>
+		<div class="container-fluid" style="background: #ffffff">
+			<div class="row">
+				<div class="col-md-12 table-box  " style="padding: 0">
+					<div class="table-responsive">
+						<table class="table">
+							<thead>
+								<tr id="key_row">
+								
+							    </tr>
+							</thead>
+							<tbody>
+								<tr id="value_row">
+								
+							    </tr>
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
-			<div class="col-md-2 col-sm-3 right-box" >
+			<!--<div class="col-md-2 col-sm-3 right-box" >
 				<a id="budget_band" class ="sideclass" data-toggle="modal" data-target="#myModal3">Budget Bands</a>
 			    <a id="email_pitch" class ="sideclass" data-toggle="modal" data-target="#myModal">Email Pitch Guidelines</a>
 			    <a id="implementation" class ="sideclass" data-toggle="modal" data-target="#myModal">Implementation Guide</a>
 			    <a id="faqns" class ="sideclass" data-toggle="modal" data-target="#myModal">FAQ's</a>
-			</div>
+			</div>-->
 		</div>
 		<div class="container-fluid last-row" >
 			<div class="row"><h1>Elevator Pitch</h1></div>
@@ -191,6 +219,9 @@
 	<script type="text/javascript" src="{% static 'js/script.js' %}"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
+			sub_process = "{{sub_process.id}}"
+			$('.process[data-processid='+ sub_process + "]").addClass('active');
+
 	    	if('.prg-type'){
 	    		$('.prg-type:first').addClass('make-active');
 	    	}
@@ -206,6 +237,7 @@
 				e.preventDefault();
 		    	$('.prg-task').removeClass('active').css('background','#777777');
 		    	$(this).addClass('active').css('background','#009b59');
+		    	$('#email_pitch').text('More about '+ $(this).text())
 		    	loadTaskData($(this).data('programtype-id'));
 		    });
 
@@ -255,7 +287,8 @@
 		            				td_html += "<a href='#'  class='prg-task sub-task-link' data-programtype-id="+task_id +">" + task_name +"</a>"	            				
 		            			}
 		            		}
-		            		$('#program-tasks').append(td_html)
+		            		$('#program-tasks').append(td_html);
+		            		$('#email_pitch').text('More about '+ $('.prg-task.active').text());
 		            		loadTaskData(tsk_id);
 		            	}
 		            },
@@ -267,6 +300,31 @@
 	    		});
 			}
 	        updateTaskTypes($('.prgrm-tab > li > a:eq(0)').attr("data-programtype-id"));
+
+
+		    $("body").on("click", ".process", function(e){
+		    	e.preventDefault()
+		    	selected_sub_process = $(this).attr('data-processid');
+		    	url = $(this).attr('href');
+	    		$.ajax({
+		            url: $(this).attr('href'),
+		            type: 'GET',
+		            success: function(data) {
+		            	window.location.href = url;
+		            	$('.process').removeClass('active');
+		            	$('.process[data-processid='+ selected_sub_process + "]").addClass('active');
+
+		            },
+		            error: function(xhr, status, error) {
+		                var err = eval("(" + xhr.responseText + ")");
+		                alert(err.Message);
+		                //alert("Something went wrong, please try after some time");
+		            }	
+
+		        });	    	
+		    	
+
+		    });
 	    });	
 
 	</script>

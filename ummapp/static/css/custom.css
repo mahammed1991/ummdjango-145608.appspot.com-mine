@@ -360,3 +360,19 @@ text-decoration: none;}
 #username_login{
     padding-top: 30px;
 }
+.right-box2 a {
+             display: inline-block; margin:20px 0; 
+             background: #ffb607; color: #fff; 
+             font-size: 14px; 
+             text-decoration: none; 
+             padding: 8px 15px;
+            
+             cursor: pointer;  
+
+
+}
+
+.right-box2 a:hover { 
+                    background: #d2d2d2; color: #666666; 
+                    text-decoration: none ;
+}
