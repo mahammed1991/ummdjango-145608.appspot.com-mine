@@ -110,7 +110,7 @@
 		<div class="container-fluid" style="background: #ffffff">
 			<div class="row">
 				<div class="col-md-12 table-box  " style="padding: 0">
-					<div class="table-responsive">
+					
 						<table class="table">
 							<thead>
 								<tr id="key_row">
@@ -123,7 +123,7 @@
 							    </tr>
 							</tbody>
 						</table>
-					</div>
+					
 				</div>
 			</div>
 			<!--<div class="col-md-2 col-sm-3 right-box" >
@@ -216,7 +216,7 @@
     <script type="text/javascript" src="{% static 'js/looper.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
-	<script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+	<!--<script type="text/javascript" src="{% static 'js/script.js' %}"></script>-->
 	<script type="text/javascript">
 		$(document).ready(function(){
 			sub_process = "{{sub_process.id}}"
@@ -254,8 +254,9 @@
 		            		$column_name = $('#key_row');
 		            		$column_value = $('#value_row');
 		            		for(var i=0;i<data.length;i++){
+		            			column_data = data[i].data.replace(/&nbsp;/g, ' ');
 		            			$column_name.append('<th data-number="'+data[i].column_number+'" class="task-column tbl-btn" data-taskdata-id="'+data[i].data_id+'">'+ data[i].column_name+'</th>')
-		            			$column_value.append('<td data-number="'+data[i].column_number+'" class="task-column tbl-btn" data-taskdata-id="'+data[i].data_id+'">'+ data[i].data+'</td>');
+		            			$column_value.append('<td data-number="'+data[i].column_number+'" class="task-column tbl-btn" data-taskdata-id="'+data[i].data_id+'">'+ column_data +'</td>');
 		            		}
 		            	}
 
@@ -325,6 +326,55 @@
 		    	
 
 		    });
+
+			var updateCarouseldata = function(sub_process_id){
+				$.ajax({
+		            url: '/get-carousel-data/'+sub_process_id,
+		            type: 'GET',
+		            success: function(data) {
+		            	var data = data['data'];
+		            	console.log(data)
+		            	if (data.length > 0){
+				            $('.looper').looper({
+				               
+				            });
+				            for(i=0; i<data.length; i++)
+				            {	
+				            	console.log(data,'data')
+				                mytag=document.createElement('a');
+				                mytag.setAttribute('id',data[i].data_id);
+				                mytag.setAttribute('class', "item");
+				                mytag.innerHTML = data[i].column_name;
+				                $('.myclass').append(mytag);
+				            }
+				            $('.myclass').click(function(){
+				                $('.mytable').empty();
+				                for(i=0; i<data.length; i++)
+				                {
+				                    tablerow = document.createElement('tr');
+				                    tablerow.setAttribute('class',"myrow" + i);
+				                    $('.mytable').append(tablerow);
+				                    newlink1=document.createElement('td');
+				                    newlink1.innerHTML = data[i].column_name
+				                    $('.myrow' + i).append(newlink1)
+				                    newlink2=document.createElement('td');
+				                    newlink2.innerHTML = data[i].data
+				                    $('.myrow'+ i).append(newlink2)
+				                }
+				            });
+		            	}else{
+		            	}
+
+		            },
+		            error: function(xhr, status, error) {
+		                var err = eval("(" + xhr.responseText + ")");
+		                alert(err.Message);
+		                //alert("Something went wrong, please try after some time");
+		            }
+	    		});	
+			}
+
+			updateCarouseldata($('.process.active').attr('data-processid'));
 	    });	
 
 	</script>

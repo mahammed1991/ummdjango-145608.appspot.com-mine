@@ -96,25 +96,30 @@
 								</div>
 							</div>
 						</div>
-						<div class="sub-text clearfix">
-								<div class="create-heading pull-left">
-								<h3>Combo Update</h3>
-								</div>
-								<!--<div class="edit2 pull-right">
-									<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-								</div>-->
-							</div>
+
+						<div class="gray-bg" style="border-bottom: 1px solid #000;">
 							<div class="sub-text clearfix">
 								<div class="create-heading pull-left">
-								<h3>Additional Task Data </h3>
+								<h3>Carousel Updates </h3>
 								</div>
-								<!--<div class="edit2 pull-right">
-									<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-								</div>-->
+								<div class="edit2 pull-right">
+									<!--<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>-->
+									<a href="#" id="add-carousel-columns"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
+								</div>
 							</div>
+							<div class="white-bg">
+								<div class="padding-15" id="carousel-columns">
+									<a href="#" class="carousel-column tbl-btn" data-number="1" data-carouseldata-id="">Column Name	</a>
+									<a href="#" class="carousel-column tbl-btn" data-number="2" data-carouseldata-id=''>Column Name	</a>
+									<a href="#" class="carousel-column tbl-btn" data-number="3" data-carouseldata-id=''>Column Name	</a>
+									<a href="#" class="carousel-column tbl-btn" data-number="4" data-carouseldata-id=''>Column Name	</a>
+									<a href="#" class="carousel-column tbl-btn" data-number="5" data-carouseldata-id=''>Column Name </a>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
-			</div>	
+			</div>
 		</div>
 	  </section>
   
@@ -153,6 +158,42 @@
 		  </div>
 		</div>	
 	  </div>
+
+
+  	  <div class="modal-style" style="width:100%">
+  		<div class="modal fade" id="carouselModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+		  <div class="modal-dialog" role="document" style="width: 80%;">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title">Name</h4>
+		      </div>
+		      <div class="modal-body">
+		        <form id="carouselDataForm">
+		          <input type="hidden" class="form-control" name='sub_process_id' value='' >
+		          <input type="hidden" class="form-control" name='carousel_data_id' value='' >
+		          <div class="form-group">
+		            <input type="text" class="form-control" name="column_name" id="carousel-name" placeholder="">
+		            <p id="carousel-name-error" style="color:red"></p>
+		          </div>
+		          <h4 class="modal-title margin-bottom-10px" >Data</h4>
+		          <div class="form-group">
+		            <textarea class="form-control" name="column_data" id="carouseldata-text"></textarea>
+		          </div>
+			      <div class="modal-footer">
+			        <!--<button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>-->
+			        <button type="submit" class="btn btn-primary" id="carouselDataFormSubmit">Save</button>
+			      </div>
+		        </form>
+		      </div>
+		      <!--<div class="modal-footer">
+		        <button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+		        <button type="button" class="btn btn-primary">Save</button>
+		      </div>-->
+		    </div>
+		  </div>
+		</div>	
+	  </div>
   
   
   
@@ -169,6 +210,7 @@
 	<script type="text/javascript">
 	$(document).ready(function(){
 	    CKEDITOR.replace('message-text');
+	    CKEDITOR.replace('carouseldata-text');
 
 	    $("body").on("click", ".task-column", function(e){
 	    	e.preventDefault();
@@ -194,6 +236,31 @@
 	    	/*else
 	    		$('input[name=column_number]').val('');*/
   			$('#exampleModal').modal('show');
+  			return false;
+	    });
+
+	    $("body").on("click", ".carousel-column", function(e){
+	    	e.preventDefault();
+	    	$that = $(this);
+	    	var data_id = $that.attr("data-carouseldata-id");
+	    	sub_process = $('.process-tab a.active').attr('data-subprocessid');
+	    	$('input[name=sub_process_id]').val(sub_process);
+	    	var data = carouselDataIds[parseInt(data_id)]
+	    	console.log(data)
+	    	var column_name = $that.text();
+	    	if (data_id)
+	    		$('input[name=carousel_data_id]').val(data_id);
+	    	$('.carousel-column').removeClass('active');
+	    	$that.addClass('active');
+	    	
+	    	if (data && data.length > 0){
+	    		$("#carousel-name").val(column_name);
+	    		CKEDITOR.instances["carouseldata-text"].setData(data);
+	    	}else{
+	    		$("#carousel-name").val('');
+	    		CKEDITOR.instances["carouseldata-text"].setData('');
+	    	}
+  			$('#carouselModal').modal('show');
   			return false;
 	    });
 
@@ -245,7 +312,12 @@
 	    	var column_number = parseInt($("#columns > a:last-child").data("number")) + 1;
 	    	$('#columns').append('<a href="#" data-number="'+column_number+'" class="task-column tbl-btn" data-taskdata-id="" data-columndata="">Column Name</a>');
 	    });
-    	
+
+	    $('#add-carousel-columns').on('click',function(e) {
+	    	e.preventDefault();
+	    	$('#carousel-columns').append('<a href="#" data-number="" class="carousel-column tbl-btn" data-carouseldata-id="" >Column Name</a>');
+	    });
+
     	function updateTaskTypes(program_type_id){
     		$('#program-tasks').html("")
     		$.ajax({
@@ -293,6 +365,21 @@
 			$('#taskDataForm input').val('');
 		});
 
+		$('#carouselModal').on('shown.bs.modal', function(){
+            $('#carouselDataForm').data('formValidation').resetForm();
+			//$(this).find('form').trigger('reset');
+			$('input[name=sub_process_id]').val($('input[name=sub_process_id]').val());
+    		$("#cke_22").hide();
+    		$("#cke_15").hide();
+    		$("#cke_30").hide();
+    		$("#cke_35").hide();
+		});
+
+
+		$('#carouselModal').on('hidden.bs.modal', function (e) {
+			$('#carouselDataForm input').val('');
+		});
+
 
     	if('.prg-type'){
     		$('.prg-type:first').addClass('active');
@@ -327,6 +414,36 @@
 	    	});
 	    }		
 	})
+
+
+	$("#carousel-name").focusout(function(e) {
+		e.preventDefault();
+		if ($(this).val()) {
+			$.ajax({
+				url: '/get-carousel-column-name/',
+				method: 'POST',
+				data: {'subprocess_id':$("input[name=sub_process_id]").val(), 'column_name':$('#carousel-name').val(), 'carousel_data_id':$("input[name=carousel_data_id]").val()},
+				success : function(data) {
+					if(!data['success']){
+						$('#carousel-name-error').text(data['msg']);
+						$('#carouselDataFormSubmit').prop('disabled', true);
+						return false
+					}else{
+						$('#carousel-name-error').text('');
+						$('#carouselDataFormSubmit').prop('disabled', false);
+						return true
+					}
+
+				},
+	            error: function(xhr, status, error) {
+	                var err = eval("(" + xhr.responseText + ")");
+	                alert(err.Message);
+	                //alert("Something went wrong, please try after some time");
+	            }
+	    	});
+	    }		
+	})
+
 
      $('#taskDataForm')
          .formValidation({
@@ -396,6 +513,112 @@
              $('#taskFormSubmit').prop('disabled', false);
 
          });
+
+     $('#carouselDataForm')
+         .formValidation({
+             framework: 'bootstrap',
+             icon: {
+                 valid: 'glyphicon glyphicon-ok',
+                 invalid: 'glyphicon glyphicon-remove',
+                 validating: 'glyphicon glyphicon-refresh'
+             },
+             fields: {
+                 column_name: {
+                     validators: {
+                         notEmpty: {
+                             message: 'The field is required'
+                         },
+                     }
+                 }
+             }
+         })
+         .on('success.form.fv', function(e) {
+             // Save the form data via an Ajax request
+             e.preventDefault();
+             var data = CKEDITOR.instances["carouseldata-text"].getData();
+             if(data.length < 1){
+             	alert("Please provide data for the column.")
+             	$('#carouselDataFormSubmit').prop('disabled', true);
+
+             }
+             else{ 
+             	$('#carouselDataFormSubmit').removeClass('disabled');
+             	$('#carouselDataFormSubmit').prop('disabled', false);
+	            var formData = new FormData(); 
+	            formData.append('sub_process_id', $('input[name=sub_process_id]').val());
+	            formData.append('carousel_data_id', $('input[name=carousel_data_id]').val());
+	            formData.append('column_name', $('#carousel-name').val());
+	            formData.append('column_data', data);
+
+				$.ajax({
+					url: '/add-carousel-data/',
+					method: 'POST',
+					data: formData,
+	                cache: false,
+	                contentType: false,
+	                processData: false,
+					success : function(data) {
+						if(data['success']){
+							$('.carousel-column.active').attr('data-carouseldata-id',data['carousel_data_id']);
+							$('.carousel-column.active').text(data['column_name']);
+							$('.carousel-column.active').attr('data-columndata',data['column_data']);
+							$('.carousel-column.active').removeClass('active');
+							$('#carouselModal').modal('hide');
+							$('#carouselDataForm')[0].reset();
+							$('#carouselDataForm').data('formValidation').resetForm();
+							CKEDITOR.instances["carouseldata-text"].setData('');
+							//loadTaskData(data["task_id"])
+						}
+					},
+	                error: function(xhr, status, error) {
+	                    var err = eval("(" + xhr.responseText + ")");
+	                    alert(err.Message);
+	                }
+            	});
+
+             }
+             $('#carouselDataFormSubmit').removeClass('disabled');
+             $('#carouselDataFormSubmit').prop('disabled', false);
+
+         });
+
+        carouselDataIds = {}
+
+		var updateCarouseldata = function(sub_process_id){
+			$.ajax({
+	            url: '/get-carousel-data/'+sub_process_id,
+	            type: 'GET',
+	            success: function(data) {
+	            	var data = data['data'];
+	            	console.log(data)
+	            	if (data.length > 0){
+	            		$col = $("#carousel-columns");
+	            		$col.html('');
+	            		for(var i=0;i<data.length;i++){
+	            			carouselDataIds[data[i].data_id] = data[i].data
+	      					$col.append('<a href="#" data-number="" class="carousel-column tbl-btn" data-carouseldata-id="'+data[i].data_id+'">'+ data[i].column_name+'</a>');
+	            		}
+	            	}else{
+	            		$col = $("#carousel-columns");
+	            		$col.html('');
+	      				$col.append('<a href="#" class="carousel-column tbl-btn" data-number="1" data-carouseldata-id="">Column Name	</a><a href="#" class="carousel-column tbl-btn" data-number="2" data-carouseldata-id="">Column Name	</a><a href="#" class="carousel-column tbl-btn" data-number="3" data-carouseldata-id="">Column Name	</a><a href="#" class="carousel-column tbl-btn" data-number="4" data-carouseldata-id="">Column Name	</a><a href="#" class="carousel-column tbl-btn" data-number="5" data-carouseldata-id="">Column Name </a>');	          
+
+	            	}
+	            },
+	            error: function(xhr, status, error) {
+	                var err = eval("(" + xhr.responseText + ")");
+	                alert(err.Message);
+	                //alert("Something went wrong, please try after some time");
+	            }
+    		});	
+		}
+
+         updateCarouseldata($('.process-tab a.active').attr('data-subprocessid'));
+
+         $("body").on("click", ".process-tab", function(e){
+         	updateCarouseldata($('.process-tab a.active').attr('data-subprocessid'));
+         })
+
     });	
 
 

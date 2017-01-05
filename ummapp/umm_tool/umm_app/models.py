@@ -216,17 +216,20 @@ class TaskData(models.Model):
         return "%s %s %s" % (self.program_task, self.column_name, self.data)
 
 
-'''class SubProcessLevelUpdates(models.Model):
+class SubProcessLevelUpdates(models.Model):
     subprocess = models.ForeignKey(SubProcess)
     name = models.CharField(max_length=250)
     data = models.TextField()
-    created_date = models.DateTimeField()
+    created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, related_name='subprocessupdates_created_by', null=False)
     modified_by = models.ForeignKey(User, related_name='subprocessupdates_modified_by', null=False)
 
+    class Meta:
+        unique_together = ('subprocess', 'name')
+        
     def __unicode__(self):
-        return "%s" % (self.band_details)'''
+        return "%s" % (self.name)
 
 
 class ProgramAdditionData(models.Model):
