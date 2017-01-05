@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponse, redirect
-from .models import ExtraTask, Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, GoalTaskMap, Question, Process, SubProcess, ProgramType, ProgramTask, TaskData
+from .models import ExtraTask, Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, GoalTaskMap, Question, Process, SubProcess, ProgramType, ProgramTask, TaskData, SubProcessLevelUpdates
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
@@ -489,3 +489,87 @@ def subprocess_data_handler(request, subprocess_id=None):
         pass
 
 
+@login_required
+@csrf_exempt
+def get_carousel_column_name(request):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.method == "POST":
+            subprocess_id = request.POST.get("subprocess_id")  
+            column_name = request.POST.get("column_name")
+            carousel_data_id = request.POST.get("carousel_data_id", None)
+            context = {}
+            carousel_data = SubProcessLevelUpdates.objects.filter(subprocess=subprocess_id, name=column_name)
+            if carousel_data_id:
+                columns = [clmn.column_name for clmn in carousel_data if clmn.id != int(carousel_data_id)]
+                if columns.count(column_name) > 0:
+                    context["success"] = False
+                    context["msg"] = "Column Name already exists, please try other."
+                else:
+                    context["success"] = True
+                    context["msg"] = ""
+            else:
+                if len(carousel_data) == 0:
+                    context["success"] = True
+                    context["msg"] = ""
+                else:
+                    context["success"] = False
+                    context["msg"] = "Column Name already exists, please try other."
+    return HttpResponse(json.dumps(context), content_type="application/json")
+
+
+@login_required
+@csrf_exempt
+def add_carousel_data(request):
+    """
+        Add or update the carousel data
+    """
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.method == "POST":
+            sub_process_id = int(request.POST.get('sub_process_id'))
+            carousel_data_id = request.POST.get('carousel_data_id')
+            column_data = request.POST.get('column_data')
+            column_name = request.POST.get('column_name')
+            context = {
+                        'sub_process_id':sub_process_id,
+                        'carousel_data_id':carousel_data_id,
+                        'column_name':column_name, 
+                        'column_data':column_data, 
+                        'success':True, 
+                        'msg':'Updated successfully'
+             }
+            if carousel_data_id:
+                try:
+                    carousel_data = SubProcessLevelUpdates.objects.get(id=carousel_data_id)
+                except ObjectDoesNotExist:
+                    context = {'msg' : 'Something went wrong, please try after some time'}
+                carousel_data.name = column_name
+                carousel_data.data = column_data
+                carousel_data.modified_by =  User.objects.get(email=request.user.email)
+                carousel_data.save()
+            else:
+                subprocess = SubProcess.objects.get(id=sub_process_id)
+                carousel_data = SubProcessLevelUpdates()
+                carousel_data.subprocess = subprocess
+                carousel_data.name = column_name
+                carousel_data.data = column_data
+                carousel_data.created_by = User.objects.get(email=request.user.email)
+                carousel_data.modified_by =  User.objects.get(email=request.user.email)
+                carousel_data.save()
+                context["carousel_data_id"] = carousel_data.pk
+                context["msg"] = "Column created successfully"
+    return HttpResponse(json.dumps(context), content_type="application/json")   
+
+
+@login_required
+def get_carousel_data(request, sub_process_id):
+    carousel_data = SubProcessLevelUpdates.objects.filter(subprocess=int(sub_process_id))
+    columns = []
+    for td in carousel_data:
+        tdata = {
+            'column_name':td.name,
+            'data':td.data,
+            'data_id':td.id
+        }
+        columns.append(tdata)
+
+    return HttpResponse(json.dumps({"data":columns, "success":True, "msg":""}), content_type="application/json")

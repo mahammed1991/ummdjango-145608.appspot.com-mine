@@ -1,4 +1,4 @@
-from umm_app.models import AdditionData, Process, SubProcess, ProgramType, ProgramTask, TaskData
+from umm_app.models import AdditionData, Process, SubProcess, ProgramType, ProgramTask, TaskData, SubProcessLevelUpdates
 from django import forms
 
 class AdditionDataAdminForm(forms.ModelForm):
@@ -66,3 +66,9 @@ class TaskDataForm(forms.ModelForm):
     class Meta:
         model = TaskData
         fields = ('program_task','column_name','data','is_disabled')
+
+
+class SubProcessLevelUpdatesForm(forms.ModelForm):
+    class Meta:
+        model = SubProcessLevelUpdates
+        fields = ('subprocess','name','data')

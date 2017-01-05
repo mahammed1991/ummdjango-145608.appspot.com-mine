@@ -39,7 +39,9 @@ urlpatterns = [
     url(r'^get-column-name/','umm_app.views.get_column_name',name='get_column_name'),
     url(r'^add-task-data/','umm_app.views.add_task_data',name='add_task_data'),
     url(r'^get-task-data/(?P<task_id>[0-9]+)','umm_app.views.get_task_data',name='get_task_data'),
-    
+    url(r'^get-carousel-column-name/','umm_app.views.get_carousel_column_name',name='get_carousel_column_name'),
+    url(r'^add-carousel-data/','umm_app.views.add_carousel_data',name='add_carousel_data'),
+    url(r'^get-carousel-data/(?P<sub_process_id>[0-9]+)','umm_app.views.get_carousel_data',name='get_carousel_data'),
 
 
 
