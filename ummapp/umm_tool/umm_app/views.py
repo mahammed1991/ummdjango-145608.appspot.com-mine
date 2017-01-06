@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponse, redirect
-from .models import ExtraTask, Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, GoalTaskMap, Question, Process, SubProcess, ProgramType, ProgramTask, TaskData, SubProcessLevelUpdates
+from .models import ExtraTask, Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, GoalTaskMap, Question, Process, SubProcess, ProgramType, ProgramTask, TaskData, SubProcessLevelUpdates, ProgramAdditionData
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
@@ -500,7 +500,7 @@ def get_carousel_column_name(request):
             context = {}
             carousel_data = SubProcessLevelUpdates.objects.filter(subprocess=subprocess_id, name=column_name)
             if carousel_data_id:
-                columns = [clmn.column_name for clmn in carousel_data if clmn.id != int(carousel_data_id)]
+                columns = [clmn.name for clmn in carousel_data if clmn.id != int(carousel_data_id)]
                 if columns.count(column_name) > 0:
                     context["success"] = False
                     context["msg"] = "Column Name already exists, please try other."
@@ -572,4 +572,91 @@ def get_carousel_data(request, sub_process_id):
         }
         columns.append(tdata)
 
+    return HttpResponse(json.dumps({"data":columns, "success":True, "msg":""}), content_type="application/json")
+
+
+@login_required
+@csrf_exempt
+def get_addldata_column_name(request):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.method == "POST":
+            task_id = request.POST.get("task_id")  
+            column_name = request.POST.get("column_name")
+            data_id = request.POST.get("addl_data_id", None)
+            context = {}
+            addl_data = ProgramAdditionData.objects.filter(program_task=task_id, name=column_name)
+            print data_id,'data_id'
+            if data_id:
+                columns = [clmn.name for clmn in addl_data if clmn.id != int(data_id)]
+                if columns.count(column_name) > 0:
+                    context["success"] = False
+                    context["msg"] = "Column Name already exists, please try other."
+                else:
+                    context["success"] = True
+                    context["msg"] = ""
+            else:
+                if len(addl_data) == 0:
+                    context["success"] = True
+                    context["msg"] = ""
+                else:
+                    context["success"] = False
+                    context["msg"] = "Column Name already exists, please try other."
+    return HttpResponse(json.dumps(context), content_type="application/json")
+
+
+@login_required
+@csrf_exempt
+def add_addldata(request):
+    """
+        Add or update the addititonal task data
+    """
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.method == "POST":
+            program_task_id = int(request.POST.get('program_task_id'))
+            additionaldata_id = request.POST.get('additionaldata_id')
+            column_data = request.POST.get('column_data')
+            column_name = request.POST.get('column_name')
+            context = {
+                        'additionaldata_id':additionaldata_id,
+                        'task_id':program_task_id,
+                        'column_name':column_name,
+                        'column_data':column_data, 
+                        'success':True, 
+                        'msg':'Updated successfully'
+             }
+            if additionaldata_id:
+                try:
+                    addl_data = ProgramAdditionData.objects.get(id=additionaldata_id)
+                except ObjectDoesNotExist:
+                    context = {'msg' : 'Something went wrong, please try after some time'}
+                addl_data.name = column_name
+                addl_data.data = column_data
+                addl_data.modified_by =  User.objects.get(email=request.user.email)
+                addl_data.save()
+            else:
+                task = ProgramTask.objects.get(id=program_task_id)
+                addl_data = ProgramAdditionData()
+                addl_data.program_task = task
+                addl_data.name = column_name
+                addl_data.data = column_data
+                addl_data.is_disabled = False
+                addl_data.created_by = User.objects.get(email=request.user.email)
+                addl_data.modified_by =  User.objects.get(email=request.user.email)
+                addl_data.save()
+                context["addl_data_id"] = addl_data.pk
+                context["msg"] = "Column created successfully"
+    return HttpResponse(json.dumps(context), content_type="application/json") 
+
+
+@login_required
+def get_addldata(request, task_id):
+    addl_data = ProgramAdditionData.objects.filter(program_task=int(task_id))
+    columns = []
+    for td in addl_data:
+        tdata = {
+            'column_name':td.name,
+            'data':td.data,
+            'data_id':td.id
+        }
+        columns.append(tdata)
     return HttpResponse(json.dumps({"data":columns, "success":True, "msg":""}), content_type="application/json")

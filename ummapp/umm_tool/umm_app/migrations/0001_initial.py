@@ -103,19 +103,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='ProgramAdditionData',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=250)),
-                ('data', models.TextField()),
-                ('created_date', models.DateTimeField()),
-                ('modified_date', models.DateTimeField(auto_now=True)),
-                ('is_disabled', models.BooleanField(default=False)),
-                ('created_by', models.ForeignKey(related_name='adddata_created_by', to=settings.AUTH_USER_MODEL)),
-                ('modified_by', models.ForeignKey(related_name='adddata_modified_by', to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
             name='ProgramTask',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -214,11 +201,6 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(to='umm_app.ProgramType'),
         ),
         migrations.AddField(
-            model_name='programadditiondata',
-            name='program_task',
-            field=models.ForeignKey(to='umm_app.ProgramTask'),
-        ),
-        migrations.AddField(
             model_name='goaltaskmap',
             name='parent_task_id',
             field=models.ManyToManyField(to='umm_app.Task'),
@@ -272,10 +254,6 @@ class Migration(migrations.Migration):
         migrations.AlterUniqueTogether(
             name='programtask',
             unique_together=set([('name', 'program_type')]),
-        ),
-        migrations.AlterUniqueTogether(
-            name='programadditiondata',
-            unique_together=set([('program_task', 'name')]),
         ),
         migrations.AlterUniqueTogether(
             name='category',

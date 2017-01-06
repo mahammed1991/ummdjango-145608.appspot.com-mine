@@ -76,7 +76,7 @@
 						</div>	
 						<table class="table table-style" id="program-tasks">
 						</table>
-						<div class="gray-bg" style="border-bottom: 1px solid #000;">
+						<div class="gray-bg" style="">
 							<div class="sub-text clearfix">
 								<div class="create-heading pull-left">
 								<h3>Task Data </h3>
@@ -93,6 +93,27 @@
 									<a href="#" class="task-column tbl-btn" data-number="3" data-taskdata-id=''>Column Name	</a>
 									<a href="#" class="task-column tbl-btn" data-number="4" data-taskdata-id=''>Column Name	</a>
 									<a href="#" class="task-column tbl-btn" data-number="5" data-taskdata-id=''>Column Name </a>
+								</div>
+							</div>
+						</div>
+
+						<div class="gray-bg" style="border-bottom: 1px solid #000;">
+							<div class="sub-text clearfix">
+								<div class="create-heading pull-left">
+								<h3>Task Additional Data </h3>
+								</div>
+								<div class="edit2 pull-right">
+									<!--<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>-->
+									<a href="#" id="add-addl-columns"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
+								</div>
+							</div>
+							<div class="white-bg">
+								<div class="padding-15" id="addl-columns">
+									<a href="#" class="addl-column tbl-btn" data-number="1" data-additionaldata-id="">Column Name	</a>
+									<a href="#" class="addl-column tbl-btn" data-number="2" data-additionaldata-id=''>Column Name	</a>
+									<a href="#" class="addl-column tbl-btn" data-number="3" data-additionaldata-id=''>Column Name	</a>
+									<a href="#" class="addl-column tbl-btn" data-number="4" data-additionaldata-id=''>Column Name	</a>
+									<a href="#" class="addl-column tbl-btn" data-number="5" data-additionaldata-id=''>Column Name </a>
 								</div>
 							</div>
 						</div>
@@ -194,6 +215,42 @@
 		  </div>
 		</div>	
 	  </div>
+
+
+  	  <div class="modal-style" style="width:100%">
+  		<div class="modal fade" id="additionaldataModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+		  <div class="modal-dialog" role="document" style="width: 80%;">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title">Name</h4>
+		      </div>
+		      <div class="modal-body">
+		        <form id="additionalDataForm">
+		          <input type="hidden" class="form-control" name='program_task' value='' >
+		          <input type="hidden" class="form-control" name='additionaldata_id' value='' >
+		          <div class="form-group">
+		            <input type="text" class="form-control" name="column_name" id="additionaldata-name" placeholder="">
+		            <p id="additionaldata-name-error" style="color:red"></p>
+		          </div>
+		          <h4 class="modal-title margin-bottom-10px" >Data</h4>
+		          <div class="form-group">
+		            <textarea class="form-control" name="column_data" id="additionaldata-text"></textarea>
+		          </div>
+			      <div class="modal-footer">
+			        <!--<button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>-->
+			        <button type="submit" class="btn btn-primary" id="additionalDataFormSubmit">Save</button>
+			      </div>
+		        </form>
+		      </div>
+		      <!--<div class="modal-footer">
+		        <button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+		        <button type="button" class="btn btn-primary">Save</button>
+		      </div>-->
+		    </div>
+		  </div>
+		</div>	
+	  </div>
   
   
   
@@ -211,6 +268,7 @@
 	$(document).ready(function(){
 	    CKEDITOR.replace('message-text');
 	    CKEDITOR.replace('carouseldata-text');
+	    CKEDITOR.replace('additionaldata-text');
 
 	    $("body").on("click", ".task-column", function(e){
 	    	e.preventDefault();
@@ -264,6 +322,31 @@
   			return false;
 	    });
 
+	    $("body").on("click", ".addl-column", function(e){
+	    	e.preventDefault();
+	    	$that = $(this);
+	    	var data_id = $that.attr("data-additionaldata-id");
+	    	var data = additionalDataIds[parseInt(data_id)]
+	    	console.log(data)
+	    	debugger;
+	    	var column_name = $that.text();
+	    	if (data_id)
+	    		$('input[name=additionaldata_id]').val(data_id);
+	    	$('.addl-column').removeClass('active');
+	    	$that.addClass('active');
+	    	
+	    	if (data && data.length > 0){
+	    		$("#additionaldata-name").val(column_name);
+	    		CKEDITOR.instances["additionaldata-text"].setData(data);
+	    	}else{
+	    		$("#additionaldata-name").val('');
+	    		CKEDITOR.instances["additionaldata-text"].setData('');
+	    	}
+  			$('#additionaldataModal').modal('show');
+  			return false;
+	    });
+
+
 	    taskDataIds = {}
 		var loadTaskData = function(task_id){
 			$.ajax({
@@ -305,6 +388,7 @@
 	    	$('.prg-task').removeClass('active');
 	    	$(this).addClass('active');
 	    	loadTaskData($(this).data('programtype-id'));
+	    	updateAdditionaldata($(this).data('programtype-id'));
 	    });
 
 	    $('#add-columns').on('click',function(e) {
@@ -316,6 +400,11 @@
 	    $('#add-carousel-columns').on('click',function(e) {
 	    	e.preventDefault();
 	    	$('#carousel-columns').append('<a href="#" data-number="" class="carousel-column tbl-btn" data-carouseldata-id="" >Column Name</a>');
+	    });
+
+	    $('#add-addl-columns').on('click',function(e) {
+	    	e.preventDefault();
+	    	$('#addl-columns').append('<a href="#" data-number="" class="addl-column tbl-btn" data-addldata-id="" >Column Name</a>');
 	    });
 
     	function updateTaskTypes(program_type_id){
@@ -340,6 +429,7 @@
 	            		}
 	            		$('#program-tasks').append('<tr>' + td_html + '</tr>')
 	            		loadTaskData(tsk_id);
+	            		updateAdditionaldata(tsk_id);
 	            	}
 	            },
 	            error: function(xhr, status, error) {
@@ -378,6 +468,22 @@
 
 		$('#carouselModal').on('hidden.bs.modal', function (e) {
 			$('#carouselDataForm input').val('');
+		});
+
+
+		$('#additionaldataModal').on('shown.bs.modal', function(){
+            $('#additionalDataForm').data('formValidation').resetForm();
+			//$(this).find('form').trigger('reset');
+			$('input[name=program_task]').val($('.prg-task.active').attr('data-programtype-id'));
+    		$("#cke_22").hide();
+    		$("#cke_15").hide();
+    		$("#cke_30").hide();
+    		$("#cke_35").hide();
+		});
+
+
+		$('#additionaldataModal').on('hidden.bs.modal', function (e) {
+			$('#additionalDataForm input').val('');
 		});
 
 
@@ -431,6 +537,35 @@
 					}else{
 						$('#carousel-name-error').text('');
 						$('#carouselDataFormSubmit').prop('disabled', false);
+						return true
+					}
+
+				},
+	            error: function(xhr, status, error) {
+	                var err = eval("(" + xhr.responseText + ")");
+	                alert(err.Message);
+	                //alert("Something went wrong, please try after some time");
+	            }
+	    	});
+	    }		
+	})
+
+
+	$("#additionaldata-name").focusout(function(e) {
+		e.preventDefault();
+		if ($(this).val()) {
+			$.ajax({
+				url: '/get-addldata-column-name/',
+				method: 'POST',
+				data: {'task_id':$("input[name=program_task]").val(), 'column_name':$('#additionaldata-name').val(), 'addl_data_id':$("input[name=additionaldata_id]").val()},
+				success : function(data) {
+					if(!data['success']){
+						$('#additionaldata-name-error').text(data['msg']);
+						$('#additionalDataFormSubmit').prop('disabled', true);
+						return false
+					}else{
+						$('#additionaldata-name-error').text('');
+						$('#additionalDataFormSubmit').prop('disabled', false);
 						return true
 					}
 
@@ -582,6 +717,76 @@
 
          });
 
+
+     $('#additionalDataForm')
+         .formValidation({
+             framework: 'bootstrap',
+             icon: {
+                 valid: 'glyphicon glyphicon-ok',
+                 invalid: 'glyphicon glyphicon-remove',
+                 validating: 'glyphicon glyphicon-refresh'
+             },
+             fields: {
+                 column_name: {
+                     validators: {
+                         notEmpty: {
+                             message: 'The field is required'
+                         },
+                     }
+                 }
+             }
+         })
+         .on('success.form.fv', function(e) {
+             // Save the form data via an Ajax request
+             e.preventDefault();
+             var data = CKEDITOR.instances["additionaldata-text"].getData();
+             if(data.length < 1){
+             	alert("Please provide data for the column.")
+             	$('#additionalDataFormSubmit').prop('disabled', true);
+
+             }
+             else{ 
+             	$('#additionalDataFormSubmit').removeClass('disabled');
+             	$('#additionalDataFormSubmit').prop('disabled', false);
+	            var formData = new FormData(); 
+	            formData.append('program_task_id', $('input[name=program_task]').val());
+	            formData.append('additionaldata_id', $('input[name=additionaldata_id]').val());
+	            formData.append('column_name', $('#additionaldata-name').val());
+	            formData.append('column_data', data);
+
+				$.ajax({
+					url: '/add-addldata/',
+					method: 'POST',
+					data: formData,
+	                cache: false,
+	                contentType: false,
+	                processData: false,
+					success : function(data) {
+						if(data['success']){
+							$('.addl-column.active').attr('data-addldata-id',data['addl_data_id']);
+							$('.addl-column.active').text(data['column_name']);
+							$('.addl-column.active').attr('data-columndata',data['column_data']);
+							$('.addl-column.active').removeClass('active');
+							$('#additionaldataModal').modal('hide');
+							$('#additionalDataForm')[0].reset();
+							$('#additionalDataForm').data('formValidation').resetForm();
+							CKEDITOR.instances["additionaldata-text"].setData('');
+							updateAdditionaldata(data["task_id"]);
+						}
+					},
+	                error: function(xhr, status, error) {
+	                    var err = eval("(" + xhr.responseText + ")");
+	                    alert(err.Message);
+	                }
+            	});
+
+             }
+             $('#additionalDataFormSubmit').removeClass('disabled');
+             $('#additionalDataFormSubmit').prop('disabled', false);
+
+         });
+
+
         carouselDataIds = {}
 
 		var updateCarouseldata = function(sub_process_id){
@@ -618,6 +823,37 @@
          $("body").on("click", ".process-tab", function(e){
          	updateCarouseldata($('.process-tab a.active').attr('data-subprocessid'));
          })
+
+        additionalDataIds = {}
+
+		var updateAdditionaldata = function(task_id){
+			$.ajax({
+	            url: '/get-addldata/'+task_id,
+	            type: 'GET',
+	            success: function(data) {
+	            	var data = data['data'];
+	            	console.log(data)
+	            	if (data.length > 0){
+	            		$col = $("#addl-columns");
+	            		$col.html('');
+	            		for(var i=0;i<data.length;i++){
+	            			additionalDataIds[data[i].data_id] = data[i].data
+	      					$col.append('<a href="#" data-number="" class="addl-column tbl-btn" data-additionaldata-id="'+data[i].data_id+'">'+ data[i].column_name+'</a>');
+	            		}
+	            	}else{
+	            		$col = $("#addl-columns");
+	            		$col.html('');
+	      				$col.append('<a href="#" class="addl-column tbl-btn" data-number="1" data-additionaldata-id="">Column Name	</a><a href="#" class="addl-column tbl-btn" data-number="2" data-additionaldata-id="">Column Name	</a><a href="#" class="addl-column tbl-btn" data-number="3" data-additionaldata-id="">Column Name	</a><a href="#" class="addl-column tbl-btn" data-number="4" data-additionaldata-id="">Column Name	</a><a href="#" class="addl-column tbl-btn" data-number="5" data-additionaldata-id="">Column Name </a>');	          
+
+	            	}
+	            },
+	            error: function(xhr, status, error) {
+	                var err = eval("(" + xhr.responseText + ")");
+	                alert(err.Message);
+	                //alert("Something went wrong, please try after some time");
+	            }
+    		});	
+		}
 
     });	
 
