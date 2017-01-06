@@ -236,7 +236,7 @@ class ProgramAdditionData(models.Model):
     program_task = models.ForeignKey(ProgramTask)
     name = models.CharField(max_length=250)
     data = models.TextField()
-    created_date = models.DateTimeField()
+    created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     is_disabled = models.BooleanField(default=False)
     created_by = models.ForeignKey(User, related_name='adddata_created_by', null=False)
