@@ -87,7 +87,7 @@
 						<a id="budget_band" class ="sideclass" data-toggle="modal" data-target="#myModal3" style="margin-top: 4px;">Budget Bands</a>
 				<!--</div>-->
 					<!--<div class="col-xs-12 col-md-3 col-md-3 col-lg-2 sub-row4">-->
-				    	<a id="email_pitch" class ="sideclass" data-toggle="modal" data-target="#myModal " style="margin-top: 4px;"></a>
+				    	<a id="addl-data" class ="sideclass" data-toggle="modal" data-target="#myModal " style="margin-top: 4px;"></a>
 				    <!--</div>-->
 				    <!--div class="col-xs-12 col-md-3 col-md-3 col-lg-2 sub-row5">
 				    	<button><a id="implementation" class ="sideclass" data-toggle="modal" data-target="#myModal">Implementation Guide</a></button>
@@ -149,12 +149,12 @@
 			<div class="modal-body">
 				<div class="tabbable"> 
 					<ul class="nav nav-tabs">
-						<li><a href="#epitch"  data-toggle="tab">Email Pitch Guidelines</a></li>
+						<!--<li><a href="#epitch"  data-toggle="tab">Email Pitch Guidelines</a></li>
                         <li><a href="#impl" data-toggle="tab">Implementation Guide</a></li>
-                        <li><a href="#faq" data-toggle="tab">FAQ's</a></li>
+                        <li><a href="#faq" data-toggle="tab">FAQ's</a></li>-->
                     </ul>
                     <div class="tab-content">
-                    	<div class="tab-pane " id="epitch">
+                    	<!--<div class="tab-pane " id="epitch">
                     		
                     	</div>
                     	<div class="tab-pane" id="impl">
@@ -162,7 +162,7 @@
                     	</div>
                         <div class="tab-pane " id="faq">
         	
-                        </div>
+                        </div>-->
                     </div>
                 </div>
             </div>
@@ -237,7 +237,7 @@
 				e.preventDefault();
 		    	$('.prg-task').removeClass('active').css('background','#777777');
 		    	$(this).addClass('active').css('background','#009b59');
-		    	$('#email_pitch').text('More about '+ $(this).text())
+		    	$('#addl-data').text('More about '+ $(this).text())
 		    	loadTaskData($(this).data('programtype-id'));
 		    });
 
@@ -289,7 +289,7 @@
 		            			}
 		            		}
 		            		$('#program-tasks').append(td_html);
-		            		$('#email_pitch').text('More about '+ $('.prg-task.active').text());
+		            		$('#addl-data').text('More about '+ $('.prg-task.active').text());
 		            		loadTaskData(tsk_id);
 		            	}
 		            },
@@ -333,14 +333,12 @@
 		            type: 'GET',
 		            success: function(data) {
 		            	var data = data['data'];
-		            	console.log(data)
 		            	if (data.length > 0){
 				            $('.looper').looper({
 				               
 				            });
 				            for(i=0; i<data.length; i++)
 				            {	
-				            	console.log(data,'data')
 				                mytag=document.createElement('a');
 				                mytag.setAttribute('id',data[i].data_id);
 				                mytag.setAttribute('class', "item");
@@ -375,6 +373,51 @@
 			}
 
 			updateCarouseldata($('.process.active').attr('data-processid'));
+
+			$("body").on("click", "#addl-data", function(e){
+				e.preventDefault()
+				$("#myModalLabel").html($('.prg-task.active').html());
+				task_id = $('.prg-task.active').attr('data-programtype-id');
+				$.ajax({
+		            url: '/get-addldata/'+task_id,
+		            type: 'GET',
+		            success: function(data) {
+		            	$('.nav.nav-tabs').append('');
+		            	$('.tab-content').append('');
+		            	li_html = ''
+		            	div_html = ''
+		            	for(var i=0;i<data['data'].length;i++){
+		            		li_html = '<li><a href="" class="addl-data" data-id='+data['data'][i]['data_id'] + '" data-toggle="tab">'+ data['data'][i]['column_name'] + '</a></li>'
+		            		div_html = '<div class="tab-pane"  data-id='+data['data'][i]['data_id'] + '" id="">' + data['data'][i]['data'] + '</div>'
+		            		$('.nav.nav-tabs').append(li_html);
+		            		$('.tab-content').append(div_html);
+		            	}
+		            	$('.nav.nav-tabs li:first').addClass('active');
+		            	$('.tab-content div:first').addClass('active');
+		            	$("#myModal").show();
+		            },			
+		            error: function(xhr, status, error) {
+		                var err = eval("(" + xhr.responseText + ")");
+		                alert(err.Message);
+		                //alert("Something went wrong, please try after some time");
+		            }
+    			});	
+			})
+
+			$("body").on("click", '[class^="addl-data"]', function(e){
+				$('.tab-pane').removeClass('active')
+				$('[class^="addl-data"]').removeClass('active');
+				$(this).addClass('active');
+				$(".tab-pane[data-id='"+ $(this).attr('data-id')).addClass('active');
+			})
+
+			$('#myModal').on('hidden.bs.modal', function (e) {
+				debugger;
+				$('.nav.nav-tabs').html('');
+		        $('.tab-content').html('');
+			});
+
+			
 	    });	
 
 	</script>
