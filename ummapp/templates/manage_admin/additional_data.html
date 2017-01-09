@@ -109,11 +109,11 @@
 							</div>
 							<div class="white-bg">
 								<div class="padding-15" id="addl-columns">
-									<a href="#" class="addl-column tbl-btn" data-number="1" data-additionaldata-id="">Column Name	</a>
-									<a href="#" class="addl-column tbl-btn" data-number="2" data-additionaldata-id=''>Column Name	</a>
-									<a href="#" class="addl-column tbl-btn" data-number="3" data-additionaldata-id=''>Column Name	</a>
-									<a href="#" class="addl-column tbl-btn" data-number="4" data-additionaldata-id=''>Column Name	</a>
-									<a href="#" class="addl-column tbl-btn" data-number="5" data-additionaldata-id=''>Column Name </a>
+									<a href="#" class="addl-column tbl-btn" data-number="1" data-additionaldata-id="">Title	</a>
+									<a href="#" class="addl-column tbl-btn" data-number="2" data-additionaldata-id=''>Title	</a>
+									<a href="#" class="addl-column tbl-btn" data-number="3" data-additionaldata-id=''>Title	</a>
+									<a href="#" class="addl-column tbl-btn" data-number="4" data-additionaldata-id=''>Title	</a>
+									<a href="#" class="addl-column tbl-btn" data-number="5" data-additionaldata-id=''>Title </a>
 								</div>
 							</div>
 						</div>
@@ -223,7 +223,7 @@
 		    <div class="modal-content">
 		      <div class="modal-header">
 		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-		        <h4 class="modal-title">Name</h4>
+		        <h4 class="modal-title">Title</h4>
 		      </div>
 		      <div class="modal-body">
 		        <form id="additionalDataForm">
@@ -233,7 +233,7 @@
 		            <input type="text" class="form-control" name="column_name" id="additionaldata-name" placeholder="">
 		            <p id="additionaldata-name-error" style="color:red"></p>
 		          </div>
-		          <h4 class="modal-title margin-bottom-10px" >Data</h4>
+		          <h4 class="modal-title margin-bottom-10px" >Text</h4>
 		          <div class="form-group">
 		            <textarea class="form-control" name="column_data" id="additionaldata-text"></textarea>
 		          </div>
@@ -403,7 +403,7 @@
 
 	    $('#add-addl-columns').on('click',function(e) {
 	    	e.preventDefault();
-	    	$('#addl-columns').append('<a href="#" data-number="" class="addl-column tbl-btn" data-addldata-id="" >Column Name</a>');
+	    	$('#addl-columns').append('<a href="#" data-number="" class="addl-column tbl-btn" data-addldata-id="" >Title</a>');
 	    });
 
     	function updateTaskTypes(program_type_id){
@@ -842,7 +842,7 @@
 	            	}else{
 	            		$col = $("#addl-columns");
 	            		$col.html('');
-	      				$col.append('<a href="#" class="addl-column tbl-btn" data-number="1" data-additionaldata-id="">Column Name	</a><a href="#" class="addl-column tbl-btn" data-number="2" data-additionaldata-id="">Column Name	</a><a href="#" class="addl-column tbl-btn" data-number="3" data-additionaldata-id="">Column Name	</a><a href="#" class="addl-column tbl-btn" data-number="4" data-additionaldata-id="">Column Name	</a><a href="#" class="addl-column tbl-btn" data-number="5" data-additionaldata-id="">Column Name </a>');	          
+	      				$col.append('<a href="#" class="addl-column tbl-btn" data-number="1" data-additionaldata-id="">Title	</a><a href="#" class="addl-column tbl-btn" data-number="2" data-additionaldata-id="">Title </a><a href="#" class="addl-column tbl-btn" data-number="3" data-additionaldata-id="">Title	</a><a href="#" class="addl-column tbl-btn" data-number="4" data-additionaldata-id="">Title	</a><a href="#" class="addl-column tbl-btn" data-number="5" data-additionaldata-id="">Title </a>');	          
 
 	            	}
 	            },

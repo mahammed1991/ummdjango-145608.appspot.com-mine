@@ -30,6 +30,7 @@ body{min-height: 750px;}
     padding-bottom: 12px;
     display: block;
     cursor: pointer; 
+    font-size: 15px;
 }
 .main-category-bar ul li.active a {
     border-bottom: 3px solid #ffb609;
@@ -231,6 +232,7 @@ hr.line3 {
 h1.bottom-row { display: inline-block; margin:0; padding: 15px 32px; background: #007944; font-size: 16px; color: #fff;font-weight:bold }
 
 /* ++++++++++++ ummoffering html page css ++++++++++++   */
+.main-link h3{ font-size: 18px}
 .main-link a{
     display: inline-block;
     margin: 0 20px 0 0;
@@ -375,4 +377,13 @@ text-decoration: none;}
 .right-box2 a:hover { 
                     background: #d2d2d2; color: #666666; 
                     text-decoration: none ;
+}
+
+a.logout {
+    font-size: 16px;
+    color: #000;
+    margin-top: 4px;
+    line-height: 7px;
+    float: left;
+    margin-left: 19px;
 }
