@@ -21,20 +21,21 @@
 		<div class="container-fluid main-top-bar " >
 			<div class="row">
 				<div class="col-md-6" >
-					<div  class="" ><a href="/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a></div>
+					<div  class="" ><a href="/" class="logo"><img src="{% static 'manage_admin/images/regalix_logo.jpg' %}" alt=""></a></div>
 				</div>
 				<div class="col-md-6">
 					<div class="row">
-						<div class="col-md-8">
+						<div class="col-md-6">
 					<!--h1 class="text-left text-danger" >{{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</h1!-->
 						 </div>
-						 <div class="col-md-4">		
+						 <div class="col-md-6">		
 					<div class="user" id='username_login'>	
 						{{ user.get_full_name|default:user.username }} | 
-						<a href="{% url 'auth:logout' %}?next=/"  class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a><br>
-					{% if is_manager %}
-						<a href="/knowledgebase/admin"> Manage Admin</a>
+						{% if is_manager %}
+						<a href="/knowledgebase/admin/" class="logout  pull-right"> <i class="fa fa-group" aria-hidden="true"></i></a>
 					{% endif %}
+						<a href="{% url 'auth:logout' %}?next=/"  class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
+					
 					</div>
 					  		</div>
 					  	</div>	
@@ -221,7 +222,7 @@
 		$(document).ready(function(){
 			sub_process = "{{sub_process.id}}"
 			$('.process[data-processid='+ sub_process + "]").addClass('active');
-
+			updateCarouseldata(sub_process);
 	    	if('.prg-type'){
 	    		$('.prg-type:first').addClass('make-active');
 	    	}
@@ -239,6 +240,7 @@
 		    	$(this).addClass('active').css('background','#009b59');
 		    	$('#addl-data').text('More about '+ $(this).text())
 		    	loadTaskData($(this).data('programtype-id'));
+		    	updateCarouseldata(sub_process);
 		    });
 
 
@@ -302,7 +304,6 @@
 			}
 	        updateTaskTypes($('.prgrm-tab > li > a:eq(0)').attr("data-programtype-id"));
 
-
 		    $("body").on("click", ".process", function(e){
 		    	e.preventDefault()
 		    	selected_sub_process = $(this).attr('data-processid');
@@ -327,7 +328,7 @@
 
 		    });
 
-			var updateCarouseldata = function(sub_process_id){
+			function updateCarouseldata(sub_process_id){
 				$.ajax({
 		            url: '/get-carousel-data/'+sub_process_id,
 		            type: 'GET',
@@ -335,7 +336,7 @@
 		            	var data = data['data'];
 		            	if (data.length > 0){
 				            $('.looper').looper({
-				               
+				            	 interval: 3000
 				            });
 				            for(i=0; i<data.length; i++)
 				            {	
@@ -360,7 +361,6 @@
 				                    $('.myrow'+ i).append(newlink2)
 				                }
 				            });
-		            	}else{
 		            	}
 
 		            },
@@ -371,8 +371,6 @@
 		            }
 	    		});	
 			}
-
-			updateCarouseldata($('.process.active').attr('data-processid'));
 
 			$("body").on("click", "#addl-data", function(e){
 				e.preventDefault()
@@ -412,7 +410,6 @@
 			})
 
 			$('#myModal').on('hidden.bs.modal', function (e) {
-				debugger;
 				$('.nav.nav-tabs').html('');
 		        $('.tab-content').html('');
 			});

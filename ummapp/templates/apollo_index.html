@@ -5,6 +5,7 @@
 		{% load staticfiles %}
 		<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap.min.css'%}">
 		<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap-theme.min.css'%}">
+		<link href="{% static 'manage_admin/css/font-awesome.min.css' %}" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="{% static 'css/custom.css'%}">
 		<script src="{% static 'js/jquery-2.2.1.min.js'%}"></script>
 	</head>
@@ -13,14 +14,14 @@
         <div class="container-fluid topbar noborder">
 			<div class="col-md-12 logo-img">
   				<div class="col-md-6" >
-					<div  class="" ><a href="/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a></div>
+					<div  class="" ><a href="/" class="logo"><img src="{% static 'manage_admin/images/regalix_logo.jpg' %}" alt=""></a></div>
 				</div>
 				<div class="col-md-6" >
 					<div class="user" id="username_login">	
 						{{ user.get_full_name|default:user.username }} |
-						<a href="{% url 'auth:logout' %}?next=/">Logout</a><br>
+						<a href="{% url 'auth:logout' %}?next=/" class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
 					{% if is_manager %}
-						<a href="/knowledgebase/admin/"> Manage Admin</a>
+						<a href="/knowledgebase/admin/" class="logout  pull-right"> <i class="fa fa-group" aria-hidden="true"></i></a>
 					{% endif %}
 					</div>
 				</div>

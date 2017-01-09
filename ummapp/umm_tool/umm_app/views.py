@@ -420,13 +420,17 @@ def add_task_data(request):
 def show_process_data(request, sprocess_name):
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         if request.method == "GET":
+            is_manager = True if request.user.groups.filter(name='CHAPERONE-MANAGER') else False
             sub_process = SubProcess.objects.get(url_name=sprocess_name)
             if sub_process:
-                program_types = ProgramType.objects.filter(subprocess=sub_process)
+                program_types = ProgramType.objects.filter(subprocess=sub_process).order_by('created_date')
+                print program_types,'program_types'
                 sub_processs = SubProcess.objects.filter(is_disabled=False)
             context = RequestContext(request, 
                         {'request': request, 'user': request.user,'sub_process':sub_process,
-                        'program_types':program_types,'sub_processs':sub_processs})
+                        'program_types':program_types,'sub_processs':sub_processs,
+                        'is_manager':is_manager
+                        })
             return render(request, "apollo_home.html", context_instance=context) 
     else:
         raise PermissionDenied
@@ -585,7 +589,6 @@ def get_addldata_column_name(request):
             data_id = request.POST.get("addl_data_id", None)
             context = {}
             addl_data = ProgramAdditionData.objects.filter(program_task=task_id, name=column_name)
-            print data_id,'data_id'
             if data_id:
                 columns = [clmn.name for clmn in addl_data if clmn.id != int(data_id)]
                 if columns.count(column_name) > 0:
