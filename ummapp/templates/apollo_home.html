@@ -32,8 +32,8 @@
 					<div class="user" id='username_login'>	
 						{{ user.get_full_name|default:user.username }} | 
 						{% if is_manager %}
-						<a href="/knowledgebase/admin/" class="logout  pull-right"> <i class="fa fa-group" aria-hidden="true"></i></a>
-					{% endif %}
+							<a href="/knowledgebase/admin/" class="logout  pull-right"> <i class="fa fa-group" aria-hidden="true"></i></a>
+						{% endif %}
 						<a href="{% url 'auth:logout' %}?next=/"  class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
 					
 					</div>
