@@ -663,3 +663,18 @@ def get_addldata(request, task_id):
         }
         columns.append(tdata)
     return HttpResponse(json.dumps({"data":columns, "success":True, "msg":""}), content_type="application/json")
+
+
+@login_required
+def get_subprocess_programdata(request, sub_process_id):
+    program_types = ProgramType.objects.filter(subprocess=int(sub_process_id))
+    programs = {}
+    program_data = []
+    for prog in program_types:
+        tasks = []
+        program_task = ProgramTask.objects.filter(program_type=prog)
+        tasks = [task.name for task in program_task]
+        print {prog.name :tasks }
+        program_data.append({prog.name :tasks })
+        print program_data,'program_data'
+    return HttpResponse(json.dumps({"data":program_data, "success":True, "msg":""}), content_type="application/json")    
