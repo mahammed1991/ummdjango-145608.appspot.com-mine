@@ -386,7 +386,7 @@
 		            	div_html = ''
 		            	for(var i=0;i<data['data'].length;i++){
 		            		li_html = '<li><a href="" class="addl-data" data-id='+data['data'][i]['data_id'] + '" data-toggle="tab">'+ data['data'][i]['column_name'] + '</a></li>'
-		            		div_html = '<div class="tab-pane"  data-id='+data['data'][i]['data_id'] + '" id="">' + data['data'][i]['data'] + '</div>'
+		            		div_html = '<div class="tab-pane"  data-id='+data['data'][i]['data_id'] + '" id="">' + data['data'][i]['data'].replace(/&nbsp;/g, ' ') + '</div>'
 		            		$('.nav.nav-tabs').append(li_html);
 		            		$('.tab-content').append(div_html);
 		            	}
