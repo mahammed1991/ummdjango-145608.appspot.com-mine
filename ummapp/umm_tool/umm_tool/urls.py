@@ -46,6 +46,7 @@ urlpatterns = [
     url(r'^add-addldata/','umm_app.views.add_addldata',name='add_addldata'),
     url(r'^get-addldata/(?P<task_id>[0-9]+)','umm_app.views.get_addldata',name='get_addldata'),
     url(r'^get-subprocess-programdata/(?P<sub_process_id>[0-9]+)','umm_app.views.get_subprocess_programdata',name='get_subprocess_programdata'),
+    url(r'^add-subprocess-programdata/(?P<sub_process_id>[0-9]+)','umm_app.views.add_subprocess_programdata',name='add_subprocess_programdata'),
 
     # API
 
