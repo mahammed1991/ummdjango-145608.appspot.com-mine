@@ -264,31 +264,33 @@
 		      </div>
 		      <div class="modal-body">
 		        <form id="addProgramDataForm">
+		        	{% csrf_token %}
 				    <div class="form-group progs">
 				    	<h4 class="modal-title margin-bottom-10px" >Program Type</h4>
-				        <div class="col-xs-4">
+				        <div class="col-xs-5 form-group">
 				            <input type="text" class="form-control req" name="program_type_0_name" placeholder="Program Type" />
 				        </div>
-				        <div class="col-xs-4">
+				        <div class="col-xs-5 form-group">
 				            <input type="text" class="form-control req" name="program_task_0_name" placeholder="Program Task" />
 				        </div>
-				        <div class="col-xs-1">
+				        <div class="col-xs-2">
 				            <button type="button" class="btn btn-default addButton"><i class="fa fa-plus"></i></button>
 				        </div>
 				    </div>
 
 				    <!--The template for adding new field-->
 				    <div class="form-group hide" id="programTypeTemplate">
-				        <div class="col-xs-4 col-xs-offset-1">
+				        <div class="col-xs-5 form-group">
 				            <input type="text" class="form-control" name="program-type-name" placeholder="Program Type" />
 				        </div>
-				        <div class="col-xs-4">
+				        <div class="col-xs-5 form-group">
 				            <input type="text" class="form-control" name="program-task-name" placeholder="Program Task" />
 				        </div>
-				        <div class="col-xs-1">
+				        <div class="col-xs-2">
 				            <button type="button" class="btn btn-default removeButton"><i class="fa fa-minus"></i></button>
 				        </div>
 				    </div>
+				    <div class="clearfix"></div>
 				      <div class="modal-footer">
 				        <!--<button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>-->
 				        <button type="submit" class="btn btn-primary" id="addProgramDataSubmit">Save</button>
@@ -908,23 +910,19 @@
 
 	    $('#add-programtypes').on('click',function(e) {
 	    	e.preventDefault();
-	    	a = '{{data.programs}}'
 	    	sub_process_id = $('.process-tab a.active').attr('data-subprocessid');
 			$.ajax({
 	            url: '/get-subprocess-programdata/'+sub_process_id,
 	            type: 'GET',
 	            success: function(data) {
 	            	var data = data['data'];
-	            	console.log(data)
+	            	programTypeIndex = 0
 	            	if (data.length > 0){
-	            		$('#addProgramDataForm div.form-group.progs:not(:first)').remove();
-	            		/*$col = $("#addl-columns");
-	            		$col.html('');*/
+	            		program_data = $('#addProgramDataForm div.form-group.progs:not(:first)')
+	            		program_data.remove();
 	            		for(var i=0;i<data.length;i++){
-	            			debugger;
 	            			program_type = Object.keys(data[i])[0]
 	            			program_tasks = data[i][program_type]
-	            			console.log(program_type,program_tasks);
 	            			if (i == 0){
 	            				$('input[name=program_type_0_name').val(program_type);
 	            				$('input[name=program_task_0_name').val(program_tasks);
@@ -950,14 +948,16 @@
 
 						        $('#addProgramDataForm')
 						            .formValidation('addField', 'program_type_'+programTypeIndex+'_name', typeValidators)
-						            .formValidation('addField', 'program_task_'+programTypeIndex+'_name', taskValidators)	            				
+						            .formValidation('addField', 'program_task_'+programTypeIndex+'_name', taskValidators)	
+
+						        $('input[name=program_type_'+ i + '_name').val(program_type);
+	            				$('input[name=program_task_' + i + '_name').val(program_tasks);          				
 	            			}
 	            			$('#addProgramDataModal').modal('show');
 	            		}
 	            	}else{
-	            		/*$col = $("#addl-columns");
-	            		$col.html('');
-	      				$col.append('<a href="#" class="addl-column tbl-btn" data-number="1" data-additionaldata-id="">Title	</a><a href="#" class="addl-column tbl-btn" data-number="2" data-additionaldata-id="">Title </a><a href="#" class="addl-column tbl-btn" data-number="3" data-additionaldata-id="">Title	</a><a href="#" class="addl-column tbl-btn" data-number="4" data-additionaldata-id="">Title	</a><a href="#" class="addl-column tbl-btn" data-number="5" data-additionaldata-id="">Title </a>');	*/          
+	            		program_data = $('#addProgramDataForm div.form-group.progs:not(:first)')
+	            		program_data.remove();         
 
 	            	}
 	            },
@@ -967,8 +967,7 @@
 	                //alert("Something went wrong, please try after some time");
 	            }
     		});	
-	    	/*var column_number = parseInt($("#columns > a:last-child").data("number")) + 1;
-	    	$('#columns').append('<a href="#" data-number="'+column_number+'" class="task-column tbl-btn" data-taskdata-id="" data-columndata="">Column Name</a>');*/
+
 	    });
 
 		programTypeIndex = 0;
@@ -1000,7 +999,6 @@
 
 	    // Remove button click handler
 	    $("body").on('click', '.removeButton', function() {
-	    	//debugger
 	        var $row  = $(this).parents('.form-group'),
             index = $row.attr('data-programType-index');
 
@@ -1011,6 +1009,13 @@
 	    
 	        // Remove element containing the fields
         	$row.remove();
+
+        	// to remove disabled class from addProgramDataForm submit
+		    $('#addProgramDataForm :input.req').each(function(){
+		        if($(this).val() == "" ) return false;
+		        $('#addProgramDataSubmit').removeClass('disabled');
+		        $('#addProgramDataSubmit').prop('disabled',false);
+		    })
 	    });
 
 	    var typeValidators = {
@@ -1056,11 +1061,7 @@
 			        formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
 			        
 			        var processData = {};
-			        /*processData['name'] = $('#process-name').val();
-			        processData['is_disabled'] = $('#is-disabled').val();
-			        processData['sub_process_name'] = $('#sub-process-name').val();
-			        processData['quarter'] = $('#quarter').val();
-			        processData['quarter_year'] = $('#quarter-year').val();
+			        processData['sub_process_id'] = $('.process-tab a.active').attr('data-subprocessid');
 			        programs = {}
 			        p_type_error = false
 			        $(".progs").each(function(){
@@ -1080,9 +1081,9 @@
 					processData['programs'] = programs;
 					formData.append('processData', JSON.stringify(processData));
 					 
-					if (!p_type_error){    
+					if (!p_type_error){  
 				        $.ajax({
-				                url: '/process/create/',
+				                url: '/add-subprocess-programdata/'+sub_process_id,
 				                type: 'POST',
 				                data: formData,
 				                cache: false,
@@ -1104,17 +1105,17 @@
 				                    //alert("Something went wrong, please try after some time");
 				                }
 				            })
-				    }*/
+				    }
 
 
 	         });
 
 		$('#addProgramDataModal').on('hidden.bs.modal', function (e) {
-			$('#additionalDataForm input').val('');
+			$('#addProgramDataForm input').val('');
 		});	  
 		
 		$('#addProgramDataModal').on('shown.bs.modal', function(){
-            $('#additionalDataForm').data('formValidation').resetForm();
+            $('#addProgramDataForm').data('formValidation').resetForm();
 		}); 
 
     });	

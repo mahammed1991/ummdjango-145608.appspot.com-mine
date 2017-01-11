@@ -674,7 +674,53 @@ def get_subprocess_programdata(request, sub_process_id):
         tasks = []
         program_task = ProgramTask.objects.filter(program_type=prog)
         tasks = [task.name for task in program_task]
-        print {prog.name :tasks }
         program_data.append({prog.name :tasks })
-        print program_data,'program_data'
-    return HttpResponse(json.dumps({"data":program_data, "success":True, "msg":""}), content_type="application/json")    
+    return HttpResponse(json.dumps({"data":program_data, "success":True, "msg":""}), content_type="application/json") 
+
+
+@login_required
+def add_subprocess_programdata(request, sub_process_id):
+    context = {}
+    success = False
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.POST:
+            process_data = json.loads(request.POST.get("processData"))
+            try:
+                process_objects = list()
+                sub_process_id = process_data.get('sub_process_id')
+                sub_process = SubProcess.objects.get(id=int(sub_process_id))
+                programs = process_data.get("programs")
+                for ptype,ptask in programs.iteritems():
+                    try:
+                        program_type = ProgramType.objects.get(subprocess=sub_process,name=ptype)
+                    except ObjectDoesNotExist:
+                        program_type = ProgramType()
+                    program_type.subprocess = sub_process
+                    program_type.name = ptype
+                    program_type.is_disabled = False
+                    program_type.created_by = User.objects.get(email=request.user.email)
+                    program_type.modified_by =  User.objects.get(email=request.user.email)
+                    program_type.save()
+                    process_objects.append(program_type)
+
+                    for val in ptask:
+                        try:
+                            program_task = ProgramTask.objects.get(program_type=program_type,name=val)
+                        except ObjectDoesNotExist:
+                            program_task = ProgramTask()
+                        program_task.program_type = program_type
+                        program_task.name = val
+                        program_type.is_disabled = False
+                        program_task.created_by = User.objects.get(email=request.user.email)
+                        program_task.modified_by =  User.objects.get(email=request.user.email)
+                        program_task.save()
+                        process_objects.append(program_task)
+                del process_objects
+                context = {'process_id':sub_process.process.id,'sub_process_url_name':sub_process.url_name,'success':True, 'msg':'Program type and tasks created successfully'}                        
+            except Exception as e:
+                for obj in process_objects:
+                    obj.delete()
+                context = {'success':False,'msg':'Something went wrong, please try after some time'}
+            return HttpResponse(json.dumps(context), content_type="application/json")       
+        else:
+            return HttpResponse(json.dumps({"data":{}, "success":True, "msg":""}), content_type="application/json")       
