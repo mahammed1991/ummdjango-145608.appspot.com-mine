@@ -89,11 +89,11 @@
 							</div>
 							<div class="white-bg">
 								<div class="padding-15" id="columns">
-									<a href="#" class="task-column tbl-btn" data-number="1" data-taskdata-id="">Column Name	</a>
+									<!--<a href="#" class="task-column tbl-btn" data-number="1" data-taskdata-id="">Column Name	</a>
 									<a href="#" class="task-column tbl-btn" data-number="2" data-taskdata-id=''>Column Name	</a>
 									<a href="#" class="task-column tbl-btn" data-number="3" data-taskdata-id=''>Column Name	</a>
 									<a href="#" class="task-column tbl-btn" data-number="4" data-taskdata-id=''>Column Name	</a>
-									<a href="#" class="task-column tbl-btn" data-number="5" data-taskdata-id=''>Column Name </a>
+									<a href="#" class="task-column tbl-btn" data-number="5" data-taskdata-id=''>Column Name </a>-->
 								</div>
 							</div>
 						</div>
@@ -110,11 +110,11 @@
 							</div>
 							<div class="white-bg">
 								<div class="padding-15" id="addl-columns">
-									<a href="#" class="addl-column tbl-btn" data-number="1" data-additionaldata-id="">Title	</a>
+									<!--<a href="#" class="addl-column tbl-btn" data-number="1" data-additionaldata-id="">Title	</a>
 									<a href="#" class="addl-column tbl-btn" data-number="2" data-additionaldata-id=''>Title	</a>
 									<a href="#" class="addl-column tbl-btn" data-number="3" data-additionaldata-id=''>Title	</a>
 									<a href="#" class="addl-column tbl-btn" data-number="4" data-additionaldata-id=''>Title	</a>
-									<a href="#" class="addl-column tbl-btn" data-number="5" data-additionaldata-id=''>Title </a>
+									<a href="#" class="addl-column tbl-btn" data-number="5" data-additionaldata-id=''>Title </a>-->
 								</div>
 							</div>
 						</div>
@@ -131,11 +131,11 @@
 							</div>
 							<div class="white-bg">
 								<div class="padding-15" id="carousel-columns">
-									<a href="#" class="carousel-column tbl-btn" data-number="1" data-carouseldata-id="">Column Name	</a>
+									<!--<a href="#" class="carousel-column tbl-btn" data-number="1" data-carouseldata-id="">Column Name	</a>
 									<a href="#" class="carousel-column tbl-btn" data-number="2" data-carouseldata-id=''>Column Name	</a>
 									<a href="#" class="carousel-column tbl-btn" data-number="3" data-carouseldata-id=''>Column Name	</a>
 									<a href="#" class="carousel-column tbl-btn" data-number="4" data-carouseldata-id=''>Column Name	</a>
-									<a href="#" class="carousel-column tbl-btn" data-number="5" data-carouseldata-id=''>Column Name </a>
+									<a href="#" class="carousel-column tbl-btn" data-number="5" data-carouseldata-id=''>Column Name </a>-->
 								</div>
 							</div>
 						</div>
@@ -417,7 +417,7 @@
 	            	}else{
 	            		$col = $("#columns");
 	            		$col.html('');
-	      				$col.append('<a href="#" class="task-column tbl-btn" data-number="1" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="2" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="3" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="4" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="5" data-taskdata-id="">Column Name </a>');	          
+	      				/*$col.append('<a href="#" class="task-column tbl-btn" data-number="1" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="2" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="3" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="4" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="5" data-taskdata-id="">Column Name </a>');*/	          
 
 	            	}
 	            },
@@ -446,7 +446,13 @@
 
 	    $('#add-columns').on('click',function(e) {
 	    	e.preventDefault();
-	    	var column_number = parseInt($("#columns > a:last-child").data("number")) + 1;
+	    	if ($("#columns > a:last-child").length > 0){
+	    		var column_number = parseInt($("#columns > a:last-child").data("number")) + 1;
+	    	}
+	    	else{
+	    		var column_number = 1;
+	    	}
+	    	//var column_number = parseInt($("#columns > a:last-child").data("number")) + 1;
 	    	$('#columns').append('<a href="#" data-number="'+column_number+'" class="task-column tbl-btn" data-taskdata-id="" data-columndata="">Column Name</a>');
 	    });
 
@@ -457,7 +463,14 @@
 
 	    $('#add-addl-columns').on('click',function(e) {
 	    	e.preventDefault();
-	    	$('#addl-columns').append('<a href="#" data-number="" class="addl-column tbl-btn" data-addldata-id="" >Title</a>');
+	    	if ($('.addl-column').length == 4){
+	    		$('#add-addl-columns').attr('disabled','disabled');
+	    		$('#add-addl-columns').attr('title','Only 4 Task additional data are allowed');
+	    	}
+	    	else{
+	    		$('#addl-columns').append('<a href="#" data-number="" class="addl-column tbl-btn" data-addldata-id="" >Title</a>');
+	    	}
+
 	    });
 
     	function updateTaskTypes(program_type_id){
@@ -859,7 +872,7 @@
 	            	}else{
 	            		$col = $("#carousel-columns");
 	            		$col.html('');
-	      				$col.append('<a href="#" class="carousel-column tbl-btn" data-number="1" data-carouseldata-id="">Column Name	</a><a href="#" class="carousel-column tbl-btn" data-number="2" data-carouseldata-id="">Column Name	</a><a href="#" class="carousel-column tbl-btn" data-number="3" data-carouseldata-id="">Column Name	</a><a href="#" class="carousel-column tbl-btn" data-number="4" data-carouseldata-id="">Column Name	</a><a href="#" class="carousel-column tbl-btn" data-number="5" data-carouseldata-id="">Column Name </a>');	          
+	      				/*$col.append('<a href="#" class="carousel-column tbl-btn" data-number="1" data-carouseldata-id="">Column Name	</a><a href="#" class="carousel-column tbl-btn" data-number="2" data-carouseldata-id="">Column Name	</a><a href="#" class="carousel-column tbl-btn" data-number="3" data-carouseldata-id="">Column Name	</a><a href="#" class="carousel-column tbl-btn" data-number="4" data-carouseldata-id="">Column Name	</a><a href="#" class="carousel-column tbl-btn" data-number="5" data-carouseldata-id="">Column Name </a>');	 */         
 
 	            	}
 	            },
@@ -896,7 +909,7 @@
 	            	}else{
 	            		$col = $("#addl-columns");
 	            		$col.html('');
-	      				$col.append('<a href="#" class="addl-column tbl-btn" data-number="1" data-additionaldata-id="">Title	</a><a href="#" class="addl-column tbl-btn" data-number="2" data-additionaldata-id="">Title </a><a href="#" class="addl-column tbl-btn" data-number="3" data-additionaldata-id="">Title	</a><a href="#" class="addl-column tbl-btn" data-number="4" data-additionaldata-id="">Title	</a><a href="#" class="addl-column tbl-btn" data-number="5" data-additionaldata-id="">Title </a>');	          
+	      				/*$col.append('<a href="#" class="addl-column tbl-btn" data-number="1" data-additionaldata-id="">Title	</a><a href="#" class="addl-column tbl-btn" data-number="2" data-additionaldata-id="">Title </a><a href="#" class="addl-column tbl-btn" data-number="3" data-additionaldata-id="">Title	</a><a href="#" class="addl-column tbl-btn" data-number="4" data-additionaldata-id="">Title	</a><a href="#" class="addl-column tbl-btn" data-number="5" data-additionaldata-id="">Title </a>');*/	          
 
 	            	}
 	            },
