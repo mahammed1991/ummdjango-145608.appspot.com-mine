@@ -15,6 +15,7 @@
     <!--<link href="{% static 'manage_admin/css/jquery-ui.css' %}" rel="stylesheet">-->
     <link href="{% static 'manage_admin/css/datepicker.min.css' %}" rel="stylesheet">
     <link href="{% static 'manage_admin/css/formValidation.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'manage_admin/css/iziToast.min.css'%}">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -25,6 +26,9 @@
     <!--<style type="text/css">
     	.ui-datepicker-calendar,.ui-datepicker-month { display: none; }
     </style>-->
+    <style>
+		.datepicker{z-index:1151 !important;}
+	</style>
   </head>
   <body>
     <section class="top-white-bg">
@@ -42,6 +46,11 @@
 	
 	<section class="process-create">
 	  	<div class="container">
+            <ol class="breadcrumb">
+              <li><a id="process-url" href="/knowledgebase/admin/">All</a></li>
+              <li><a href="/process/{{data.process_id}}/show" class="active">{{data.process_name}}</a></li>
+              <li>{{data.sub_process_name}} Q'{{data.quarter}} {{data.year}}</li>
+            </ol>	  	
 			<div class="create-heading text-uppercase pull-left">
 				<h1 data-processid="{{data.process_id}}">{{data.process_name}}</h1>
 			</div>
@@ -51,12 +60,12 @@
 					<div class="red-bg clearfix">
 						<div class="create-heading pull-left">
 							<ul class="process-tab">
-								<li><a href="#" data-subprocessid="{{data.sub_process_id}}" class="active">{{data.sub_process_name}}</a></li>
+								<li><a href="#" data-subprocessid="{{data.sub_process_id}}" data-quarter="{{data.quarter}}" data-year="{{data.year}}" class="active">{{data.sub_process_name}} Q'{{data.quarter}} {{data.year}}</a></li>
 							</ul>
 						</div>
-						<!--<div class="edit-white pull-right">
+						<div class="edit-white pull-right" id="edit-subprocess">
 							<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-						</div>-->
+						</div>
 					</div>
 
 					<div class="padding-15">
@@ -305,6 +314,66 @@
 		  </div>
 		</div>	
 	  </div>
+
+
+  	  <div class="modal-style" style="width:100%">
+  		<div class="modal fade" id="subProcessEditModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+		  <div class="modal-dialog" role="document" style="width: 80%;">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title"></h4>
+		      </div>
+		      <div class="modal-body">
+		        <form id="subProcessEditForm">
+		        	{% csrf_token %}
+				    <div class="form-group progs">
+						<div class="form-group">
+					        <label for="sub-process-name" class="control-label col-sm-2">Sub Process Name</label>
+					        <div class="col-sm-9 form-group">
+					            <input type="text" class="form-control req" id="sub-process-name" name="sub_process_name" value="{{sub_process_form.data.name}}">
+					            <p id="sub-process-error" style="color:red"></p>
+					            
+					        </div>
+						</div>
+					    <div class="form-group">
+					        <label for="quarter" class="control-label col-sm-2">Sub Process Quarter </label>
+					        <div class="col-sm-2 form-group">
+					            <select class="form-control" id="quarter" name="quarter">
+					            <option id="1" value="1" >1</option>
+					            <option id="2" value="2" >2</option>
+					            <option id="3" value="3" >3</option>
+					            <option id="4" value="4" >4</option>
+					            </select>
+					    	</div>
+					    </div>
+					    <div class="form-group">
+					        <label for="quarter-year" class="control-label col-sm-2">Sub Process Year</label>
+					        <div class="col-sm-3 form-group">
+					        	<div class="input-group input-append date" id="quarter-year" >
+							        <input  type="text"  name="quarter_year" class="form-control req" >
+							        <span class="input-group-addon add-on"><span class="glyphicon glyphicon-calendar"></span></span>
+							        <p id="quarter-year-error" style="color:red"></p>
+							    </div>
+					        </div>
+					    </div>
+				    </div>
+
+				    <div class="clearfix"></div>
+				      <div class="modal-footer">
+				        <!--<button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>-->
+				        <button type="submit" class="btn btn-primary" id="addProgramDataSubmit">Save</button>
+				      </div>
+		        </form>
+		      </div>
+		      <!--<div class="modal-footer">
+		        <button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+		        <button type="button" class="btn btn-primary">Save</button>
+		      </div>-->
+		    </div>
+		  </div>
+		</div>	
+	  </div>
   
   
   
@@ -317,12 +386,23 @@
     <script src="{% static 'manage_admin/js/form_bootstrap.min.js' %}"></script>
     <script src="{% static 'manage_admin/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'ckeditor/ckeditor.js' %}"></script>
+    <script src="{% static 'manage_admin/js/iziToast.min.js' %}"></script>
     <!--<script src="{% static 'manage_admin/js/jquery-ui.min.js' %}"></script>-->
 	<script type="text/javascript">
 	$(document).ready(function(){
 	    CKEDITOR.replace('message-text');
 	    CKEDITOR.replace('carouseldata-text');
 	    CKEDITOR.replace('additionaldata-text');
+
+	    sub_process_name = "{{data.sub_process_name}}"
+
+	    current_url = window.location.href
+	    if (current_url.indexOf('?')!= -1 && current_url.split('?')[1].split('=')[1] == 'updated'){
+				iziToast.success({
+				    title: 'OK',
+				    message: 'Successfully updated sub process' ,
+				});
+	    }
 
 	    $("body").on("click", ".task-column", function(e){
 	    	e.preventDefault();
@@ -354,6 +434,7 @@
 	    $("body").on("click", ".carousel-column", function(e){
 	    	e.preventDefault();
 	    	$that = $(this);
+	    	debugger;
 	    	var data_id = $that.attr("data-carouseldata-id");
 	    	sub_process = $('.process-tab a.active').attr('data-subprocessid');
 	    	$('input[name=sub_process_id]').val(sub_process);
@@ -465,7 +546,11 @@
 	    	e.preventDefault();
 	    	if ($('.addl-column').length == 4){
 	    		$('#add-addl-columns').attr('disabled','disabled');
-	    		$('#add-addl-columns').attr('title','Only 4 Task additional data are allowed');
+				iziToast.warning({
+				    title: 'Caution',
+				    message: 'Only 4 Task additional data are allowed',
+				});	    		
+	    		//$('#add-addl-columns').attr('title','Only 4 Task additional data are allowed');
 	    	}
 	    	else{
 	    		$('#addl-columns').append('<a href="#" data-number="" class="addl-column tbl-btn" data-addldata-id="" >Title</a>');
@@ -701,6 +786,16 @@
 							$('#taskDataForm').data('formValidation').resetForm();
 							CKEDITOR.instances["message-text"].setData('');
 							loadTaskData(data["task_id"])
+	                         iziToast.success({
+	                            title: 'OK',
+	                            message: data['msg'] ,
+	                        });							
+						}
+						else{
+							iziToast.error({
+							    title: 'Error',
+							    message: data['msg'],
+							});							
 						}
 					},
 	                error: function(xhr, status, error) {
@@ -768,7 +863,18 @@
 							$('#carouselDataForm')[0].reset();
 							$('#carouselDataForm').data('formValidation').resetForm();
 							CKEDITOR.instances["carouseldata-text"].setData('');
+							updateCarouseldata($('.process-tab a.active').attr('data-subprocessid'));
+							iziToast.success({
+							    title: 'OK',
+							    message: data['msg'] ,
+							});
 							//loadTaskData(data["task_id"])
+						}
+						else{
+							iziToast.error({
+							    title: 'Error',
+							    message: data['msg'],
+							});							
 						}
 					},
 	                error: function(xhr, status, error) {
@@ -838,6 +944,16 @@
 							$('#additionalDataForm').data('formValidation').resetForm();
 							CKEDITOR.instances["additionaldata-text"].setData('');
 							updateAdditionaldata(data["task_id"]);
+							iziToast.success({
+							    title: 'OK',
+							    message: data['msg'] ,
+							});							
+						}
+						else{
+							iziToast.error({
+							    title: 'Error',
+							    message: data['msg'],
+							});							
 						}
 					},
 	                error: function(xhr, status, error) {
@@ -1130,6 +1246,95 @@
 		$('#addProgramDataModal').on('shown.bs.modal', function(){
             $('#addProgramDataForm').data('formValidation').resetForm();
 		}); 
+
+		$('#edit-subprocess').on('click',function(e) {
+			e.preventDefault();
+			sub_process = $('.process-tab a.active');
+			sub_process_id = sub_process.attr('data-subprocessid');
+			quarter = sub_process.attr('data-quarter');
+			year = sub_process.attr('data-year');
+			$('#sub-process-name').val(sub_process_name);
+			$('#quarter').val(quarter);
+			$('input[name=quarter_year]').val(parseInt(year))
+			$('#subProcessEditModal').modal('show');
+		});
+
+	    $('#quarter-year')
+	        .datepicker({
+	            format: "yyyy",
+				viewMode: "years", 
+				minViewMode: "years"
+	        })
+	        .on('changeDate', function(e) {
+	            // Revalidate the date field
+	            $('#quarter-year').val(e.date.getFullYear());
+	            $('#subProcessEditForm').formValidation('revalidateField', 'quarter_year');
+	        });
+
+			 $('#subProcessEditForm')
+			     .formValidation({
+			        fields: {
+			            sub_process_name:{
+			                validators: {
+			                    notEmpty: {
+			                        message: 'Sub Process Name is required'
+			                    },
+
+			                }
+
+			            },
+			            quarter_year:{
+			                validators: {
+			                    notEmpty: {
+			                        message: 'Sub Process Year is required'
+			                    },
+
+			                }
+
+			            },
+			        }
+			     })
+			     .on('success.form.fv', function(e) {
+			         // Save the form data via an Ajax request
+			         e.preventDefault();
+				        var formData = new FormData();
+				        formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+				        formData.append('sub_process_name', $('#sub-process-name').val());
+				        formData.append('quarter', $('#quarter').val());
+				        formData.append('quarter_year',$('input[name=quarter_year]').val());
+				        sub_process_id = $('.process-tab a.active').attr('data-subprocessid');
+				        $.ajax({
+				                url: '/edit-subprocess/'+sub_process_id,
+				                type: 'POST',
+				                data: formData,
+				                cache: false,
+				                contentType: false,
+				                processData: false,
+				                success: function(data) {
+				                	if (data['success']){
+				                		window.location='/process/'+ data['process_id']+'/sp/'+data['sub_process_url_name']+'/edit/?sub_process=updated'
+			                             iziToast.success({
+			                                title: 'OK',
+			                                message: data['msg'] ,
+			                            });				                		
+				                	}
+				                	else{
+			                             iziToast.success({
+			                                title: 'Error',
+			                                message: data['msg'] ,
+			                            });
+
+				                	}
+				                },
+				                error: function(xhr, status, error) {
+				                    var err = eval("(" + xhr.responseText + ")");
+				                    alert(err.Message);
+				                    //alert("Something went wrong, please try after some time");
+				                }
+				            })
+
+
+			     });
 
     });	
 

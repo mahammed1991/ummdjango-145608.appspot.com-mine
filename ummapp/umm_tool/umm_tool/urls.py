@@ -47,6 +47,7 @@ urlpatterns = [
     url(r'^get-addldata/(?P<task_id>[0-9]+)','umm_app.views.get_addldata',name='get_addldata'),
     url(r'^get-subprocess-programdata/(?P<sub_process_id>[0-9]+)','umm_app.views.get_subprocess_programdata',name='get_subprocess_programdata'),
     url(r'^add-subprocess-programdata/(?P<sub_process_id>[0-9]+)','umm_app.views.add_subprocess_programdata',name='add_subprocess_programdata'),
+    url(r'^edit-subprocess/(?P<sub_process_id>[0-9]+)','umm_app.views.edit_subprocess',name='edit_subprocess'),
 
     # API
 
@@ -59,7 +60,7 @@ urlpatterns = [
     #Views
 
     url(r'^process/(?P<reference_id>[0-9]+)/show$', 'umm_app.views.subprocess_handler', name='subprocess_handler'),
-    url(r'^process/(?P<process_id>[0-9]+)/sp/(?P<sprocess_name>[A-Za-z0-9-]+)/edit$','umm_app.views.create_task_data',name=''),
+    url(r'^process/(?P<process_id>[0-9]+)/sp/(?P<sprocess_name>[A-Za-z0-9-]+)/edit','umm_app.views.create_task_data',name=''),
     url(r'^process/create/$','umm_app.views.process_handler', name='process_handler'),
-    url(r'^sp/(?P<sprocess_name>[A-Za-z0-9-]+)/$','umm_app.views.show_process_data', name='show_process_data'),
+    url(r'^process/(?P<process_id>[0-9]+)/sp/(?P<sprocess_name>[A-Za-z0-9-]+)/view$','umm_app.views.show_process_data', name='show_process_data'),
 ]
