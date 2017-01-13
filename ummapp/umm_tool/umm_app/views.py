@@ -294,6 +294,8 @@ def create_task_data(request, process_id=None, sprocess_name=None):
         data["process_id"] = process.id
         data["sub_process_name"] = sub_process.name
         data["sub_process_id"] =  sub_process.id
+        data["quarter"] = sub_process.quarter.quarter
+        data["year"] = sub_process.quarter.quarter_year
         programs = {}
         program_task = None
         program_types = ProgramType.objects.filter(subprocess=sub_process)
@@ -388,13 +390,13 @@ def add_task_data(request):
                         'column_name':column_name, 
                         'column_data':column_data, 
                         'success':True, 
-                        'msg':'Updated successfully'
+                        'msg':'Task data updated successfully'
              }
             if task_data_id:
                 try:
                     task_data = TaskData.objects.get(id=task_data_id)
                 except ObjectDoesNotExist:
-                    context = {'msg' : 'Something went wrong, please try after some time'}
+                    context = {'success': False, 'msg' : 'Something went wrong, please try after some time'}
                 task_data.column_name = column_name
                 task_data.column_number = column_number
                 task_data.data = column_data
@@ -412,19 +414,18 @@ def add_task_data(request):
                 task_data.modified_by =  User.objects.get(email=request.user.email)
                 task_data.save()
                 context["task_data_id"] = task_data.pk
-                context["msg"] = "Column created successfully"
+                context["msg"] = "Task data created successfully"
     return HttpResponse(json.dumps(context), content_type="application/json")        
 
 
 @login_required
-def show_process_data(request, sprocess_name):
+def show_process_data(request, process_id, sprocess_name):
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         if request.method == "GET":
             is_manager = True if request.user.groups.filter(name='CHAPERONE-MANAGER') else False
-            sub_process = SubProcess.objects.get(url_name=sprocess_name)
+            sub_process = SubProcess.objects.get(process=process_id,url_name=sprocess_name)
             if sub_process:
                 program_types = ProgramType.objects.filter(subprocess=sub_process).order_by('created_date')
-                print program_types,'program_types'
                 sub_processs = SubProcess.objects.filter(is_disabled=False)
             context = RequestContext(request, 
                         {'request': request, 'user': request.user,'sub_process':sub_process,
@@ -539,7 +540,7 @@ def add_carousel_data(request):
                         'column_name':column_name, 
                         'column_data':column_data, 
                         'success':True, 
-                        'msg':'Updated successfully'
+                        'msg':'Carousel data updated successfully'
              }
             if carousel_data_id:
                 try:
@@ -560,7 +561,7 @@ def add_carousel_data(request):
                 carousel_data.modified_by =  User.objects.get(email=request.user.email)
                 carousel_data.save()
                 context["carousel_data_id"] = carousel_data.pk
-                context["msg"] = "Column created successfully"
+                context["msg"] = "Carousel data created successfully"
     return HttpResponse(json.dumps(context), content_type="application/json")   
 
 
@@ -625,13 +626,13 @@ def add_addldata(request):
                         'column_name':column_name,
                         'column_data':column_data, 
                         'success':True, 
-                        'msg':'Updated successfully'
+                        'msg':'Task additional data updated successfully'
              }
             if additionaldata_id:
                 try:
                     addl_data = ProgramAdditionData.objects.get(id=additionaldata_id)
                 except ObjectDoesNotExist:
-                    context = {'msg' : 'Something went wrong, please try after some time'}
+                    context = {'success': False, 'msg' : 'Something went wrong, please try after some time'}
                 addl_data.name = column_name
                 addl_data.data = column_data
                 addl_data.modified_by =  User.objects.get(email=request.user.email)
@@ -647,7 +648,7 @@ def add_addldata(request):
                 addl_data.modified_by =  User.objects.get(email=request.user.email)
                 addl_data.save()
                 context["addl_data_id"] = addl_data.pk
-                context["msg"] = "Column created successfully"
+                context["msg"] = "Task additional data created successfully"
     return HttpResponse(json.dumps(context), content_type="application/json") 
 
 
@@ -724,3 +725,49 @@ def add_subprocess_programdata(request, sub_process_id):
             return HttpResponse(json.dumps(context), content_type="application/json")       
         else:
             return HttpResponse(json.dumps({"data":{}, "success":True, "msg":""}), content_type="application/json")       
+
+
+@login_required
+def edit_subprocess(request, sub_process_id):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        context = {}
+        if request.method == "POST":
+            sub_process_name = request.POST.get("sub_process_name")
+            try:
+                quarter = Quarter.objects.get(quarter=request.POST.get("quarter"),quarter_year=request.POST.get("quarter_year"))
+            except ObjectDoesNotExist:
+                quarter = Quarter()
+                quarter.quarter = request.POST.get("quarter")
+                quarter.quarter_year = int(request.POST.get("quarter_year"))
+                quarter.save()
+
+            process = SubProcess.objects.get(id=sub_process_id).process
+            sub_process_url_name = sub_process_name.lower().replace(' ','-')
+            exists = True
+            try:
+                sub_process = SubProcess.objects.get(process=process,name=sub_process_name,quarter=quarter)
+                if sub_process.id == int(sub_process_id):
+                    exists = False
+            except ObjectDoesNotExist:
+                exists = False
+            
+            if exists:
+                context = {'success':False,'msg':'Sub Process with this name , quarter and year already exists'}
+            else:
+                """
+                update sub process
+                """
+                sub_process = SubProcess.objects.get(id=sub_process_id)
+                sub_process.quarter = quarter
+                sub_process.name = sub_process_name
+                sub_process.url_name = sub_process_name.lower().replace(' ','-')
+                sub_process.created_by = User.objects.get(email=request.user.email)
+                sub_process.modified_by =  User.objects.get(email=request.user.email)
+                sub_process.save()
+                context = {
+                        'process_id':process.id,
+                        'sub_process_url_name':sub_process_url_name,
+                        'success':True, 
+                        'msg': sub_process_name + ' updated successfully.'
+                    }                      
+            return HttpResponse(json.dumps(context), content_type="application/json") 

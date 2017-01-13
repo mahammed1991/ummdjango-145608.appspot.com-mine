@@ -47,7 +47,7 @@
 
 					<a href="/" > <h3 class="adv "> Advertiser Goals </h3> </a>
 					{% for sub_process in sub_processs %}
-						<a href="/sp/{{sub_process.url_name}}" target="_blank" data-processid="{{sub_process.id}}" class="process"> <h3 class="adv" > {{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</h3> </a>
+						<a href="/process/{{sub_process.process.id}}/sp/{{sub_process.url_name}}/view" target="_blank" data-processid="{{sub_process.id}}" class="process"> <h3 class="adv" > {{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</h3> </a>
 					{%endfor %}
 					<!--<a href="/apollo_home/" class="active"> <h3 clas="adv"> {{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</h3> </a>-->
 					<hr class="line2">
