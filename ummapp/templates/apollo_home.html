@@ -12,135 +12,114 @@
 	<link href="{% static 'manage_admin/css/font-awesome.min.css' %}" rel="stylesheet">
 
 	<link rel="stylesheet" type="text/css" href="{% static 'css/looper.css'%}">
-	<link rel="stylesheet" type="text/css" href="{% static 'css/custom.css'%}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/new_custom.css'%}">
 </head>
 
 <body>
+	<header class="top-section">
+	  <div class="container-fluid">
+		  <div class="row">
+		  	  <div class="col-md-4">
+				<a href="/"><img src="{% static 'manage_admin/images/regalix_logo.jpg' %}" alt=""></a>
+			  </div>
+			  <div class="col-md-8">
+				  <ul>
+					  <li>{{ user.get_full_name|default:user.username }} </li>		  
+					  <li><a href="{% url 'auth:logout' %}?next=/"><i class="fa fa-power-off" aria-hidden="true"></i></a></li>
+					  {% if is_manager %}
+					  	<li><a href="/knowledgebase/admin/"><i class="fa fa-users" aria-hidden="true"></i></a></li>
+					  {% endif %}	
+				  </ul>
+			  </div>
+		  </div>
+	</header>
+	<section class="top-nav">
+	  <div class="container-fluid">
+		  <ul>
+			  <li><a href="/">Advertiser Goals</a></li>
+			  {% for sub_process in sub_processs %}
+			  	<li><a href="/process/{{sub_process.process.id}}/sp/{{sub_process.url_name}}/view" data-processid="{{sub_process.id}}" class="process">{{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</a></li>
+			  {%endfor %}
+		  </ul>
+	  </div>
+	</section>
 
-	<div class="container-fluid">
-		<div class="container-fluid main-top-bar " >
-			<div class="row">
-				<div class="col-md-6" >
-					<div  class="" ><a href="/" class="logo"><img src="{% static 'manage_admin/images/regalix_logo.jpg' %}" alt=""></a></div>
-				</div>
-				<div class="col-md-6">
-					<div class="row">
-						<div class="col-md-6">
-					<!--h1 class="text-left text-danger" >{{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</h1!-->
-						 </div>
-						 <div class="col-md-6">		
-					<div class="user" id='username_login'>	
-						{{ user.get_full_name|default:user.username }} | 
-						{% if is_manager %}
-							<a href="/knowledgebase/admin/" class="logout  pull-right"> <i class="fa fa-group" aria-hidden="true"></i></a>
-						{% endif %}
-						<a href="{% url 'auth:logout' %}?next=/"  class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
-					
+	<section class="sub-category-section">
+	  <div class="container-fluid">
+		   <!-- Nav tabs -->
+		  <ul class="nav nav-tabs prgrm-tab" role="tablist">
+			{% for ptype in program_types %}
+			<li role="presentation"><a  href="#tab{{ ptype.id }}" aria-controls="tab{{ ptype.id }}" role="tab" data-toggle="tab" data-programtype-id="{{ ptype.id }}" class="prg-type ">{{ ptype.name }}</a>
+			</li>
+			<script>
+		    	 cateList.push({{ category.id }});
+		     </script>	
+		    {% endfor %}
+		  </ul>
+
+		  <!-- Tab panes -->
+		  <div class="tab-content">
+			<div role="tabpanel" class="sub-task" id="program-tasks">
+			</div>
+		  </div>
+	  </div>
+	</section>
+
+	<section class="sub-row">
+	  <div class="container-fluid">
+			  <div class="col-lg-7 no-padding">
+				  <div class="faq-bg">
+					  <ul>
+					  </ul>
+				  </div>
+			  </div>
+			  <div class="col-lg-5 no-padding">
+				  <div class="combo-bg">
+					  <div id="text-carousel" class="carousel slide" data-ride="carousel">
+					<!-- Wrapper for slides -->
+						<div class="row">
+							<div class="carousel-inner" data-toggle="modal" data-target="#myModal2">
+							</div>
+						</div>
+	<!-- Controls --> <a class="left carousel-control" href="#text-carousel" data-slide="prev">
+					<span class="glyphicon glyphicon-chevron-left"></span>
+				  </a>
+				 <a class="right carousel-control" href="#text-carousel" data-slide="next">
+					<span class="glyphicon glyphicon-chevron-right"></span>
+				  </a>
+
 					</div>
-					  		</div>
-					  	</div>	
+				  </div>
+			  </div>
+	  </div>
+	</section>
+	<section class="table-setting">
+		<div class="container-fluid">
+			<table class="table table-bordered">
+				<thead>
+					<tr id="key_row">
 					
-				</div>
-			</div>
-			<div class="row">
-				<div class="container-fluid main-link">
-
-					<a href="/" > <h3 class="adv "> Advertiser Goals </h3> </a>
-					{% for sub_process in sub_processs %}
-						<a href="/process/{{sub_process.process.id}}/sp/{{sub_process.url_name}}/view" target="_blank" data-processid="{{sub_process.id}}" class="process"> <h3 class="adv" > {{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</h3> </a>
-					{%endfor %}
-					<!--<a href="/apollo_home/" class="active"> <h3 clas="adv"> {{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</h3> </a>-->
-					<hr class="line2">
-				</div>
-			</div>
-
-			    <script>
-			    	var cateList = [];
-			    </script>	
-
-		<div class="container-fluid main-category-bar" >
-			<ul class="prgrm-tab main-option">
-				{% for ptype in program_types %}
-				<li ><a  data-programtype-id="{{ ptype.id }}" class="prg-type ">{{ ptype.name }}</a>
-				</li>
-				<script>
-			    	 cateList.push({{ category.id }});
-			     </script>	
-			    {% endfor %}
-
-			</ul>
-			 
-			<hr class="line">
-			<div class="row sub-task" id="program-tasks">
-				<!--<a class="sub-task-link" id="{{ task.id }}"></a>-->
-			</div>
-		</div>
-		<div class="container-fluid" >
-			<div class="row">
-				<!--<div class="col-xs-12 col-md-3 col-md-3 col-lg-2 sub-row1">Combos Update</div>-->
-				<div data-looper="go" class="looper" style="width:40%;">
-					<div class="col-xs-12 col-md-9 col-md-9 col-lg-10 sub-row2 myclass looper-inner" data-toggle="modal" data-target="#myModal2">
-						
-				</div>
-				</div>
-				<div class="col-md-7 col-sm-12 right-box2">
-				<!--<div class="col-xs-12 col-md-3 col-md-3 col-lg-2 sub-row3">-->
-						<a id="budget_band" class ="sideclass" data-toggle="modal" data-target="#myModal3" style="margin-top: 4px;">Budget Bands</a>
-				<!--</div>-->
-					<!--<div class="col-xs-12 col-md-3 col-md-3 col-lg-2 sub-row4">-->
-				    	<a id="addl-data" class ="sideclass" data-toggle="modal" data-target="#myModal " style="margin-top: 4px;"></a>
-				    <!--</div>-->
-				    <!--div class="col-xs-12 col-md-3 col-md-3 col-lg-2 sub-row5">
-				    	<button><a id="implementation" class ="sideclass" data-toggle="modal" data-target="#myModal">Implementation Guide</a></button>
-				    </div>
-				    <div class="col-xs-12 col-md-3 col-md-3 col-lg-2 sub-row5">
-				    	<button><a id="faqns" class ="sideclass" data-toggle="modal" data-target="#myModal">FAQ's</a></button>
-				    </div-->
-				</div>
-				<!--<div class="col-md-7 col-sm-12 right-box2">
-				<a id="budget_band" class="sideclass" data-toggle="modal" data-target="#myModal3">Budget Bands</a>
-			    <a id="email_pitch" class="sideclass" data-toggle="modal" data-target="#myModal">Email Pitch Guidelines</a>
-			    <a id="implementation" class="sideclass" data-toggle="modal" data-target="#myModal">Implementation Guide</a>
-			    <a id="faqns" class="sideclass" data-toggle="modal" data-target="#myModal">FAQ's</a>
-			</div>-->
-				
-			</div>
-			</div>
-		</div>
-
-		<div class="container-fluid" style="background: #ffffff">
-			<div class="row">
-				<div class="col-md-12 table-box  " style="padding: 0">
+				    </tr>
+				</thead>
+				<tbody>
+					<tr id="value_row">
 					
-						<table class="table">
-							<thead>
-								<tr id="key_row">
-								
-							    </tr>
-							</thead>
-							<tbody>
-								<tr id="value_row">
-								
-							    </tr>
-							</tbody>
-						</table>
-					
-				</div>
-			</div>
-			<!--<div class="col-md-2 col-sm-3 right-box" >
-				<a id="budget_band" class ="sideclass" data-toggle="modal" data-target="#myModal3">Budget Bands</a>
-			    <a id="email_pitch" class ="sideclass" data-toggle="modal" data-target="#myModal">Email Pitch Guidelines</a>
-			    <a id="implementation" class ="sideclass" data-toggle="modal" data-target="#myModal">Implementation Guide</a>
-			    <a id="faqns" class ="sideclass" data-toggle="modal" data-target="#myModal">FAQ's</a>
-			</div>-->
+				    </tr>
+				</tbody>
+			</table>
 		</div>
-		<div class="container-fluid last-row" >
-			<div class="row"><h1>Elevator Pitch</h1></div>
-			<br><p id="elevator_data"></p><br>
-		</div>
-	</div >
+	</section>
 
-<div class="modal fade" id="myModal" >
+	<section class="recommendations-section">
+		  <div class="container-fluid">
+		  	  <div class="white-bg">
+			  	<h2>Elevator Pitch</h2>
+			  	<p id="elevator_data"></p>
+			  </div>
+		  </div>
+	  </section>
+
+<div class="container modal fade modal-box-css" id="myModal" style="margin-top: 20px;">
 	<div role="document">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -174,7 +153,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="myModal2" >
+<div class="container modal fade" id="myModal2" style="margin-top: 20px;">
 	<div role="document">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -195,12 +174,12 @@
 	</div>
 </div>
 
-<div class="modal fade" id="myModal3">
+<div class="container modal fade" id="myModal3" style="margin-top: 20px;">
 	<div role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Budget Bands</h4>
+				<h4 class="modal-title" id="myModalLabel" data-target="#myModal3">Budget Bands</h4>
 			</div>
 			<div class="modal-body budget-body">
 				
@@ -213,9 +192,9 @@
 </div>
 
 </div>
-	<script type="text/javascript" src="{% static 'js/jquery-2.2.1.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/looper.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
 	<!--<script type="text/javascript" src="{% static 'js/script.js' %}"></script>-->
 	<script type="text/javascript">
@@ -224,13 +203,13 @@
 			$('.process[data-processid='+ sub_process + "]").addClass('active');
 			updateCarouseldata(sub_process);
 	    	if('.prg-type'){
-	    		$('.prg-type:first').addClass('make-active');
+	    		$('.prg-type:first').parent().addClass('active');
 	    	}
 
 		    $('.prg-type').click(function (e) {
 		    	e.preventDefault();
-		    	$('.prg-type').removeClass('make-active');
-		    	$(this).addClass('make-active');
+		    	//$('.prg-type').removeClass('make-active');
+		    	//$(this).addClass('make-active');
 		    	updateTaskTypes($(this).attr('data-programtype-id'));
 		    });	
 
@@ -241,6 +220,7 @@
 		    	$('#addl-data').text('More about '+ $(this).text())
 		    	loadTaskData($(this).data('programtype-id'));
 		    	updateCarouseldata(sub_process);
+		    	updateAdditionaldata($(this).data('programtype-id'));
 		    });
 
 
@@ -293,6 +273,7 @@
 		            		$('#program-tasks').append(td_html);
 		            		$('#addl-data').text('More about '+ $('.prg-task.active').text());
 		            		loadTaskData(tsk_id);
+		            		updateAdditionaldata(tsk_id)
 		            	}
 		            },
 		            error: function(xhr, status, error) {
@@ -338,15 +319,21 @@
 				            $('.looper').looper({
 				            	 interval: 3000
 				            });
+				            $('.carousel-inner').html('');
 				            for(i=0; i<data.length; i++)
 				            {	
 				                mytag=document.createElement('a');
 				                mytag.setAttribute('id',data[i].data_id);
-				                mytag.setAttribute('class', "item");
+				                //mytag.setAttribute('class', "item");
 				                mytag.innerHTML = data[i].column_name;
+				                active_class = ''
+				                if (i == 0){
+				                	active_class = 'active'
+				                }
+				                $('.carousel-inner').append("<div class='item "+ active_class + "'>"+"<p><a id='"+data[i].data_id + "'>"+data[i].column_name +"</a></p></div>")
 				                $('.myclass').append(mytag);
 				            }
-				            $('.myclass').click(function(){
+				            $('.carousel-inner').click(function(){
 				                $('.mytable').empty();
 				                for(i=0; i<data.length; i++)
 				                {
@@ -362,6 +349,9 @@
 				                }
 				            });
 		            	}
+		            	else{
+		            		$('.carousel-inner').html('');
+		            	}
 
 		            },
 		            error: function(xhr, status, error) {
@@ -376,22 +366,27 @@
 				e.preventDefault()
 				$("#myModalLabel").html($('.prg-task.active').html());
 				task_id = $('.prg-task.active').attr('data-programtype-id');
+				selected_add_data = $(this).attr('data-additionaldata-id');
 				$.ajax({
 		            url: '/get-addldata/'+task_id,
 		            type: 'GET',
 		            success: function(data) {
-		            	$('.nav.nav-tabs').append('');
-		            	$('.tab-content').append('');
+		            	$('#myModal').find('.nav.nav-tabs').html('');
+		            	$('#myModal').find('.tab-content').html('');
 		            	li_html = ''
 		            	div_html = ''
 		            	for(var i=0;i<data['data'].length;i++){
-		            		li_html = '<li><a href="" class="addl-data" data-id='+data['data'][i]['data_id'] + '" data-toggle="tab">'+ data['data'][i]['column_name'] + '</a></li>'
-		            		div_html = '<div class="tab-pane"  data-id='+data['data'][i]['data_id'] + '" id="">' + data['data'][i]['data'].replace(/&nbsp;/g, ' ') + '</div>'
-		            		$('.nav.nav-tabs').append(li_html);
-		            		$('.tab-content').append(div_html);
+		            		li_html = '<li><a href="" class="addl-data" data-id='+data['data'][i]['data_id'] + ' data-toggle="tab">'+ data['data'][i]['column_name'] + '</a></li>'
+		            		div_html = '<div class="tab-pane"  data-id='+data['data'][i]['data_id'] + ' id="">' + data['data'][i]['data'].replace(/&nbsp;/g, ' ') + '</div>'
+		            		$('#myModal').find('.nav.nav-tabs').append(li_html);
+		            		$('#myModal').find('.tab-content').append(div_html);
+			            	if (selected_add_data == parseInt(data['data'][i]['data_id'])){
+			            		$('#myModal').find('.nav.nav-tabs li > a[data-id='+ data['data'][i]['data_id']+ ']').parent().addClass('active');
+			            		$('#myModal').find('.tab-content div[data-id='+ data['data'][i]['data_id']+ ']').addClass('active');
+			            		/*$('#myModal').find('.nav.nav-tabs li:first').addClass('active');
+			            		$('#myModal').find('.tab-content div:first').addClass('active');*/
+			            	}
 		            	}
-		            	$('.nav.nav-tabs li:first').addClass('active');
-		            	$('.tab-content div:first').addClass('active');
 		            	$("#myModal").show();
 		            },			
 		            error: function(xhr, status, error) {
@@ -410,9 +405,38 @@
 			})
 
 			$('#myModal').on('hidden.bs.modal', function (e) {
-				$('.nav.nav-tabs').html('');
-		        $('.tab-content').html('');
+				$('#myModal').find('.nav.nav-tabs').html()
+		        $('#myModal').find('.tab-content').html('');
 			});
+
+			additionalDataIds = {}
+
+			var updateAdditionaldata = function(task_id){
+				$.ajax({
+		            url: '/get-addldata/'+task_id,
+		            type: 'GET',
+		            success: function(data) {
+		            	var data = data['data'];
+		            	if (data.length > 0){
+		            		$cols = $('.faq-bg > ul');
+		            		$cols.html('');
+		            		for(var i=0;i<data.length;i++){
+		            			additionalDataIds[data[i].data_id] = data[i].data
+		      					$cols.append('<li><a href="#" data-toggle="modal" data-target="#myModal" id="addl-data" data-additionaldata-id="'+data[i].data_id+'">'+ data[i].column_name+'</a></li>');
+		            		}
+		            	}else{
+							$cols = $('.faq-bg > ul');
+		            		$cols.html('');
+
+		            	}
+		            },
+		            error: function(xhr, status, error) {
+		                var err = eval("(" + xhr.responseText + ")");
+		                alert(err.Message);
+		                //alert("Something went wrong, please try after some time");
+		            }
+	    		});	
+			}
 
 			
 	    });	

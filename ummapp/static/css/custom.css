@@ -261,7 +261,7 @@ text-decoration: none;}
 
 .modal-body{
     overflow-y: auto;
-    height: 700px;
+    height: 500px;
 }
 
 .looper{
@@ -360,7 +360,7 @@ text-decoration: none;}
 }
 
 #username_login{
-    /*padding-top: 30px;*/
+    padding-top: 30px;
 }
 .right-box2 a {
              display: inline-block; margin:20px 0; 
@@ -387,3 +387,5 @@ a.logout {
     float: left;
     margin-left: 19px;
 }
+
+
