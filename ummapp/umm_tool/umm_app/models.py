@@ -153,6 +153,7 @@ class SubProcess(models.Model):
     process = models.ForeignKey(Process)
     quarter = models.ForeignKey(Quarter)
     name = models.CharField(max_length=250)
+    cloned_count = models.IntegerField(default=0)
     url_name = models.CharField(max_length=250)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
@@ -162,6 +163,7 @@ class SubProcess(models.Model):
 
     class Meta:
         unique_together = ('process', 'name', 'quarter',)
+
     def __unicode__(self):
         return "%s" % (self.name)
 

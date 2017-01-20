@@ -55,10 +55,19 @@ urlpatterns = [
     url(r'^get-process/$','umm_app.views.get_process', name='get_process'),
     # Get All Subprocesses
     url(r'^process/(?P<reference_id>[0-9]+)/subprocesses$', 'umm_app.views.subprocess_handler'),
-    
+    # Clone Sub Process
+    url(r'^process/(?P<process_id>[0-9]+)/sp/(?P<sprocess_name>[A-Za-z0-9-]+)/clone', 'umm_app.views.clone_subprocess'),
 
-    #Views
+    # Delete Process/Subproccess/Program types/ tasks/ task data/ additional data
+    url(r'^process/(?P<process_id>[0-9]+)/delete$', 'umm_app.views.delete_process_handler'),
+    url(r'^process/(?P<process_id>[0-9]+)/sp/(?P<sub_process_id>[0-9]+)/delete', 'umm_app.views.delete_subprocess_handler'),
+    url(r'^programtype/delete', 'umm_app.views.delete_programs_handler'),
+    url(r'^programtask/delete', 'umm_app.views.delete_tasks_handler'),
+    url(r'^taskdata/(?P<task_data_id>[0-9]+)/delete', 'umm_app.views.delete_taskdata_handler'),
+    url(r'^taskadditionaldata/(?P<additional_data_id>[0-9]+)/delete', 'umm_app.views.delete_additionaldata_handler'),
+    url(r'^quaterupdate/(?P<data_id>[0-9]+)/delete', 'umm_app.views.delete_subprocess_level_data'),
 
+    # Views
     url(r'^process/(?P<reference_id>[0-9]+)/show$', 'umm_app.views.subprocess_handler', name='subprocess_handler'),
     url(r'^process/(?P<process_id>[0-9]+)/sp/(?P<sprocess_name>[A-Za-z0-9-]+)/edit','umm_app.views.create_task_data',name=''),
     url(r'^process/create/$','umm_app.views.process_handler', name='process_handler'),

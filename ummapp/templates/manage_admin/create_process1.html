@@ -159,6 +159,28 @@
 
 		$(document).ready(function() {
 
+			var getQueryString = function (field) {
+				var href = window.location.href;
+				var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
+				var string = reg.exec(href);
+				return string ? string[1] : null;
+			};
+			subprocessCreation = false;
+
+			// Get Process from Query Param, returns string if it finds the query parameter else null
+			var pro = getQueryString('process')
+			var proId = getQueryString('id')
+			if(proId) proId = parseInt(proId)
+			if(pro){
+				subprocessCreation = true;
+				$("#process-name").val(pro);
+				$("#process-name").prop('disabled', true);
+				$('#sub-process').removeClass('disabled');
+				$('#sub-process').removeClass('red-bg');
+				$('#sub-process-hdg').css('display', 'none');
+				$('.process-rows').css('display', 'block');
+			}
+
 			$('#btn-close').on('click', function(){
 				$('#msg-info').css('display', 'none')
 			});
@@ -260,7 +282,11 @@
 				        formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
 				        
 				        var processData = {};
+				        if(proId){
+				        	processData['proId'] = proId;
+				        }
 				        processData['name'] = $('#process-name').val();
+
 				        processData['is_disabled'] = $('#is-disabled').val();
 				        processData['sub_process_name'] = $('#sub-process-name').val();
 				        processData['quarter'] = $('#quarter').val();
@@ -315,13 +341,12 @@
 
 		    $("#process-name").focusout(function() {
 		    	
-		        if ($(this).val()) {
+		        if ($(this).val() && !subprocessCreation) {
 			        $.ajax({
 			                url: '/get-process/',
 			                type: 'POST',
 			                data: {'name':$("#process-name").val()},
 			                success: function(data) {
-			                	
 			                	if (data['msg'] != ''){
 			                		$('#process-error').text(data['msg']);
 			                		$('input[type="submit"]').prop('disabled', true);
