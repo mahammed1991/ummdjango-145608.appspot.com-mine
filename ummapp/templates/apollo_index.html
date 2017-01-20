@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Advertiser Goals</title>
+		{% load staticfiles %}
+		<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap.min.css'%}">
+		<!--<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap-theme.min.css'%}">-->
+		<link href="{% static 'manage_admin/css/font-awesome.min.css' %}" rel="stylesheet">
+		{% if user and not user.is_anonymous %}
+		<link rel="stylesheet" type="text/css" href="{% static 'css/new_custom.css'%}">
+		{% else %}
+		<link rel="stylesheet" type="text/css" href="{% static 'css/custom.css'%}">
+		{% endif %}
+		<script src="{% static 'js/jquery-2.2.1.min.js'%}"></script>
+	</head>
+	<body>
+        {% if user and not user.is_anonymous %}
+        <header class="top-section">
+		  <div class="container-fluid">
+			  <div class="row">
+			  	  <div class="col-md-4">
+					<a href="/"><img src="{% static 'manage_admin/images/regalix_logo.jpg' %}" alt=""></a>
+				  </div>
+				  <div class="col-md-8">
+					  <ul>
+						  <li>{{ user.get_full_name|default:user.username }} </li>		  
+						  <li><a href="{% url 'auth:logout' %}?next=/"><i class="fa fa-power-off" aria-hidden="true"></i></a></li>
+						  {% if is_manager %}
+						  	<li><a href="/knowledgebase/admin/"><i class="fa fa-users" aria-hidden="true"></i></a></li>
+						  {% endif %}	
+					  </ul>
+				  </div>
+			  </div>
+		</header>
+
+		<section class="top-nav">
+		  <div class="container-fluid">
+			  <ul>
+				  <li><a href="/" class="active">Advertiser Goals</a></li>
+				  {% for sub_process in sub_processs %}
+				  	<li><a href="process/{{sub_process.process.id}}/sp/{{sub_process.url_name}}/view" data-processid="{{sub_process.id}}" class="process">{{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</a></li>
+				  {%endfor %}
+			  </ul>
+		  </div>
+		</section>
+
+		<section class="sub-category-section">
+		  <div class="container-fluid">
+			  <h2>Select your advertiser goals & hit 'Submit' button</h2>
+			  
+			      <form action="" id="goalform">
+			      <div class="row">
+		            {% for g_map in goal_map %}
+				      <div class="col-md-4">
+				      <label class="control control--checkbox task_name"  id="{{ g_map.id }}">{{ g_map.goal_name }}
+				      <input type="checkbox" class="task" >
+				      <div class="control__indicator"></div>
+					  </label>
+					  </div>
+				     {% endfor %} 
+				  </div> 
+					<button type="button" class="btn btn-default pull-right refresh">Refresh</button>
+				      <button type="submit" class="btn btn-primary pull-right sbtn">SUBMIT</button>
+			      </form>
+		  </div>
+		</section>
+		<section class="recommendations-section">
+		  <div class="container-fluid">
+		  	  <div class="white-bg">
+				  <h2 class="task-list">Task Recommendations</h2>
+				  <div class="clearfix"></div>
+				  <div class="taskrecommend">
+				  	<p>Watch out this space for your task recommendations</p>
+				  </div>
+				  <div class="clearfix"></div>
+				  <div class="taskrecommend2">
+				      	
+				    </div>
+				  <h2>Additional Questions</h2>
+				  <div class="clearfix">  </div>
+				  <div class="advertiser-goal">
+				  <p>Watch out this space for your advertiser goal better</p>
+				  </div>
+			  </div>
+		  </div>
+		</section>
+			  <script type="text/javascript" src="{% static 'js/custom.js'%}"></script>
+
+          {% else %}
+	         <div id="header">
+			    <div id="header-content">
+			      <a href="/"><div id="logo"></div></a>
+			    </div>
+			  </div>
+
+			  <div id="extra"></div>
+
+			  <div class="container">
+			    <div class="login-container">
+			      <div class="login">
+		               <a href="{% url 'social:begin' 'google-oauth2' %}"><img src="{% static 'images/login.png'%}"></div></a>
+		                </div>
+			    </div>
+			  </div>
+			  {% if error %}
+				  <div id="error">
+				  		<p>{{error}}</p>
+				  </div>
+			  {% endif %}
+			  
+			  <div class="footer"></div>
+         {% endif %} 
+<script src="{% static 'manage_admin/js/jquery.min.js' %}"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+	    /*$("body").on("click", ".process", function(e){
+	    	e.preventDefault()
+	    	selected_sub_process = $(this).attr('data-processid');
+    		$.ajax({
+	            url: $(this).attr('href'),
+	            type: 'GET',
+	            success: function(data) {
+
+	            	$('.process').removeClass('active');
+	            	$('.process[data-processid='+ selected_sub_process + "]").addClass('active');
+
+	            },
+	            error: function(xhr, status, error) {
+	                var err = eval("(" + xhr.responseText + ")");
+	                alert(err.Message);
+	                //alert("Something went wrong, please try after some time");
+	            }	
+
+	        });	    	
+	    	
+
+	    });*/
+	});
+</script>  
+</body>
+</html>
+	
