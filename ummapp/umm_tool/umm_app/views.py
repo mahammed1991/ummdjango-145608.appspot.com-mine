@@ -194,8 +194,9 @@ def manage_admin(request):
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         processes = Process.objects.all()
         context = RequestContext(request, {'request': request, 'user': request.user,'processes':processes})
-    return render(request, "manage_admin/umm_admin.html", context_instance = context) 
-
+        return render(request, "manage_admin/umm_admin.html", context_instance = context) 
+    else:
+        raise PermissionDenied
 
 @login_required
 def process_handler(request):
@@ -265,7 +266,9 @@ def process_handler(request):
             return HttpResponse(json.dumps(context), content_type="application/json")
         else:
             context = RequestContext(request, {'request': request, 'user': request.user, 'success':True})
-    return render(request, "manage_admin/create_process1.html", context_instance = context) 
+            return render(request, "manage_admin/create_process1.html", context_instance = context) 
+    else:
+        raise PermissionDenied
 
 
 @login_required
@@ -279,7 +282,9 @@ def get_process(request):
                 context['msg'] = "Process with the name already exists"
             except Process.DoesNotExist:
                 context['msg'] = ''
-    return HttpResponse(json.dumps(context), content_type="application/json")
+            return HttpResponse(json.dumps(context), content_type="application/json")
+    else:
+        raise PermissionDenied
 
 
 @login_required
@@ -312,8 +317,9 @@ def create_task_data(request, process_id=None, sprocess_name=None):
                         'success':True,
                         'data':data
                         })
-    return render(request, "manage_admin/additional_data.html", context_instance = context) 
-
+        return render(request, "manage_admin/additional_data.html", context_instance = context) 
+    else:
+        raise PermissionDenied
 
 
 @login_required
@@ -325,7 +331,9 @@ def get_program_tasks(request, program_type_id):
                 tasks = [{task.name: task.id} for task in program_tasks]
             except ObjectDoesNotExist:
                 program_tasks = []
-    return HttpResponse(json.dumps({"data":tasks, "success":True, "msg":""}), content_type="application/json")    
+            return HttpResponse(json.dumps({"data":tasks, "success":True, "msg":""}), content_type="application/json")    
+    else:
+        raise PermissionDenied
 
 @login_required
 def get_task_data(request, task_id):
@@ -367,7 +375,9 @@ def get_column_name(request):
                 else:
                     context["success"] = False
                     context["msg"] = "Column Name already exists, please try other."
-    return HttpResponse(json.dumps(context), content_type="application/json")        
+            return HttpResponse(json.dumps(context), content_type="application/json")
+    else:
+        raise PermissionDenied        
 
 
 
@@ -415,7 +425,9 @@ def add_task_data(request):
                 task_data.save()
                 context["task_data_id"] = task_data.pk
                 context["msg"] = "Task data created successfully"
-    return HttpResponse(json.dumps(context), content_type="application/json")        
+            return HttpResponse(json.dumps(context), content_type="application/json")
+    else:
+        raise PermissionDenied        
 
 
 @login_required
@@ -519,7 +531,9 @@ def get_carousel_column_name(request):
                 else:
                     context["success"] = False
                     context["msg"] = "Column Name already exists, please try other."
-    return HttpResponse(json.dumps(context), content_type="application/json")
+            return HttpResponse(json.dumps(context), content_type="application/json")
+    else:
+        raise PermissionDenied
 
 
 @login_required
@@ -562,7 +576,9 @@ def add_carousel_data(request):
                 carousel_data.save()
                 context["carousel_data_id"] = carousel_data.pk
                 context["msg"] = "Carousel data created successfully"
-    return HttpResponse(json.dumps(context), content_type="application/json")   
+            return HttpResponse(json.dumps(context), content_type="application/json") 
+    else:
+        raise PermissionDenied  
 
 
 @login_required
@@ -605,8 +621,9 @@ def get_addldata_column_name(request):
                 else:
                     context["success"] = False
                     context["msg"] = "Column Name already exists, please try other."
-    return HttpResponse(json.dumps(context), content_type="application/json")
-
+            return HttpResponse(json.dumps(context), content_type="application/json")
+    else:
+        raise PermissionDenied
 
 @login_required
 @csrf_exempt
@@ -649,7 +666,9 @@ def add_addldata(request):
                 addl_data.save()
                 context["addl_data_id"] = addl_data.pk
                 context["msg"] = "Task additional data created successfully"
-    return HttpResponse(json.dumps(context), content_type="application/json") 
+            return HttpResponse(json.dumps(context), content_type="application/json") 
+    else:
+        raise PermissionDenied
 
 
 @login_required
@@ -686,6 +705,7 @@ def add_subprocess_programdata(request, sub_process_id):
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         if request.POST:
             process_data = json.loads(request.POST.get("processData"))
+            print process_data,process_data.get("programs")
             try:
                 process_objects = list()
                 sub_process_id = process_data.get('sub_process_id')
@@ -725,7 +745,8 @@ def add_subprocess_programdata(request, sub_process_id):
             return HttpResponse(json.dumps(context), content_type="application/json")       
         else:
             return HttpResponse(json.dumps({"data":{}, "success":True, "msg":""}), content_type="application/json")       
-
+    else:
+        raise PermissionDenied
 
 @login_required
 def edit_subprocess(request, sub_process_id):
@@ -771,3 +792,80 @@ def edit_subprocess(request, sub_process_id):
                         'msg': sub_process_name + ' updated successfully.'
                     }                      
             return HttpResponse(json.dumps(context), content_type="application/json") 
+    else:
+        raise PermissionDenied
+
+
+@login_required
+def delete_carouseldata(request, carousel_data_id):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        context = {}
+        if request.method == "POST":
+            try:
+                carousel_update = SubProcessLevelUpdates.objects.get(id=carousel_data_id)
+                sub_process = SubProcess.objects.get(id=int(request.POST.get('sub_process_id')))
+                process_id = sub_process.process.id
+                sub_process_url_name = sub_process.url_name
+                carousel_update.delete()
+
+                context = {
+                        'process_id':process_id,
+                        'sub_process_url_name':sub_process_url_name,
+                        'success':True, 
+                        'msg': 'Carousel data deleted successfully.'
+                    }
+            except Exception as e:
+                context = {'success':False,'msg':'Something went wrong, please try after some time'}                    
+            return HttpResponse(json.dumps(context), content_type="application/json")            
+    else:
+        raise PermissionDenied  
+
+
+@login_required
+def delete_addldata(request, additional_data_id):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        context = {}
+        if request.method == "POST":
+            try:
+                addl_data = ProgramAdditionData.objects.get(id=additional_data_id)
+                program_task = ProgramTask.objects.get(id=int(request.POST.get('program_task_id')))
+                process_id = program_task.program_type.subprocess.process.id
+                sub_process_url_name = program_task.program_type.subprocess.url_name
+                addl_data.delete()
+
+                context = {
+                        'process_id':process_id,
+                        'sub_process_url_name':sub_process_url_name,
+                        'success':True, 
+                        'msg': 'Additional data deleted successfully.'
+                    }
+            except Exception as e:
+                context = {'success':False,'msg':'Something went wrong, please try after some time'}                    
+            return HttpResponse(json.dumps(context), content_type="application/json")            
+    else:
+        raise PermissionDenied 
+
+
+@login_required
+def delete_taskdata(request, task_data_id):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        context = {}
+        if request.method == "POST":
+            try:
+                task_data = TaskData.objects.get(id=task_data_id)
+                program_task = ProgramTask.objects.get(id=int(request.POST.get('program_task_id')))
+                process_id = program_task.program_type.subprocess.process.id
+                sub_process_url_name = program_task.program_type.subprocess.url_name
+                task_data.delete()
+
+                context = {
+                        'process_id':process_id,
+                        'sub_process_url_name':sub_process_url_name,
+                        'success':True, 
+                        'msg': 'Additional data deleted successfully.'
+                    }
+            except Exception as e:
+                context = {'success':False,'msg':'Something went wrong, please try after some time'}                    
+            return HttpResponse(json.dumps(context), content_type="application/json")            
+    else:
+        raise PermissionDenied        
