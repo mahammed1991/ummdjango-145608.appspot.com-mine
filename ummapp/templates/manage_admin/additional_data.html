@@ -16,6 +16,7 @@
     <link href="{% static 'manage_admin/css/datepicker.min.css' %}" rel="stylesheet">
     <link href="{% static 'manage_admin/css/formValidation.min.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'manage_admin/css/iziToast.min.css'%}">
+	<link rel="stylesheet" href="{% static 'manage_admin/css/bootstrap-tagsinput.css'%}">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -28,6 +29,12 @@
     </style>-->
     <style>
 		.datepicker{z-index:1151 !important;}
+		.bootstrap-tagsinput {
+    width: 100%;
+}
+.label {
+    line-height: 2 !important;
+}
 	</style>
   </head>
   <body>
@@ -39,7 +46,7 @@
 				</div>
 				<div class="col-xs-8 col-md-6 col-sm-6">
 					<a href="{% url 'auth:logout' %}?next=/" class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
-					<a href="/" class="logout  pull-right"><i class="fa fa-home" aria-hidden="true"></i></a>
+					<a href="/" class="logout  pull-right" target="_blank"><i class="fa fa-home" aria-hidden="true"></i></a>
 				</div>
 			</div>
 		</div>
@@ -177,7 +184,7 @@
 		            <textarea class="form-control" name="column_data" id="message-text"></textarea>
 		          </div>
 			      <div class="modal-footer">
-			        <!--<button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>-->
+			        <button type="button" class="btn btn-primary" id="taskDataDelete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
 			        <button type="submit" class="btn btn-primary" id="taskFormSubmit">Save</button>
 			      </div>
 		        </form>
@@ -213,7 +220,7 @@
 		            <textarea class="form-control" name="column_data" id="carouseldata-text"></textarea>
 		          </div>
 			      <div class="modal-footer">
-			        <!--<button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>-->
+			        <button type="button" class="btn btn-primary" id="carouselDataDelete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
 			        <button type="submit" class="btn btn-primary" id="carouselDataFormSubmit">Save</button>
 			      </div>
 		        </form>
@@ -249,7 +256,7 @@
 		            <textarea class="form-control" name="column_data" id="additionaldata-text"></textarea>
 		          </div>
 			      <div class="modal-footer">
-			        <!--<button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>-->
+			        <button type="button" class="btn btn-primary" id="additionalDataDelete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
 			        <button type="submit" class="btn btn-primary" id="additionalDataFormSubmit">Save</button>
 			      </div>
 		        </form>
@@ -278,12 +285,13 @@
 				    <div class="form-group progs">
 				    	<h4 class="modal-title margin-bottom-10px" >Program Type</h4>
 				        <div class="col-xs-5 form-group">
-				            <input type="text" class="form-control req" name="program_type_0_name" placeholder="Program Type" />
+				            <input type="text" class="form-control req" name="program_type_0_name" placeholder="Program Type" data-id=""/>
 				        </div>
 				        <div class="col-xs-5 form-group">
 				            <input type="text" class="form-control req" name="program_task_0_name" placeholder="Program Task" />
 				        </div>
 				        <div class="col-xs-2">
+				        	<button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
 				            <button type="button" class="btn btn-default addButton"><i class="fa fa-plus"></i></button>
 				        </div>
 				    </div>
@@ -291,12 +299,13 @@
 				    <!--The template for adding new field-->
 				    <div class="form-group hide" id="programTypeTemplate">
 				        <div class="col-xs-5 form-group">
-				            <input type="text" class="form-control" name="program-type-name" placeholder="Program Type" />
+				            <input type="text" class="form-control" name="program-type-name" placeholder="Program Type"/ data-id="">
 				        </div>
 				        <div class="col-xs-5 form-group">
-				            <input type="text" class="form-control" name="program-task-name" placeholder="Program Task" />
+				            <input type="text" class="form-control" name="program-task-name" placeholder="Program Task"  />
 				        </div>
 				        <div class="col-xs-2">
+				        	<button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
 				            <button type="button" class="btn btn-default removeButton"><i class="fa fa-minus"></i></button>
 				        </div>
 				    </div>
@@ -328,7 +337,7 @@
 		      <div class="modal-body">
 		        <form id="subProcessEditForm">
 		        	{% csrf_token %}
-				    <div class="form-group progs">
+				    <div class="form-group">
 						<div class="form-group">
 					        <label for="sub-process-name" class="control-label col-sm-2">Sub Process Name</label>
 					        <div class="col-sm-9 form-group">
@@ -363,7 +372,7 @@
 				    <div class="clearfix"></div>
 				      <div class="modal-footer">
 				        <!--<button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>-->
-				        <button type="submit" class="btn btn-primary" id="addProgramDataSubmit">Save</button>
+				        <button type="submit" class="btn btn-primary" id="subProcessEditSubmit">Save</button>
 				      </div>
 		        </form>
 		      </div>
@@ -375,6 +384,36 @@
 		  </div>
 		</div>	
 	  </div>
+
+	<div class="modal-style">
+	    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+	        <div class="modal-dialog" role="document">
+	            <div class="modal-content">
+	                <div class="modal-header">
+	                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+	                    </button>
+	                    <h4 class="modal-title2">Are you ABSOLUTELY sure?
+
+	</h4>
+	                </div>
+	                <div class="modal-body">
+				        
+				        <div class="facebox-alert">
+				    		Unexpected bad things will happen if you don’t read this!
+				  		</div>
+				  		<div class="del-confirm-msg">
+					        <p>This action <strong>CANNOT</strong> be undone. This will permanently delete the <strong>sreekanth-anubolu/Java-Basic-Programs</strong> repository, wiki, issues, and comments, and remove all collaborator associations.</p>
+					        <p>Please type in the name of the repository to confirm.</p>
+				        </div>
+				        <button type="submit" class="btn btn-block btn-danger btn-ok">I understand the consequences, delete this item</button>
+				      </div>
+	                <div class="modal-footer">
+	                    <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
   
   
   
@@ -388,6 +427,7 @@
     <script src="{% static 'manage_admin/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'ckeditor/ckeditor.js' %}"></script>
     <script src="{% static 'manage_admin/js/iziToast.min.js' %}"></script>
+	<script src="{% static 'manage_admin/js/bootstrap-tagsinput.min.js' %}"></script>
     <!--<script src="{% static 'manage_admin/js/jquery-ui.min.js' %}"></script>-->
 	<script type="text/javascript">
 	$(document).ready(function(){
@@ -402,6 +442,27 @@
 				iziToast.success({
 				    title: 'OK',
 				    message: 'Successfully updated sub process' ,
+				});
+	    }
+
+	    if (current_url.indexOf('?')!= -1 && current_url.split('?')[1].split('=')[0] == 'carousel' && current_url.split('?')[1].split('=')[1] == 'deleted'){
+				iziToast.success({
+				    title: 'OK',
+				    message: 'Successfully deleted carousel data' ,
+				});
+	    }
+
+	    if (current_url.indexOf('?')!= -1 && current_url.split('?')[1].split('=')[0] == 'additionaldata' && current_url.split('?')[1].split('=')[1] == 'deleted'){
+				iziToast.success({
+				    title: 'OK',
+				    message: 'Successfully deleted task additional data' ,
+				});
+	    }
+
+	    if (current_url.indexOf('?')!= -1 && current_url.split('?')[1].split('=')[0] == 'taskdata' && current_url.split('?')[1].split('=')[1] == 'deleted'){
+				iziToast.success({
+				    title: 'OK',
+				    message: 'Successfully deleted task data' ,
 				});
 	    }
 
@@ -435,7 +496,6 @@
 	    $("body").on("click", ".carousel-column", function(e){
 	    	e.preventDefault();
 	    	$that = $(this);
-	    	debugger;
 	    	var data_id = $that.attr("data-carouseldata-id");
 	    	sub_process = $('.process-tab a.active').attr('data-subprocessid');
 	    	$('input[name=sub_process_id]').val(sub_process);
@@ -487,6 +547,7 @@
 			$.ajax({
 	            url: '/get-task-data/'+task_id,
 	            type: 'GET',
+	            cache: false,
 	            success: function(data) {
 	            	var data = data['data'];
 	            	if (data.length > 0){
@@ -564,6 +625,7 @@
     		$.ajax({
 	            url: '/get-program-tasks/'+program_type_id,
 	            type: 'GET',
+	            cache: false,
 	            success: function(data) {
 	            	if (data['data']){
 	            		td_html = ''
@@ -652,6 +714,7 @@
 				url: '/get-column-name/',
 				method: 'POST',
 				data: {'task_id':$("input[name=program_task]").val(), 'column_name':$('#column-name').val(), 'task_data_id':$("input[name=task_data_id]").val()},
+				cache: false,
 				success : function(data) {
 					if(!data['success']){
 						$('#column-name-error').text(data['msg']);
@@ -681,6 +744,7 @@
 				url: '/get-carousel-column-name/',
 				method: 'POST',
 				data: {'subprocess_id':$("input[name=sub_process_id]").val(), 'column_name':$('#carousel-name').val(), 'carousel_data_id':$("input[name=carousel_data_id]").val()},
+				cache: false,
 				success : function(data) {
 					if(!data['success']){
 						$('#carousel-name-error').text(data['msg']);
@@ -710,6 +774,7 @@
 				url: '/get-addldata-column-name/',
 				method: 'POST',
 				data: {'task_id':$("input[name=program_task]").val(), 'column_name':$('#additionaldata-name').val(), 'addl_data_id':$("input[name=additionaldata_id]").val()},
+				cache: false,
 				success : function(data) {
 					if(!data['success']){
 						$('#additionaldata-name-error').text(data['msg']);
@@ -1051,13 +1116,12 @@
 	            		program_data = $('#addProgramDataForm div.form-group.progs:not(:first)')
 	            		program_data.remove();
 	            		for(var i=0;i<data.length;i++){
-	            			program_type = Object.keys(data[i])[0]
+							program_type = Object.keys(data[i])[0]
 	            			program_tasks = data[i][program_type]
 	            			if (i == 0){
 	            				$('input[name=program_type_0_name').val(program_type);
 	            				$('input[name=program_task_0_name').val(program_tasks);
-	            			}
-	            			else{
+	            			}else{
 						        programTypeIndex++;
 						        var $template = $('#programTypeTemplate'),
 						            $clone = $template
@@ -1079,9 +1143,9 @@
 						        $('#addProgramDataForm')
 						            .formValidation('addField', 'program_type_'+programTypeIndex+'_name', typeValidators)
 						            .formValidation('addField', 'program_task_'+programTypeIndex+'_name', taskValidators)	
-
-						        $('input[name=program_type_'+ i + '_name').val(program_type);
-	            				$('input[name=program_task_' + i + '_name').val(program_tasks);          				
+						            
+ 								$('input[name=program_type_'+ i + '_name').val(program_type);
+	            				$('input[name=program_task_' + i + '_name').val(program_tasks);          
 	            			}
 	            			$('#addProgramDataModal').modal('show');
 	            		}
@@ -1336,6 +1400,129 @@
 
 
 			     });
+
+		$('#carouselDataDelete').on('click', function() {
+			carousel_data_id = $('input[name=carousel_data_id]').val();
+			var formData = new FormData();
+			formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+			formData.append('sub_process_id', $('input[name=sub_process_id]').val());
+	        if (carousel_data_id){
+	        	carousel_data_column = $('.carousel-column.tbl-btn.active').text();
+	        	$('.del-confirm-msg').html('');
+	        	$('.del-confirm-msg').html('<p>This action <strong>CANNOT</strong> be undone. This will permanently delete the carousel data with column name <strong style="font-weight: bold;">'+carousel_data_column + '</strong>');
+	        	$('#deleteConfirmationModal').modal('show');
+				$('#deleteConfirmationModal').on('click', '.btn-ok', function(e) {
+			        $.ajax({
+			                url: '/delete-carouseldata/'+carousel_data_id,
+			                type: 'POST',
+			                data: formData,
+			                cache: false,
+			                contentType: false,
+			                processData: false,
+			                success: function(data) {
+			                	if (data['success']){
+			                		$('#carouselModal').modal('hide');
+					                window.location='/process/'+ data['process_id']+'/sp/'+data['sub_process_url_name']+'/edit/?carousel=deleted'				                		
+			                	}
+			                	else{
+		                             iziToast.success({
+		                                title: 'Error',
+		                                message: data['msg'] ,
+		                            });
+
+			                	}
+			                },
+			                error: function(xhr, status, error) {
+			                    var err = eval("(" + xhr.responseText + ")");
+			                    alert(err.Message);
+			                    //alert("Something went wrong, please try after some time");
+			                }
+			            })	
+			    });
+		    }		
+		});
+
+		$('#additionalDataDelete').on('click', function() {
+			additional_data_id = $('input[name=additionaldata_id]').val();
+			var formData = new FormData();
+			formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+			formData.append('program_task_id', $('input[name=program_task]').val());
+	        if (additional_data_id){
+	        	addl_data_column = $('.addl-column.tbl-btn.active').text();
+	        	$('.del-confirm-msg').html('');
+	        	$('.del-confirm-msg').html('<p>This action <strong>CANNOT</strong> be undone. This will permanently delete the task addititonal data with title <strong style="font-weight: bold;">'+addl_data_column + '</strong>');
+	        	$('#deleteConfirmationModal').modal('show');
+				$('#deleteConfirmationModal').on('click', '.btn-ok', function(e) {
+			        $.ajax({
+			                url: '/delete-addldata/'+additional_data_id,
+			                type: 'POST',
+			                data: formData,
+			                cache: false,
+			                contentType: false,
+			                processData: false,
+			                success: function(data) {
+			                	if (data['success']){
+			                		$('#additionaldataModal').modal('hide');
+					                window.location='/process/'+ data['process_id']+'/sp/'+data['sub_process_url_name']+'/edit/?additionaldata=deleted'				                		
+			                	}
+			                	else{
+		                             iziToast.success({
+		                                title: 'Error',
+		                                message: data['msg'] ,
+		                            });
+
+			                	}
+			                },
+			                error: function(xhr, status, error) {
+			                    var err = eval("(" + xhr.responseText + ")");
+			                    alert(err.Message);
+			                    //alert("Something went wrong, please try after some time");
+			                }
+			            })	
+			    });
+		    }		
+		});
+
+		$('#taskDataDelete').on('click', function() {
+			task_data_id = $('input[name=task_data_id]').val();
+			var formData = new FormData();
+			formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+			formData.append('program_task_id', $('input[name=program_task]').val());
+	        if (task_data_id){
+	        	task_data_column = $('.task-column.tbl-btn.active').text();
+	        	$('.del-confirm-msg').html('');
+	        	$('.del-confirm-msg').html('<p>This action <strong>CANNOT</strong> be undone. This will permanently delete the task data with column name <strong style="font-weight: bold;">'+task_data_column + '</strong>');
+	        	$('#deleteConfirmationModal').modal('show');
+				$('#deleteConfirmationModal').on('click', '.btn-ok', function(e) {
+			        $.ajax({
+			                url: '/delete-taskdata/'+task_data_id,
+			                type: 'POST',
+			                data: formData,
+			                cache: false,
+			                contentType: false,
+			                processData: false,
+			                success: function(data) {
+			                	if (data['success']){
+			                		$('#exampleModal').modal('hide');
+					                window.location='/process/'+ data['process_id']+'/sp/'+data['sub_process_url_name']+'/edit/?taskdata=deleted'				                		
+			                	}
+			                	else{
+		                             iziToast.success({
+		                                title: 'Error',
+		                                message: data['msg'] ,
+		                            });
+
+			                	}
+			                },
+			                error: function(xhr, status, error) {
+			                    var err = eval("(" + xhr.responseText + ")");
+			                    alert(err.Message);
+			                    //alert("Something went wrong, please try after some time");
+			                }
+			            })
+				});
+		    }		
+		});
 
     });	
 

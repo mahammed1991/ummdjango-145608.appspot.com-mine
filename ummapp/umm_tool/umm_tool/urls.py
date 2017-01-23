@@ -48,7 +48,9 @@ urlpatterns = [
     url(r'^get-subprocess-programdata/(?P<sub_process_id>[0-9]+)','umm_app.views.get_subprocess_programdata',name='get_subprocess_programdata'),
     url(r'^add-subprocess-programdata/(?P<sub_process_id>[0-9]+)','umm_app.views.add_subprocess_programdata',name='add_subprocess_programdata'),
     url(r'^edit-subprocess/(?P<sub_process_id>[0-9]+)','umm_app.views.edit_subprocess',name='edit_subprocess'),
-
+    url(r'^delete-carouseldata/(?P<carousel_data_id>[0-9]+)','umm_app.views.delete_carouseldata',name='delete_carouseldata'),
+    url(r'^delete-addldata/(?P<additional_data_id>[0-9]+)','umm_app.views.delete_addldata',name='delete_addldata'),
+    url(r'^delete-taskdata/(?P<task_data_id>[0-9]+)','umm_app.views.delete_taskdata',name='delete_taskdata'),
     # API
 
     # Get all processes
