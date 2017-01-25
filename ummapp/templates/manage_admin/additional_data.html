@@ -289,6 +289,7 @@
 				        </div>
 				        <div class="col-xs-5 form-group">
 				            <input type="text" class="form-control req" name="program_task_0_name" placeholder="Program Task" />
+				            <p id="task-error"></p>
 				        </div>
 				        <div class="col-xs-2">
 				        	<button type="button" class="btn btn-primary" id="programDataDelete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
@@ -1268,8 +1269,17 @@
             
         $("body").on('change', '[name^="program_task_"]', function() {
             // Revalidate the program tasks field when it is changed
-            debugger;
             $('body').find('#addProgramDataForm').formValidation('revalidateField', $(this).attr('name'));
+            /*if ($(this).tagsinput('items').length == 0){
+            	$('#task-error').text('Program Task is required')
+            	$('#addProgramDataSubmit').addClass('disabled');
+		        $('#addProgramDataSubmit').prop('disabled',true);
+            }
+            else{
+            	$('#task-error').text('');
+		        $('#addProgramDataSubmit').removeClass('disabled');
+		        $('#addProgramDataSubmit').prop('disabled',false);
+            }*/
         })
             
 

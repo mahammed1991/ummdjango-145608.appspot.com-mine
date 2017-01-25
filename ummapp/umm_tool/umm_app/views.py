@@ -731,6 +731,9 @@ def add_subprocess_programdata(request, sub_process_id):
                     program_type.save()
                     process_objects.append(program_type)
 
+                    program_tasks = ProgramTask.objects.filter(program_type=program_type).exclude(name__in=ptask)
+                    if program_tasks:
+                        program_tasks.delete()
                     for val in ptask:
                         try:
                             program_task = ProgramTask.objects.get(program_type=program_type,name=val)
