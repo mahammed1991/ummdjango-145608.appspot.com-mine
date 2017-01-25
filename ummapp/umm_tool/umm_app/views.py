@@ -692,8 +692,16 @@ def get_subprocess_programdata(request, sub_process_id):
     for prog in program_types:
         tasks = []
         program_task = ProgramTask.objects.filter(program_type=prog)
-        tasks = [task.name for task in program_task]
-        program_data.append({prog.name :tasks })
+        program_data_dict = {}
+        program_data_dict['p_type_id'] = prog.id
+        program_data_dict['p_type_name'] = prog.name
+        program_task_dict = {}
+        for task in program_task:
+            program_task_dict[task.id] = task.name
+        program_data_dict['program_tasks'] = program_task_dict
+        print program_data_dict,'program_data_dict'
+        tasks = [{task.id: task.name} for task in program_task]
+        program_data.append(program_data_dict)
     return HttpResponse(json.dumps({"data":program_data, "success":True, "msg":""}), content_type="application/json") 
 
 
@@ -984,3 +992,240 @@ def delete_taskdata(request, task_data_id):
             return HttpResponse(json.dumps(context), content_type="application/json")            
     else:
         raise PermissionDenied        
+
+
+@require_http_methods(['POST'])
+@login_required
+@csrf_exempt
+def clone_subprocess(request, process_id, sprocess_name):
+    """
+    Args:
+        request: request object
+        sprocess_name: subprocess URL
+        process_id: Process ID
+
+    Get sub process by ID, re create it with new PK.
+    Take the new subprocess id and create program types and create columns an associate data to it.
+
+    Returns: JSON response with parameters success/ message/ data
+
+    """
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        sub_process = None
+        try:
+            process = Process.objects.get(id=process_id)
+            sub_process = SubProcess.objects.get(url_name=sprocess_name, process=process)
+        except ObjectDoesNotExist:
+            resp = {"success": False, "msg": "There is no sub process with the given id"}
+            return HttpResponse(json.dumps(resp), content_type="application/json")
+
+        subprocess_name = sub_process.name
+        cloned_count = sub_process.cloned_count + 1
+        sub_process.cloned_count = cloned_count
+        sub_process.save()
+        quarter = sub_process.quarter
+        programs = ProgramType.objects.filter(subprocess=sub_process)
+        updates = SubProcessLevelUpdates.objects.filter(subprocess=sub_process)
+
+        # Creating new sub Process
+        sub_process_url_name = sub_process.url_name + "-Copy"+ str(cloned_count)
+        sub_process_name = subprocess_name + "-Copy" + str(cloned_count)
+        sub_process = SubProcess()
+        sub_process.process = process
+        sub_process.quarter = quarter
+        sub_process.name = sub_process_name
+        sub_process.cloned_count = 0
+        sub_process.is_disabled = True
+        sub_process.url_name = sub_process_url_name
+        sub_process.created_by = User.objects.get(email=request.user.email)
+        sub_process.modified_by = User.objects.get(email=request.user.email)
+        sub_process.save()
+
+        # Creating programs
+        for prog in programs:
+            program_type = ProgramType()
+            program_type.subprocess = sub_process
+            program_type.name = prog.name
+            program_type.is_disabled = False
+            program_type.created_by = User.objects.get(email=request.user.email)
+            program_type.modified_by = User.objects.get(email=request.user.email)
+            program_type.save()
+
+            # Creating program tasks
+            ptask = ProgramTask.objects.filter(program_type=prog)
+            for task in ptask:
+                program_task = ProgramTask()
+                program_task.program_type = program_type
+                program_task.name = task.name
+                program_task.is_disabled = False
+                program_task.created_by = User.objects.get(email=request.user.email)
+                program_task.modified_by = User.objects.get(email=request.user.email)
+                program_task.save()
+
+                # Creating Programming additional data, if exists.
+                pad = ProgramAdditionData.objects.filter(program_task=task)
+                for d in pad:
+                    additional_data = ProgramAdditionData()
+                    additional_data.program_task = program_task
+                    additional_data.name = d.name
+                    additional_data.data = d.data
+                    additional_data.is_disabled = False
+                    additional_data.created_by = User.objects.get(email=request.user.email)
+                    additional_data.modified_by = User.objects.get(email=request.user.email)
+                    additional_data.save()
+
+                # Creating task data
+                pvals = TaskData.objects.filter(program_task=task)
+                for column in pvals:
+                    task_data = TaskData()
+                    task_data.program_task = program_task
+                    task_data.column_name = column.column_name
+                    task_data.column_number = column.column_number
+                    task_data.data = column.data
+                    task_data.is_disabled = False
+                    task_data.created_by = User.objects.get(email=request.user.email)
+                    task_data.modified_by = User.objects.get(email=request.user.email)
+                    task_data.save()
+
+        # Creating subprocess level updates
+        for splu in updates:
+            carousel_data = SubProcessLevelUpdates()
+            carousel_data.subprocess = sub_process
+            carousel_data.name = splu.name
+            carousel_data.data = splu.data
+            carousel_data.created_by = User.objects.get(email=request.user.email)
+            carousel_data.modified_by = User.objects.get(email=request.user.email)
+            carousel_data.save()
+
+        resp = {"success": True, "msg": "Successfully cloned the sub process"}
+        data = {
+            "name": sub_process_name,
+            "url_name": sub_process_url_name,
+            "process_id": process_id,
+            "sp_id": sub_process.id,
+            "disabled": True,
+            "quarter": {"quarter": quarter.quarter, "year": quarter.quarter_year}
+        }
+        resp['data'] = data
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    else:
+        raise PermissionDenied
+
+
+@require_http_methods(['POST'])
+@login_required
+def delete_process_handler(request, process_id):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        try:
+            deleted = delete_process(process_id)
+            if deleted:
+                resp = {"success": True, "msg": "Successfully deleted process"}
+            else:
+                resp = {"success": False, "msg": "No Process found with the given ID"}
+        except:
+            resp = {"success": False, "msg": "Something went wrong. Please try after sometime"}
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    else:
+        raise PermissionDenied
+
+
+@require_http_methods(['POST'])
+@login_required
+@csrf_exempt
+def delete_subprocess_handler(request, process_id, sub_process_id):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        try:
+            deleted = delete_sub_process(sub_process_id)
+            if deleted:
+                resp = {"success": True, "msg": "Successfully deleted sub process"}
+            else:
+                resp = {"success": False, "msg": "No Sub-process found with the given ID"}
+        except:
+            resp = {"success": False, "msg": "Something went wrong. Please try after sometime"}
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    else:
+        raise PermissionDenied
+
+
+@require_http_methods(['POST'])
+@login_required
+def delete_programs_handler(request):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        program_ids = request.POST.get('program_ids', None)
+        if not program_ids:
+            resp = {"success": False, "msg": "Invalid Parameters."}
+        else:
+            try:
+                program_type = ProgramType.objects.get(id=program_ids)
+                process_id = program_type.subprocess.process.id
+                sub_process_url_name = program_type.subprocess.url_name
+                delete_program_types([program_ids])
+                resp = {"success": True, "msg": "Successfully deleted",
+                        'process_id':process_id,
+                        'sub_process_url_name':sub_process_url_name}
+            except:
+                resp = {"success": False, "msg": "Something went wrong. Please try after sometime"}
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    else:
+        raise PermissionDenied
+
+
+@require_http_methods(['POST'])
+@login_required
+def delete_tasks_handler(request):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        task_ids = request.POST.get('task_ids', None)
+        if not task_ids:
+            resp = {"success": False, "msg": "Invalid Parameters."}
+        else:
+            try:
+                delete_program_tasks(task_ids)
+                resp = {"success": True, "msg": "Successfully deleted"}
+            except:
+                resp = {"success": False, "msg": "Something went wrong. Please try after sometime"}
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    else:
+        raise PermissionDenied
+
+
+@require_http_methods(['POST'])
+@login_required
+def delete_taskdata_handler(request, task_data_id):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        try:
+            delete_task_data(task_data_id)
+            resp = {"success": True, "msg": "Successfully deleted"}
+        except:
+            resp = {"success": False, "msg": "Something went wrong. Please try after sometime"}
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    else:
+        raise PermissionDenied
+
+
+@require_http_methods(['POST'])
+@login_required
+def delete_additionaldata_handler(request, additional_data_id):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        try:
+            delete_program_additional_data(additional_data_id)
+            resp = {"success": True, "msg": "Successfully deleted"}
+        except:
+            resp = {"success": False, "msg": "Something went wrong. Please try after sometime"}
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    else:
+        raise PermissionDenied
+
+
+@require_http_methods(['POST'])
+@login_required
+def delete_subprocess_level_data(request, data_id):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        try:
+    #Add a comment to this line
+            delete_subprocess_level_data(data_id)
+            resp = {"success": True, "msg": "Successfully deleted"}
+        except:
+            resp = {"success": False, "msg": "Something went wrong. Please try after sometime"}
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    else:
+        raise PermissionDenied

@@ -291,7 +291,7 @@
 				            <input type="text" class="form-control req" name="program_task_0_name" placeholder="Program Task" />
 				        </div>
 				        <div class="col-xs-2">
-				        	<button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+				        	<button type="button" class="btn btn-primary" id="programDataDelete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
 				            <button type="button" class="btn btn-default addButton"><i class="fa fa-plus"></i></button>
 				        </div>
 				    </div>
@@ -305,7 +305,7 @@
 				            <input type="text" class="form-control" name="program-task-name" placeholder="Program Task"  />
 				        </div>
 				        <div class="col-xs-2">
-				        	<button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+				        	<button type="button" class="btn btn-primary" id="programDataDelete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
 				            <button type="button" class="btn btn-default removeButton"><i class="fa fa-minus"></i></button>
 				        </div>
 				    </div>
@@ -463,6 +463,13 @@
 				iziToast.success({
 				    title: 'OK',
 				    message: 'Successfully deleted task data' ,
+				});
+	    }
+
+	    if (current_url.indexOf('?')!= -1 && current_url.split('?')[1].split('=')[0] == 'programdata' && current_url.split('?')[1].split('=')[1] == 'deleted'){
+				iziToast.success({
+				    title: 'OK',
+				    message: 'Successfully deleted Program Type and all its associated Program Tasks, Task Data and Task Additional Data.' ,
 				});
 	    }
 
@@ -1116,11 +1123,19 @@
 	            		program_data = $('#addProgramDataForm div.form-group.progs:not(:first)')
 	            		program_data.remove();
 	            		for(var i=0;i<data.length;i++){
-							program_type = Object.keys(data[i])[0]
-	            			program_tasks = data[i][program_type]
+	            			program_type = data[i]['p_type_name']
+							tasks = Object.keys(data[i]['program_tasks']).map(function(key) {
+							    return data[i]['program_tasks'][key];
+							});
+							program_tasks = tasks.join();
 	            			if (i == 0){
-	            				$('input[name=program_type_0_name').val(program_type);
-	            				$('input[name=program_task_0_name').val(program_tasks);
+	            				debugger;
+	            				$('input[name=program_type_0_name]').val(program_type);
+	            				$('input[name=program_type_0_name]').attr('data-id',data[i]['p_type_id']);
+	            				$('input[name=program_task_0_name]').val(program_tasks);
+	            				$('input[name=program_task_0_name]').attr('value',program_tasks);
+	            				debugger;
+	            				$('input[name=program_task_0_name]').tagsinput('items');
 	            			}else{
 						        programTypeIndex++;
 						        var $template = $('#programTypeTemplate'),
@@ -1143,9 +1158,12 @@
 						        $('#addProgramDataForm')
 						            .formValidation('addField', 'program_type_'+programTypeIndex+'_name', typeValidators)
 						            .formValidation('addField', 'program_task_'+programTypeIndex+'_name', taskValidators)	
-						            
- 								$('input[name=program_type_'+ i + '_name').val(program_type);
-	            				$('input[name=program_task_' + i + '_name').val(program_tasks);          
+
+						        $('input[name=program_type_'+ i + '_name]').val(program_type);
+	            				$('body').find('input[name=program_type_'+ i + '_name]').attr('data-id',data[i]['p_type_id'])
+	            				$('input[name=program_task_'+ i + '_name]').val(program_tasks);
+	            				$('input[name=program_task_'+ i + '_name]').attr('value',program_tasks);
+	            				$('input[name=program_task_'+ i + '_name]').tagsinput('items');          
 	            			}
 	            			$('#addProgramDataModal').modal('show');
 	            		}
@@ -1189,6 +1207,8 @@
 	        $('#addProgramDataForm')
 	            .formValidation('addField', 'program_type_'+programTypeIndex+'_name', typeValidators)
 	            .formValidation('addField', 'program_task_'+programTypeIndex+'_name', taskValidators)
+
+	        $('input[name=program_task_'+programTypeIndex+'_name]').tagsinput('items');
 	    });
 
 	    // Remove button click handler
@@ -1238,6 +1258,20 @@
 
 	        }
 	    }
+
+		//$('body').find('#addProgramDataForm')
+        /*$('input[name^="program_type_"]')
+            // Revalidate the program types field when it is changed
+            .change(function (e) {
+                $('#addProgramDataForm').formValidation('revalidateField', $(this).attr('name'));
+            })*/
+            
+        $("body").on('change', '[name^="program_task_"]', function() {
+            // Revalidate the program tasks field when it is changed
+            debugger;
+            $('body').find('#addProgramDataForm').formValidation('revalidateField', $(this).attr('name'));
+        })
+            
 
 	     $('#addProgramDataForm')
 	         .formValidation({
@@ -1523,6 +1557,53 @@
 				});
 		    }		
 		});
+
+		$("body").on("click", "#programDataDelete", function(e){
+			program_type_id = $(this).parent().parent().find(".form-group:first > input[name^='program_type']").attr('data-id')
+			var formData = new FormData();
+			formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+			formData.append('program_ids', [parseInt(program_type_id)]);
+	        if (program_type_id){
+	        	program_type = $(this).parent().parent().find(".form-group:first > input[name^='program_type']").val();
+	        	$('.del-confirm-msg').html('');
+	        	$('.del-confirm-msg').html('<p>This action <strong>CANNOT</strong> be undone. This will permanently delete the Program Type with name <strong style="font-weight: bold;">'+program_type + '</strong>'+ ' and all its associated <strong style="font-weight: bold;">Program Tasks</strong>, <strong style="font-weight: bold;">Task Data</strong> and <strong style="font-weight: bold;">Task Additional Data</strong>');
+	        	$('#deleteConfirmationModal').modal('show');
+				$('#deleteConfirmationModal').on('click', '.btn-ok', function(e) {
+			        $.ajax({
+			                url: '/programtype/delete',
+			                type: 'POST',
+			                data: formData,
+			                cache: false,
+			                contentType: false,
+			                processData: false,
+			                success: function(data) {
+			                	if (data['success']){
+			                		$('#addProgramDataModal').modal('hide');
+					                window.location='/process/'+ data['process_id']+'/sp/'+data['sub_process_url_name']+'/edit/?programdata=deleted'				                		
+			                	}
+			                	else{
+		                             iziToast.success({
+		                                title: 'Error',
+		                                message: data['msg'] ,
+		                            });
+
+			                	}
+			                },
+			                error: function(xhr, status, error) {
+			                    var err = eval("(" + xhr.responseText + ")");
+			                    alert(err.Message);
+			                    //alert("Something went wrong, please try after some time");
+			                }
+			            })
+				});
+		    }	
+		});
+
+		/*$('input').on('beforeItemRemove', function(event) {
+			debugger
+		  // event.item: contains the item
+		  // event.cancel: set to true to prevent the item getting removed
+		});*/
 
     });	
 
