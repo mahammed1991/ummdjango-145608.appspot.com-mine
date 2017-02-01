@@ -712,15 +712,18 @@ def add_subprocess_programdata(request, sub_process_id):
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         if request.POST:
             process_data = json.loads(request.POST.get("processData"))
-            
             try:
                 process_objects = list()
                 sub_process_id = process_data.get('sub_process_id')
                 sub_process = SubProcess.objects.get(id=int(sub_process_id))
                 programs = process_data.get("programs")
+                prg_type_id = process_data.get("prg_type_id")
                 for ptype,ptask in programs.iteritems():
                     try:
-                        program_type = ProgramType.objects.get(subprocess=sub_process,name=ptype)
+                        program_type_id = prg_type_id.get(ptype)
+                        if program_type_id == u'':
+                            program_type_id = None
+                        program_type = ProgramType.objects.get(subprocess=sub_process,id=program_type_id)
                     except ObjectDoesNotExist:
                         program_type = ProgramType()
                     program_type.subprocess = sub_process
