@@ -1355,14 +1355,18 @@
 			        var processData = {};
 			        processData['sub_process_id'] = $('.process-tab a.active').attr('data-subprocessid');
 			        programs = {}
+			        prg_type_id = {}
 			        p_type_error = false
 			        $(".progs").each(function(){
 			        	var prgName = $(this).find("div:eq(0) > input:eq(0)").val().toString();
+
+			        	var prgId = $(this).find("div:eq(0) > input:eq(0)").attr('data-id');
 			        	if(!programs[prgName]){
 				        	var prgVals = $(this).find("div:eq(1) > input:eq(0)").val();
 				        	if(prgVals.endsWith(","))
 				        		prgVals = prgVals.slice(0,-1)
 				        	programs[prgName] = prgVals.split(",");
+				        	prg_type_id[prgName] = prgId
 				        }else{
 				        	$err = $(this).find("div:eq(0) > small:eq(0)");
 				        	$err.text(prgName + " already exists in programs.").css("color","#c92127").show();
@@ -1371,8 +1375,8 @@
 				        }
 			        });
 					processData['programs'] = programs;
+					processData['prg_type_id'] = prg_type_id;
 					formData.append('processData', JSON.stringify(processData));
-					 
 					if (!p_type_error){  
 				        $.ajax({
 				                url: '/add-subprocess-programdata/'+sub_process_id,
