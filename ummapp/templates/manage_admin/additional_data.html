@@ -289,7 +289,7 @@
 				        </div>
 				        <div class="col-xs-5 form-group">
 				            <input type="text" class="form-control req" name="program_task_0_name" placeholder="Program Task" />
-				            <p id="task-error"></p>
+				            <p class="task-error" style="color: #a94442;"></p>
 				        </div>
 				        <div class="col-xs-2">
 				        	<button type="button" class="btn btn-primary" id="programDataDelete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
@@ -304,6 +304,7 @@
 				        </div>
 				        <div class="col-xs-5 form-group">
 				            <input type="text" class="form-control" name="program-task-name" placeholder="Program Task"  />
+				            <p class="task-error" style="color: #a94442;"></p>
 				        </div>
 				        <div class="col-xs-2">
 				        	<button type="button" class="btn btn-primary" id="programDataDelete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
@@ -1130,12 +1131,10 @@
 							});
 							program_tasks = tasks.join();
 	            			if (i == 0){
-	            				debugger;
 	            				$('input[name=program_type_0_name]').val(program_type);
 	            				$('input[name=program_type_0_name]').attr('data-id',data[i]['p_type_id']);
 	            				$('input[name=program_task_0_name]').val(program_tasks);
 	            				$('input[name=program_task_0_name]').attr('value',program_tasks);
-	            				debugger;
 	            				$('input[name=program_task_0_name]').tagsinput('items');
 	            			}else{
 						        programTypeIndex++;
@@ -1164,13 +1163,17 @@
 	            				$('body').find('input[name=program_type_'+ i + '_name]').attr('data-id',data[i]['p_type_id'])
 	            				$('input[name=program_task_'+ i + '_name]').val(program_tasks);
 	            				$('input[name=program_task_'+ i + '_name]').attr('value',program_tasks);
-	            				$('input[name=program_task_'+ i + '_name]').tagsinput('items');          
+	            				$('input[name=program_task_'+ i + '_name]').tagsinput('items');
+								$('#addProgramDataForm')
+    								.formValidation('enableFieldValidators', 'program_task_'+ i + '_name', true, 'notEmpty');	            				          
 	            			}
 	            			$('#addProgramDataModal').modal('show');
 	            		}
 	            	}else{
 	            		program_data = $('#addProgramDataForm div.form-group.progs:not(:first)')
-	            		program_data.remove();         
+	            		program_data.remove();
+	            		$('input[name=program_task_0_name]').tagsinput('items');
+	            		$('#addProgramDataModal').modal('show');         
 
 	            	}
 	            },
@@ -1266,10 +1269,43 @@
             .change(function (e) {
                 $('#addProgramDataForm').formValidation('revalidateField', $(this).attr('name'));
             })*/
+
+        $("body").find('#addProgramDataForm').on('change', '[name^="program_type_"]', function() {
+        	$('body').find('#addProgramDataForm').formValidation('revalidateField', $(this).attr('name'));
+        })
             
-        $("body").on('change', '[name^="program_task_"]', function() {
+        $("body").find('#addProgramDataForm').on('change', '[name^="program_task_"]', function() {
             // Revalidate the program tasks field when it is changed
             $('body').find('#addProgramDataForm').formValidation('revalidateField', $(this).attr('name'));
+	        /*$('#addProgramDataForm')
+	            .formValidation('addField', $(this).attr('name'), taskValidators)*/
+			$(this).parent().find('p').text('');
+	        $('#addProgramDataSubmit').removeClass('disabled');
+	        $('#addProgramDataSubmit').prop('disabled',false);
+            if ($(this).val() == '' ){
+				$(this).parent().find('p').text('Program Task is required')
+            	$('#addProgramDataSubmit').addClass('disabled');
+		        $('#addProgramDataSubmit').prop('disabled',true);            	
+            }
+            if (program_type_error){
+            	$('#addProgramDataSubmit').addClass('disabled');
+		        $('#addProgramDataSubmit').prop('disabled',true);            	
+            }
+            /*else{
+				$(this).parent().find('p').text('');
+		        $('#addProgramDataSubmit').removeClass('disabled');
+		        $('#addProgramDataSubmit').prop('disabled',false);            	
+            }
+            if (program_type_error){
+            	$('#addProgramDataSubmit').addClass('disabled');
+		        $('#addProgramDataSubmit').prop('disabled',true);            	
+            }
+            else{
+            	$('#addProgramDataSubmit').removeClass('disabled');
+		        $('#addProgramDataSubmit').prop('disabled',false);
+            }*/
+            //console.log($(this).tagsinput('items').length == 0)
+           	//$('body').find('#addProgramDataForm').formValidation('revalidateField', $(this).attr('name'));
             /*if ($(this).tagsinput('items').length == 0){
             	$('#task-error').text('Program Task is required')
             	$('#addProgramDataSubmit').addClass('disabled');
@@ -1282,7 +1318,7 @@
             }*/
         })
             
-
+        program_type_error = false
 	     $('#addProgramDataForm')
 	         .formValidation({
 	            fields: {
@@ -1293,6 +1329,24 @@
 	         .on('success.form.fv', function(e) {
 	             // Save the form data via an Ajax request
 	             e.preventDefault();
+	             	var empty_program_task = $("input[name^='program_task_']").filter(function() { return $(this).val() == ""; });
+	             	console.log(empty_program_task.length)
+	             	if (empty_program_task.length){
+	             		$.each(empty_program_task, function( index, value ) {
+							$(this).parent().find('p').text('Program Task is required')
+						});
+						$('#addProgramDataSubmit').addClass('disabled');
+					    $('#addProgramDataSubmit').prop('disabled',true);
+						p_type_error = true
+				        return;
+	             	}
+	             	else{
+	             		$.each($("input[name^='program_task_']"), function( index, value ) {
+	             			$(this).parent().find('p').text('');
+	             		});
+	        			$('#addProgramDataSubmit').removeClass('disabled');
+	        			$('#addProgramDataSubmit').prop('disabled',false);	             		
+	             	}
 			        var formData = new FormData();
 			        //var file = $('input[name^="image_ref"]')[0].files[0];
 			        //formData.append('file', file);
@@ -1346,7 +1400,30 @@
 				    }
 
 
-	         });
+	         })
+		// This event is triggered when the field doesn't pass any validator
+		    .on('err.validator.fv', function(e, data) {
+		    	program_type_error = true
+		        // data.field     --> The field name
+		        // data.element   --> The field element
+		        // data.validator --> The validator name
+		        // data.result    --> The data returned by the validator
+
+		        // Do something ...
+		    })
+		    .on('success.validator.fv', function(e, data) {
+		    	program_type_error = false
+		    	if ($('.task-error:contains("Program Task is required")').length){
+		        	$('#addProgramDataSubmit').addClass('disabled');
+		        	$('#addProgramDataSubmit').prop('disabled',true);
+		    	}
+		        // data.field     --> The field name
+		        // data.element   --> The field element
+		        // data.validator --> The validator name
+		        // data.result    --> The data returned by the validator
+
+		        // Do something ...
+		    });
 
 		$('#addProgramDataModal').on('hidden.bs.modal', function (e) {
 			$('#addProgramDataForm input').val('');
