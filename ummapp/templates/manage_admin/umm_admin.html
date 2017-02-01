@@ -12,6 +12,7 @@
     <link href="{% static 'manage_admin/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'manage_admin/css/font-awesome.min.css' %}" rel="stylesheet">
     <link href="{% static 'manage_admin/css/style.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'manage_admin/css/iziToast.min.css'%}">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -41,12 +42,17 @@
 			<div class="row">
 				{% for process in processes %}
 				<div class="col-xs-6 col-md-3 col-sm-3 ">
-					<a href="/process/{{process.id}}/show">
+					
 						<div class="white-bg">
-							<h1>{{process.name}}</h1>
+                        <div class="dropdown">
+							  <a href="#" class="pull-right" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-cog" aria-hidden="true"></i></a>
+							  <ul class="dropdown-menu pull-right" aria-labelledby="dropdownMenu1" style="margin-top: 20px;" data-pid="{{process.id}}">
+								<li><a class="delete-process" href="#">Delete</a></li>
+							  </ul>
+							</div>						
+							<h1><a href="/process/{{process.id}}/show">{{process.name}}</a></h1>
 							<!--img src="{% static 'manage_admin/images/apollo.jpg' %}" alt=""-->
 						</div>
-					</a>
 				</div>
 				{% endfor %}
 			</div>
@@ -60,6 +66,44 @@
     <script src="{% static 'manage_admin/js/jquery.min.js' %}"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="{% static 'manage_admin/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/iziToast.min.js' %}"></script>
     <!--<script src="{% static 'manage_admin/js/scripts.js' %}"></script> -->
+    <script type="text/javascript">
+        $("body").on('click', '.delete-process', function(e){
+            e.preventDefault();
+            var $that = $(this).parent().parent();
+            var $parent = $that.parent().parent().parent();
+            var pid = $that.data('pid');
+            var apiURL = "/process/"+pid+"/delete";
+            if(pid){
+                $parent.remove();
+                $.ajax({
+                    url: apiURL,
+                    type: 'POST',
+                    success: function(res) {
+                            if(res.success){
+                               iziToast.success({
+                                title: 'OK',
+                                message: res.msg,
+                            });
+                            }
+
+                    },
+                    error: function(xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        alert(err.Message);
+                        location.reload();
+                        //alert("Something went wrong, please try after some time");
+                    }
+
+                });
+            }else{
+                iziToast.error({
+                                title: 'Error',
+                                message: "Oops!! This shouldn't have happened" ,
+                            });
+            }
+        });
+    </script>
   </body>
 </html>

@@ -1117,6 +1117,7 @@ def clone_subprocess(request, process_id, sprocess_name):
 
 @require_http_methods(['POST'])
 @login_required
+@csrf_exempt
 def delete_process_handler(request, process_id):
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         try:
