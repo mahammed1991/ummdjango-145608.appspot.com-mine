@@ -323,16 +323,18 @@ def create_task_data(request, process_id=None, sprocess_name=None):
 
 @login_required
 def get_program_tasks(request, program_type_id):
-    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
-        if request.method == "GET":
-            try:
-                program_tasks = ProgramTask.objects.filter(program_type=program_type_id)
-                tasks = [{task.name: task.id} for task in program_tasks]
-            except ObjectDoesNotExist:
-                program_tasks = []
-            return HttpResponse(json.dumps({"data":tasks, "success":True, "msg":""}), content_type="application/json")    
+    #if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+    if request.method == "GET":
+        try:
+            program_tasks = ProgramTask.objects.filter(program_type=program_type_id)
+            tasks = [{task.name: task.id} for task in program_tasks]
+        except ObjectDoesNotExist:
+            program_tasks = []
+        return HttpResponse(json.dumps({"data":tasks, "success":True, "msg":""}), content_type="application/json")    
+    """
     else:
         raise PermissionDenied
+    """
 
 @login_required
 def get_task_data(request, task_id):
@@ -431,21 +433,23 @@ def add_task_data(request):
 
 @login_required
 def show_process_data(request, process_id, sprocess_name):
-    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
-        if request.method == "GET":
-            is_manager = True if request.user.groups.filter(name='CHAPERONE-MANAGER') else False
-            sub_process = SubProcess.objects.get(process=process_id,url_name=sprocess_name)
-            if sub_process:
-                program_types = ProgramType.objects.filter(subprocess=sub_process).order_by('created_date')
-                sub_processs = SubProcess.objects.filter(is_disabled=False)
-            context = RequestContext(request, 
-                        {'request': request, 'user': request.user,'sub_process':sub_process,
-                        'program_types':program_types,'sub_processs':sub_processs,
-                        'is_manager':is_manager
-                        })
-            return render(request, "apollo_home.html", context_instance=context) 
+    #if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+    if request.method == "GET":
+        is_manager = True if request.user.groups.filter(name='CHAPERONE-MANAGER') else False
+        sub_process = SubProcess.objects.get(process=process_id,url_name=sprocess_name)
+        if sub_process:
+            program_types = ProgramType.objects.filter(subprocess=sub_process).order_by('created_date')
+            sub_processs = SubProcess.objects.filter(is_disabled=False)
+        context = RequestContext(request, 
+                    {'request': request, 'user': request.user,'sub_process':sub_process,
+                    'program_types':program_types,'sub_processs':sub_processs,
+                    'is_manager':is_manager
+                    })
+        return render(request, "apollo_home.html", context_instance=context) 
+    """
     else:
         raise PermissionDenied
+    """
 
 
 @login_required
