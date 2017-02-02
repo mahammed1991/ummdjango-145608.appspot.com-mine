@@ -102,6 +102,35 @@
             </div>    
         </div>
       </section>
+        <div class="modal-style">
+            <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title2">Are you ABSOLUTELY sure?
+
+        </h4>
+                        </div>
+                        <div class="modal-body">
+                            
+                            <div class="facebox-alert">
+                                Unexpected bad things will happen if you don’t read this!
+                            </div>
+                            <div class="del-confirm-msg">
+                                <p>This action <strong>CANNOT</strong> be undone. This will permanently delete the <strong>sreekanth-anubolu/Java-Basic-Programs</strong> repository, wiki, issues, and comments, and remove all collaborator associations.</p>
+                                <p>Please type in the name of the repository to confirm.</p>
+                            </div>
+                            <button type="submit" class="btn btn-block btn-danger btn-ok">I understand the consequences, delete this item</button>
+                          </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     <script src="{% static 'manage_admin/js/jquery.min.js' %}"></script>
     <script src="{% static 'manage_admin/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'manage_admin/js/bootstrap-toggle.js' %}"></script>
@@ -118,6 +147,7 @@
                 $.ajax({
                     url: '/process/'+ location.pathname.split("/")[2]+'/show',
                     type: 'GET',
+                    cache: false,
                     success: function(data) {
                         $.each(data, function (index,value) {
                             renderSPTemplate(value)
@@ -161,6 +191,7 @@
             $.ajax({
                 url: apiURL,
                 type: 'POST',
+                cache: false,
                 success: function(res) {
                         if(res.success){
                              renderSPTemplate(res.data);
@@ -187,34 +218,44 @@
             var pid = $that.data('pid');
             var spid = $parent.attr('id');
             var apiURL = "/process/"+pid+"/sp/"+spid +"/delete";
-            if(spid && pid){
-                $parent.remove();
-                $.ajax({
-                    url: apiURL,
-                    type: 'POST',
-                    success: function(res) {
-                            if(res.success){
-                               iziToast.success({
-                                title: 'OK',
-                                message: res.msg,
-                            });
-                            }
 
-                    },
-                    error: function(xhr, status, error) {
-                        var err = eval("(" + xhr.responseText + ")");
-                        alert(err.Message);
-                        location.reload();
-                        //alert("Something went wrong, please try after some time");
-                    }
+            sub_process_name = $that.parent().parent().find('.row a').text();
+            $('.del-confirm-msg').html('');
+            $('.del-confirm-msg').html('<p>This action <strong>CANNOT</strong> be undone. This will permanently delete the sub process with name <strong style="font-weight: bold;">'+sub_process_name + '</strong> all its associated <strong style="font-weight: bold;">Program Types</strong>, <strong style="font-weight: bold;">Program Tasks</strong>, <strong style="font-weight: bold;">Task Data</strong> ,<strong style="font-weight: bold;">Task Additional Data</strong> and <strong style="font-weight: bold;">Carousel updates</strong>');
 
-                });
-            }else{
-                iziToast.error({
-                                title: 'Error',
-                                message: "Oops!! This shouldn't have happened" ,
-                            });
-            }
+            $('#deleteConfirmationModal').modal('show');
+            $('#deleteConfirmationModal').on('click', '.btn-ok', function(e) {
+                if(spid && pid){
+                    $parent.remove();
+                    $.ajax({
+                        url: apiURL,
+                        type: 'POST',
+                        cache: false,
+                        success: function(res) {
+                                if(res.success){
+                                   $('#deleteConfirmationModal').modal('hide');  
+                                   iziToast.success({
+                                    title: 'OK',
+                                    message: res.msg,
+                                });
+                                }
+
+                        },
+                        error: function(xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            alert(err.Message);
+                            location.reload();
+                            //alert("Something went wrong, please try after some time");
+                        }
+
+                    });
+                }else{
+                    iziToast.error({
+                                    title: 'Error',
+                                    message: "Oops!! This shouldn't have happened" ,
+                                });
+                }
+            });
         });
 
         $("body").on("click", ".toggle", function(e){
@@ -225,6 +266,7 @@
             $.ajax({
                     url: '/process/'+ spId+'/subprocesses?enable='+isEnabled,
                     type: 'GET',
+                    cache: false,
                     success: function(data) {
                              iziToast.success({
                                 title: 'OK',
