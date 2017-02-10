@@ -36,7 +36,7 @@
 	<section class="top-nav">
 	  <div class="container-fluid">
 		  <ul>
-			  <li><a href="/">Advertiser Goals</a></li>
+			  <!--<li><a href="/">Advertiser Goals</a></li>-->
 			  {% for sub_process in sub_processs %}
 			  	<li><a href="/process/{{sub_process.process.id}}/sp/{{sub_process.url_name}}/view" data-processid="{{sub_process.id}}" class="process">{{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</a></li>
 			  {%endfor %}
@@ -237,7 +237,7 @@
 		            		$column_value = $('#value_row');
 		            		for(var i=0;i<data.length;i++){
 		            			column_data = data[i].data.replace(/&nbsp;/g, ' ');
-		            			$column_name.append('<th data-number="'+data[i].column_number+'" class="task-column tbl-btn" data-taskdata-id="'+data[i].data_id+'">'+ data[i].column_name+'</th>')
+		            			$column_name.append('<th data-number="'+data[i].column_number+'" class="task-column tbl-btn" style="max-width:50px;min-width:30px;width:32px" data-taskdata-id="'+data[i].data_id+'">'+ data[i].column_name+'</th>')
 		            			$column_value.append('<td data-number="'+data[i].column_number+'" class="task-column tbl-btn" data-taskdata-id="'+data[i].data_id+'">'+ column_data +'</td>');
 		            		}
 		            	}

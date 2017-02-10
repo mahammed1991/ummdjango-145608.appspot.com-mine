@@ -93,7 +93,7 @@ if os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'HOST': '/cloudsql/ummdjango18:app-umm',
+            'HOST': '/cloudsql/ummdjango-145608:apollo',
             'NAME': 'umm_tool',
             'USER': 'root',
         }
@@ -103,17 +103,17 @@ elif os.getenv('SETTINGS_MODE') == 'prod':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'HOST': '173.194.242.139',
+            'HOST': '173.194.243.38',
             'NAME': 'umm_tool',
-            'USER': 'arun',
-            'PASSWORD': '5hfJguceAbT4?347',
-            'OPTIONS':  {
-                'ssl': {
-                    'ca': 'server-ca.pem',
-                    'cert': 'client-cert.pem',
-                    'key': 'client-key.pem'
-                }
-            }
+            'USER': 'test',
+            'PASSWORD': 'test',
+            #'OPTIONS':  {
+            #    'ssl': {
+            #        'ca': 'server-ca.pem',
+            #        'cert': 'client-cert.pem',
+            #        'key': 'client-key.pem'
+            #    }
+            #}
         }
     }
 else:
