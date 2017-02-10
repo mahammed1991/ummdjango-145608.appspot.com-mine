@@ -36,7 +36,7 @@
 		<section class="top-nav">
 		  <div class="container-fluid">
 			  <ul>
-				  <li><a href="/" class="active">Advertiser Goals</a></li>
+				  <!--<li><a href="/" class="active">Advertiser Goals</a></li>-->
 				  {% for sub_process in sub_processs %}
 				  	<li><a href="process/{{sub_process.process.id}}/sp/{{sub_process.url_name}}/view" data-processid="{{sub_process.id}}" class="process">{{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</a></li>
 				  {%endfor %}
@@ -44,7 +44,7 @@
 		  </div>
 		</section>
 
-		<section class="sub-category-section">
+		<!--<section class="sub-category-section">
 		  <div class="container-fluid">
 			  <h2>Select your advertiser goals & hit 'Submit' button</h2>
 			  
@@ -83,7 +83,7 @@
 				  </div>
 			  </div>
 		  </div>
-		</section>
+		</section>-->
 			  <script type="text/javascript" src="{% static 'js/custom.js'%}"></script>
 
           {% else %}
@@ -113,6 +113,27 @@
 <script src="{% static 'manage_admin/js/jquery.min.js' %}"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
+		if ($('.process').length){
+			that = $('.process:first')
+	    	selected_sub_process = that.attr('data-processid');
+	    	url = that.attr('href');
+    		$.ajax({
+	            url: that.attr('href'),
+	            type: 'GET',
+	            success: function(data) {
+	            	window.location.href = url;
+	            	$('.process').removeClass('active');
+	            	$('.process[data-processid='+ selected_sub_process + "]").addClass('active');
+
+	            },
+	            error: function(xhr, status, error) {
+	                var err = eval("(" + xhr.responseText + ")");
+	                alert(err.Message);
+	                //alert("Something went wrong, please try after some time");
+	            }	
+
+	        });
+		}
 	    /*$("body").on("click", ".process", function(e){
 	    	e.preventDefault()
 	    	selected_sub_process = $(this).attr('data-processid');
