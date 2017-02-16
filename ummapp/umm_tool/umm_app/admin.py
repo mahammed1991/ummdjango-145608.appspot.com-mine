@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db import models
 from django import forms
-from .models import Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, Question, GoalTaskMap, ExtraTask, Process, SubProcess, ProgramType, ProgramTask, TaskData, ProgramAdditionData, SubProcessLevelUpdates
+from .models import Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, Question, GoalTaskMap, ExtraTask, Process, SubProcess, ProgramType, ProgramTask, TaskData, ProgramAdditionData, SubProcessLevelUpdates, QualityFramework
 from umm_app.forms import AdditionDataAdminForm
 
 class ComboInline(admin.TabularInline):
@@ -156,6 +156,13 @@ class SubProcessLevelUpdatesAdmin(admin.ModelAdmin):
         model = SubProcessLevelUpdates
 
 
+class QualityFrameworkAdmin(admin.ModelAdmin):
+    list_display = ('name', 'data')
+
+    class Meta:
+        model = QualityFramework
+
+
 # -------------- Apollo -------------------
 
 
@@ -180,3 +187,4 @@ admin.site.register(ProgramTask, ProgramTaskAdmin)
 admin.site.register(TaskData, TaskDataAdmin)
 admin.site.register(ProgramAdditionData, ProgramAdditionDataAdmin)
 admin.site.register(SubProcessLevelUpdates, SubProcessLevelUpdatesAdmin)
+admin.site.register(QualityFramework, QualityFrameworkAdmin)
