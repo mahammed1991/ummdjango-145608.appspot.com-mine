@@ -74,4 +74,14 @@ urlpatterns = [
     url(r'^process/(?P<process_id>[0-9]+)/sp/(?P<sprocess_name>[A-Za-z0-9-]+)/edit','umm_app.views.create_task_data',name=''),
     url(r'^process/create/$','umm_app.views.process_handler', name='process_handler'),
     url(r'^process/(?P<process_id>[0-9]+)/sp/(?P<sprocess_name>[A-Za-z0-9-]+)/view$','umm_app.views.show_process_data', name='show_process_data'),
+
+    url(r'^faq/create/$','umm_app.views.faq_handler', name='faq_handler'),
+    url(r'^faq/faq_creater/$','umm_app.views.faq_creater', name='faq_creater'),
+    url(r'^faq/all/','umm_app.views.faq_all', name='faq_all'),
+    url(r'^faq/edit/', 'umm_app.views.faq_edit', name='faq_edit'), 
+    url(r'^faq/faq_update/', 'umm_app.views.faq_update', name='faq_update'),
+    url(r'^faq/faq_delete/', 'umm_app.views.faq_delete', name='faq_delete'),
+    url(r'^faq/home_view/', 'umm_app.views.faq_home_view', name='faq_home_view'),
+    url(r'faq/get_faq/', 'umm_app.views.get_faq', name='get_faq')
+    
 ]
