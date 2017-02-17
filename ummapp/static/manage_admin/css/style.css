@@ -215,6 +215,13 @@ modal-style .btn {
     font-weight: 700;
     border-radius: 2px; text-transform: uppercase;
 }
+
+/*admin faq table css*/
+.faq-table th{ font-weight: 700; background:#c92127;color:#fff;}
+.faq-table .fa{ color: #000 }
+.faq-table th:nth-child(1){ width: 10em; }
+.faq-table th:nth-child(2) { width: 10em; }
+.faq-table th:nth-child(5) { width: 9em; }
 /*Responsive Start*/
 @media only screen and (min-width: 992px) and (max-width: 1219px) {
     

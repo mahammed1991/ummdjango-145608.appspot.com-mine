@@ -39,7 +39,10 @@
 			  <!--<li><a href="/">Advertiser Goals</a></li>-->
 			  {% for sub_process in sub_processs %}
 			  	<li><a href="/process/{{sub_process.process.id}}/sp/{{sub_process.url_name}}/view" data-processid="{{sub_process.id}}" class="process">{{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</a></li>
-			  {%endfor %}
+			  {% endfor %}
+			  {% if faq %}
+			  <li><a href="#" id="home-faq"  class="" >FAQ</a></li>
+			  {% endif %}
 		  </ul>
 	  </div>
 	</section>
@@ -198,6 +201,7 @@
     <script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
 	<!--<script type="text/javascript" src="{% static 'js/script.js' %}"></script>-->
 	<script type="text/javascript">
+
 		$(document).ready(function(){
 			sub_process = "{{sub_process.id}}"
 			$('.process[data-processid='+ sub_process + "]").addClass('active');
@@ -439,7 +443,23 @@
 			}
 
 			
-	    });	
+	    });
+
+
+//function to get all faq question and answer
+	    $("#home-faq").click(function(){
+	    	
+	    	$('.process').removeClass('active');
+	    	$('#home-faq').addClass('active');
+	    	window.location='/faq/home_view/'
+	    })	
+
+
+
+	
+
+
+
 
 	</script>
 </body>
