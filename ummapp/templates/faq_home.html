@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<title>UMM - Tool</title>
+	{% load staticfiles %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.css'%}">
+    
+	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap.min.css'%}">
+	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap-theme.min.css'%}">
+	<link href="{% static 'manage_admin/css/font-awesome.min.css' %}" rel="stylesheet">
+
+	<link rel="stylesheet" type="text/css" href="{% static 'css/looper.css'%}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/new_custom.css'%}">
+
+</head>
+
+<body>
+	<header class="top-section">
+	  <div class="container-fluid">
+		  <div class="row">
+		  	  <div class="col-md-4">
+				<a href="/"><img src="{% static 'manage_admin/images/regalix_logo.jpg' %}" alt=""></a>
+			  </div>
+			  <div class="col-md-8">
+				  <ul>
+					  <li>{{ user.get_full_name|default:user.username }} </li>		  
+					  <li><a href="{% url 'auth:logout' %}?next=/"><i class="fa fa-power-off" aria-hidden="true"></i></a></li>
+					  {% if is_manager %}
+					  	<li><a href="/knowledgebase/admin/"><i class="fa fa-users" aria-hidden="true"></i></a></li>
+					  {% endif %}	
+
+				  </ul>
+			  </div>
+		  </div>
+	</header>
+	<section class="top-nav">
+	  <div class="container-fluid">
+		  <ul>
+			  <!--<li><a href="/">Advertiser Goals</a></li>-->
+			  {% for sub_process in sub_processs %}
+			  	<li><a href="/process/{{sub_process.process.id}}/sp/{{sub_process.url_name}}/view" data-processid="{{sub_process.id}}" class="process">{{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</a></li>
+			  {%endfor %}
+			  <li><a href="#" id="home-faq"  class="active" >FAQ</a></li>
+		  </ul>
+	  </div>
+	</section>
+
+	<section class="sub-category-section">
+	  <div class="container-fluid">
+		   <!-- Nav tabs -->
+		  <ul class="nav nav-tabs prgrm-tab" role="tablist">
+			{% for ptype in program_types %}
+			<li role="presentation"><a  href="#tab{{ ptype.id }}" aria-controls="tab{{ ptype.id }}" role="tab" data-toggle="tab" data-programtype-id="{{ ptype.id }}" class="prg-type">{{ ptype.name }}</a>
+			</li>
+			<!--<script>
+		    	 cateList.push({{ category.id }});
+		     </script>-->	
+		    {% endfor %}
+		    {% if others %}
+			<li role="presentation"><a  href="#tab" aria-controls="tab" role="tab" data-toggle="tab" data-programtype-id="other" class="prg-type-other ">Other</a>
+			</li>	
+		   	{% endif %}
+		  </ul>
+
+		  <!-- Tab panes -->
+		  <div class="tab-content">
+			<div role="tabpanel" class="sub-task" id="program-tasks">
+			</div>
+		  </div>
+	  </div>
+	</section>
+
+
+	<section class="table-setting">
+		<div class="container-fluid">
+			<table class="table table-bordered">
+				<thead>
+					<tr id="key_row">
+					
+				    </tr>
+				</thead>
+				<tbody>
+					<tr id="value_row">
+					
+				    </tr>
+				</tbody>
+			</table>
+		</div>
+	</section>
+
+
+
+<div class="container modal fade modal-box-css" id="myModal" style="margin-top: 20px;">
+	<div role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel"></h4>
+			</div>
+			<div class="modal-body">
+				<div class="tabbable"> 
+					<ul class="nav nav-tabs">
+                    </ul>
+                    <div class="tab-content">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container modal fade" id="myModal2" style="margin-top: 20px;">
+	<div role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Combo Update</h4>
+			</div>
+			<div class="modal-body">
+				<div class="table-responsive">
+					<table class="table mytable">
+						
+					</table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container modal fade" id="myModal3" style="margin-top: 20px;">
+	<div role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel" data-target="#myModal3">Budget Bands</h4>
+			</div>
+			<div class="modal-body budget-body">
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+</div>
+
+
+<section class="recommendations-section">
+	<div class="container-fluid">
+		<div class="white-bg">
+			<div class="panel-group fqa-adding-table" id="accordion" style="height:300px; overflow-y: scroll;">
+      			<!-- FAQ will be added here in javascript -->
+
+      					
+						    
+			</div>
+
+    	</div>
+	</div>
+		  
+</section>
+
+
+</body>
+	<script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/looper.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
+	<!--<script type="text/javascript" src="{% static 'js/script.js' %}"></script>-->
+
+	<script type="text/javascript">
+
+
+	
+		$(document).ready(function() {
+		 	if('.prg-type'){
+				$(".prg-type:first").parent().addClass('active');
+		 	}
+
+		$('.prg-type').click(function (e) {
+		    	e.preventDefault();
+		    	updateTaskTypes($(this).attr('data-programtype-id'));
+		    });
+
+		 $('.prg-type-other').click(function (e) {
+		    	e.preventDefault();
+		    	updateTaskTypes('other');
+		    	getFaq("other"); 
+		    });
+
+		 $("body").on("click", ".prg-task", function(e){
+				e.preventDefault();
+		    	$('.prg-task').removeClass('active').css('background','#777777');
+		    	$(this).addClass('active').css('background','#009b59');
+		    	getFaq($(this).attr('data-programtype-id')); 
+		    	/*$('#addl-data').text('More about '+ $(this).text())*/
+		    	//loadTaskData($(this).data('programtype-id'));
+		    	//updateCarouseldata(sub_process);
+		    	//updateAdditionaldata($(this).data('programtype-id'));
+		  });
+
+
+		  function updateTaskTypes(program_type_id){
+				$('#program-tasks').html("")
+				if(program_type_id == 'other'){
+					$('#program-tasks').append("<a href='#'  class=' active sub-task-link' data-programtype-id=''>other</a>");
+				}else if(program_type_id == undefined){
+					alert("something went wrong !")
+				}
+				else{
+
+	    		$.ajax({
+		            url: '/get-program-tasks/'+program_type_id,
+		            type: 'GET',
+		            success: function(data) {
+		            	if (data['data']){
+		            		td_html = ''
+		            		tsk_id = data['data'][0][Object.keys(data['data'][0])[0]];
+		            		for(var i=0;i<data['data'].length;i++){
+		            			task_name = Object.keys(data['data'][i])[0]
+		            			task_id = data['data'][i][task_name]
+		            			if (i == 0){
+		            				td_html += "<a href='#' class='prg-task active sub-task-link' data-programtype-id="+task_id +">" + task_name +"</a>"; 
+		            				getFaq(task_id);    //this function adds first active task type question answers  			
+		            			}
+		            			else{
+		            				td_html += "<a href='#'  class='prg-task sub-task-link' data-programtype-id="+task_id +">" + task_name +"</a>"	            				
+		            			}
+		            		}
+		            		$('#program-tasks').append(td_html);
+		            		$('#addl-data').text('More about '+ $('.prg-task.active').text());
+		            		//loadTaskData(tsk_id);
+		            		//updateAdditionaldata(tsk_id)
+		            		var check_task_active = true;
+		            	}
+		            },
+		            error: function(xhr, status, error) {
+		                var err = eval("(" + xhr.responseText + ")");
+		                alert(err.Message);
+		                
+		            }
+	    		});
+			   }				
+			  }
+
+			updateTaskTypes($('.prgrm-tab > li > a:eq(0)').attr("data-programtype-id"));
+
+			function getFaq(task_id){
+				
+					$.ajax({
+			    		url:'/faq/get_faq/?task_id='+task_id,
+			    		type:'GET',
+			    		success:function(data){
+			    			console.log(data)
+
+			    			if(data['success']){
+			    				
+			    				updateFaq(data);
+
+			    			}
+			    			else{
+			    				alert("Something went wrong, please try after some time")
+			    			}
+			    		},
+			            error: function(xhr, status, error) {
+			                var err = eval("(" + xhr.responseText + ")");
+			                alert(err.Message);
+			                // alert("Something went wrong, please try after some time");
+			            }
+			    	})
+			}
+
+			function updateFaq(data){
+			
+			$('.fqa-adding-table').html('');
+			fqa = ""
+			count = 1
+			
+			if(data['faq'].length > 0){
+
+			for (i=0;i<data['faq'].length;i++){
+
+			fqa = "<div class='panel'><div class='panel-heading'><h4 class='panel-title'><a class='accordion-toggle' data-toggle='collapse' data-parent='#accordion' href='#collapse"+i+"  '>"+
+               "<span class='glyphicon glyphicon-plus pull-right collapsed1'></span>"+count+") "+data['faq'][i]['q']+"</a></h4>"+
+  		"<div id='collapse"+i+"' class='panel-collapse collapse'><div class='panel-body'><p>Ans) "+data['faq'][i]['a']+"</p>"+
+        "</div></div></div>"				
+					$('.fqa-adding-table').append(fqa);
+				count = 1 + count
+			  }
+			}
+			else{
+
+				fqa = "<div class='alert alert-info no-faq'><strong>Info!</strong> No FAQ's added for selected program tasks.</div>"
+				$('.fqa-adding-table').append(fqa)
+			}
+
+			
+			
+		  }
+		});// end of document ready function
+
+
+
+
+
+
+
+	</script>
