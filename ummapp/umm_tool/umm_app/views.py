@@ -1478,9 +1478,3 @@ def get_faq(request):
             return HttpResponse(json.dumps({'success':True, 'msg':'successfuly data fetched','faq':faq }), content_type="application/json")
         except:
             return HttpResponse(json.dumps({'success':False, 'msg':'exception','faq':'no data'}), content_type="application/json")
-
-
-
- 
-        
- 
