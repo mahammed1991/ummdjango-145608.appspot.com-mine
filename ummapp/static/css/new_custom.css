@@ -1,0 +1,207 @@
+@charset "utf-8";
+/* CSS Document */
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,700');
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {margin: 0; padding: 0; border: 0; font-size: 100%; font: inherit; vertical-align: baseline;}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display: block;}
+body { line-height: 1; font-family: 'Open Sans', sans-serif; font-size: 13px; color: #444; background: #eeeeee; letter-spacing: 1px}
+ol, ul { list-style: none; margin-bottom: 10px}
+blockquote, q { quotes: none; }
+blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; }
+table { border-collapse: collapse; border-spacing: 0; }
+
+.no-padding{ padding: 0}
+
+.top-section{ padding: 15px 0px; background: #fff;}
+.top-section ul{ margin-top:8px; text-align: right}
+.top-section ul li{ display:inline; margin: 0 10px;}
+.top-section ul li:nth-child(1){ border-right:1px solid #999; padding-right: 10px}
+.top-section ul li:nth-child(1){ border-right:1px solid #999; margin: 0 0px; padding-right: 10px}
+.top-section ul li:nth-child(3){ margin-right: 0}
+.top-section ul li a{ color:#444;}
+.top-section ul li .fa{ font-size:16px}
+
+.top-nav{ background: #039be5; padding: 20px 0px}
+.top-nav ul li{display:inline-block;   } 
+.top-nav ul li a{ color: #fff; text-decoration: none; text-transform: uppercase; font-weight: 600; margin: 0 20px ;padding: 5px 20px;border: 1px solid #039be5;}
+.top-nav ul li a:nth-child(1){ margin-left: 0}
+.top-nav ul li a:hover{border: 1px solid #fff;color: #fff; -webkit-transition:  all 0.5s ease 0s;
+     -moz-transition:  all 0.5s ease 0s;
+     -ms-transition:  all 0.5s ease 0s;
+     -o-transition:  all 0.5s ease 0s;
+     transition:  all 0.5s ease 0s; }
+.top-nav ul li a.active{ border: 1px solid #fff;color: #fff;}
+
+.sub-category-section{ background: #2d323e; padding: 15px 0px; text-transform: uppercase;}
+.sub-category-section h2{ font-size: 16px;  color: #fff; margin-bottom: 35px; margin-top: 20px; font-weight: 600}
+.control {display: block;position: relative; padding-left: 28px;margin-bottom: 10px;cursor: pointer; color: #fff; line-height: 22px}
+.control input {position: absolute;z-index: -1;opacity: 0;}
+.control__indicator { position: absolute;top: 2px; left: 0; height: 17px; width: 17px;background: #fff;}
+.control--radio .control__indicator {border-radius: 50%;}
+.control:hover input ~ .control__indicator, .control input:focus ~ .control__indicator {background: #fff;}
+.control input:checked ~ .control__indicator {background: #039be5;}
+.control:hover input:not([disabled]):checked ~ .control__indicator, .control input:checked:focus ~ .control__indicator { background: #039be5;}
+.control input:disabled ~ .control__indicator {background: #fff;opacity: 0.6;pointer-events: none;}
+.control__indicator:after {content: ''; position: absolute;display: none;}
+.control input:checked ~ .control__indicator:after {display: block;}
+.control--checkbox .control__indicator:after { left: 8px;top: 4px; width: 3px;height: 8px;border: solid #fff;border-width: 0 2px 2px 0;transform: rotate(45deg);}
+.sub-category-section .btn-primary {color: #fff; background-color: #039be5; border-color: #039be5;}
+.sub-category-section .btn {padding: 6px 16px; border-radius: 0px; margin-left: 10px; margin-top: 20px; margin-bottom: 20px}
+.sub-category-section .nav-tabs { border-bottom: 2px solid #fff; }
+.sub-category-section .nav-tabs > li { margin-bottom: -2px; }
+.sub-category-section .nav-tabs > li.active > a, .sub-category-section .nav-tabs > li.active > a:focus, .sub-category-section .nav-tabs > li.active > a:hover { background-color: transparent; border-color: #4caf50; border-width: 0 0 2px; color: #4caf50; text-transform: uppercase}
+.sub-category-section .nav-tabs > li > a { border-width: 0 0 2px; border-radius: 0; padding: 8px 20px; font-size: 14px; color: #fff; font-weight: 600 }
+.sub-category-section .nav-tabs > li > a:hover { border: 0 0 2px; background-color: transparent; border-color: transparent; color: #4caf50;-webkit-transition:  all 0.5s ease 0s;
+     -moz-transition:  all 0.5s ease 0s;
+     -ms-transition:  all 0.5s ease 0s;
+     -o-transition:  all 0.5s ease 0s;
+     transition:  all 0.5s ease 0s; }
+.sub-category-section .tab-content { margin-top: 20px; color: #fff }
+
+a.sub-task-link {display:inline-table;text-decoration: none; padding: 10px 18px; margin: 0 8px 10px 0;background: #506068;color: #ffffff;cursor: pointer;}
+a.sub-task-link:hover{background: #4caf50;-webkit-transition:  all 0.5s ease 0s;
+     -moz-transition:  all 0.5s ease 0s;
+     -ms-transition:  all 0.5s ease 0s;
+     -o-transition:  all 0.5s ease 0s;
+     transition:  all 0.5s ease 0s;}
+a.sub-task-link.active{background: #4caf50; }
+
+.recommendations-section{ margin:20px 0px}
+.recommendations-section h2{font-weight: 600; font-size: 18px; position: relative; padding-bottom:10px}
+.recommendations-section h2:before{content: "";position: absolute;bottom: 0px;left: 0px;background-color: #d1d1d1;width: 100%;height: 1px;}
+.recommendations-section h2:after{content: "";position: absolute;bottom: -1px;left: 0px;width: 50px;height: 3px;background-color: #039be5;}
+.recommendations-section { line-height:24px; padding: 20px 0px 35px; }
+.recommendations-section .white-bg{ background: #fff; padding: 15px}
+
+.sub-row{margin:20px 0px }
+.sub-row .faq-bg{ background: #039be5; padding: 10px; height: 45px }
+.sub-row .faq-bg ul{ text-align:center; margin-top:5px}
+.sub-row .faq-bg ul li{display:inline-block;padding:0px 25px; border-right: 1px solid #d1d1d1}
+.sub-row .faq-bg ul li a{  color: #fff; text-decoration: none; outline: none; font-weight: 600}
+.sub-row .faq-bg ul li a:hover{ color: #81d4fa;-webkit-transition:  all 0.5s ease 0s;
+     -moz-transition:  all 0.5s ease 0s;
+     -ms-transition:  all 0.5s ease 0s;
+     -o-transition:  all 0.5s ease 0s;
+     transition:  all 0.5s ease 0s;}
+.sub-row .faq-bg ul  li:nth-child(4){ border-right: 0px solid #d1d1d1}
+.sub-row .combo-bg{ background: #0288d1; padding: 10px;height: 45px ; text-align: center}
+.sub-row .combo-bg h2{font-weight: 600; font-size: 18px; color: #fff}
+.sub-row .combo-bg p a{ color: #fff; display: block; text-decoration: underline; padding-top: 5px;outline: none}
+.sub-row .combo-bg  .carousel-content {color:black;display:flex; align-items:center;}
+.sub-row .combo-bg  #text-carousel { width: 100%;height: auto;padding: 0 40px;}
+.sub-row .combo-bg  .carousel-control.right {
+    right: 0;
+    left: auto;
+    background-image: -webkit-linear-gradient(left,rgba(0,0,0,.0000) 0,rgba(0,0,0,0) 100%);
+    background-image: -o-linear-gradient(left,rgba(0,0,0,.0000) 0,rgba(0,0,0,0) 100%);
+    /* background-image: -webkit-gradient(linear,left top,right top,from(rgba(0,0,0,.0001)),to(rgba(0,0,0,.5))); */
+    background-image: linear-gradient(to right,rgba(0,0,0,.0000) 0,rgba(0,0,0,0) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#80000000', GradientType=1);
+    background-repeat: repeat-x;
+}
+.sub-row .combo-bg  .carousel-control.left {
+    background-image: -webkit-linear-gradient(left,rgba(0,0,0,.0) 0,rgba(0,0,0,.0000) 100%);
+    background-image: -o-linear-gradient(left,rgba(0,0,0,.0) 0,rgba(0,0,0,.0000) 100%);
+    background-image: -webkit-gradient(linear,left top,right top,from(rgba(0,0,0,.0)),to(rgba(0,0,0,.0000)));
+    background-image: linear-gradient(to right,rgba(0,0,0,.0) 0,rgba(0,0,0,.0000) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80000000', endColorstr='#00000000', GradientType=1);
+    background-repeat: repeat-x;
+}
+.sub-row .combo-bg .carousel-control .glyphicon-chevron-left, .carousel-control .glyphicon-chevron-right, .carousel-control .icon-next, .carousel-control .icon-prev {width: 30px;height: 30px;margin-top: -5px;font-size:14px ;}
+.sub-row .combo-bg .carousel-control .glyphicon-chevron-left, .carousel-control .icon-prev {left: 10%;}
+.sub-row .combo-bg .carousel-control .glyphicon-chevron-right, .carousel-control .icon-next {right: 10%;}
+.modal-box-css .modal-title{ font-size: 18px; font-weight: 600}
+.modal-box-css .modal-dialog{ width: 80%}
+.modal-box-css .tab-content>.active {margin-top: 20px;}
+
+.table-setting{ margin-top:20px 0px 0px}
+.table-setting .white-bg{ background: #fff; padding: 15px; }
+.table-setting .table { margin-bottom: 0px;}
+.table-setting .table>thead>tr>th{ background: #1b5e20;vertical-align: top; color: #fff; font-weight: 700; border: 1px solid #388e3c}
+.table-setting thead{border: 1px solid #43a047}
+.table-setting .table>tbody>tr { background: #4caf50;color: #fff;}
+
+
+/*FAQ  question answer home user page css*/
+
+.recommendations-section .white-bg .accordion-toggle {display: block}
+.recommendations-section .white-bg .accordion-toggle:hover, .accordion-toggle:focus {text-decoration: none}
+.recommendations-section .white-bg .panel-default {border-color: transparent}
+.recommendations-section .white-bg .panel {box-shadow: none;border-bottom: 1px solid #f3f3f3;border-radius: 0}
+.recommendations-section .white-bg .panel:last-child { border-bottom: none; }
+.recommendations-section .white-bg .panel-heading a { padding: 0px 0; }
+.recommendations-section .white-bg .panel-group { margin-bottom: 0; }
+.recommendations-section .white-bg .panel-group .panel+ .panel {margin-top: 0}
+.recommendations-section .white-bg .panel-title { font-size: 14px; color: #444; font-weight: 600}
+.recommendations-section .white-bg .panel-body p{padding: 0 45px 10px 10px;color: #444; font-size:14px; line-height:24px ;margin-bottom :0px; }
+.recommendations-section .white-bg .panel-body p{background-color: #b3d9ff;border-color:#0047b3;border-style: solid;border-width: 1px; }
+.recommendations-section .white-bg .panel-group .panel-heading+ .panel-collapse > .list-group, .faq .panel-group .panel-heading+ .panel-collapse > .panel-body {border-top: 0 none;}
+.no-faq{font-weight: 600;}
+
+/*Responsive Start*/
+@media only screen and (min-width: 992px) and (max-width: 1219px) {
+}
+@media only screen and (max-width: 1024px) {
+
+}
+
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : landscape) {
+    
+}
+
+
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : portrait) { 
+}
+
+@media only screen and (max-width: 767px) {
+    
+}
+
+.recommendations-section p {
+    line-height: 24px;
+    padding: 20px 0px 35px;
+    margin-bottom: -34px;
+}
+.modal-body{
+    overflow-y: auto;
+    height: 500px;
+}
+
+.modal-dialog{
+    overflow-y: initial !important
+}
+.modal-title{
+    font-size: 26px !important;
+}
+
+.tabbable>.nav-tabs>li.active>a{
+     background-color: #007944 !important;
+     border: 0px solid #009b59 !important;
+}
+
+.table.mytable>tbody>tr>td {
+    border: 1px solid black !important;
+}
+
+.taskrecommend {
+    padding: 20px 0 0 0px;
+}
+
+.taskrecommend2{
+    padding-bottom: 20px;
+}
+
+.extra{
+    margin-top: 20px;
+}

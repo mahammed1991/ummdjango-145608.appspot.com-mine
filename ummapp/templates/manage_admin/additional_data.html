@@ -1,0 +1,1704 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Admin Panel</title>
+
+    <!-- Bootstrap -->
+    <link href="{% static 'manage_admin/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'manage_admin/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'manage_admin/css/style.css' %}" rel="stylesheet">
+    <!--<link href="{% static 'manage_admin/css/jquery-ui.css' %}" rel="stylesheet">-->
+    <link href="{% static 'manage_admin/css/datepicker.min.css' %}" rel="stylesheet">
+    <link href="{% static 'manage_admin/css/formValidation.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'manage_admin/css/iziToast.min.css'%}">
+	<link rel="stylesheet" href="{% static 'manage_admin/css/bootstrap-tagsinput.css'%}">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!--<style type="text/css">
+    	.ui-datepicker-calendar,.ui-datepicker-month { display: none; }
+    </style>-->
+    <style>
+		.datepicker{z-index:1151 !important;}
+		.bootstrap-tagsinput {
+    width: 100%;
+}
+.label {
+    line-height: 2 !important;
+}
+	</style>
+  </head>
+  <body>
+    <section class="top-white-bg">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-4 col-md-6 col-sm-6">
+					<a href="/knowledgebase/admin/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a>
+				</div>
+				<div class="col-xs-8 col-md-6 col-sm-6">
+					<a href="{% url 'auth:logout' %}?next=/" class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
+					<a href="/" class="logout  pull-right" target="_blank"><i class="fa fa-home" aria-hidden="true"></i></a>
+				</div>
+			</div>
+		</div>
+	</section>
+	
+	<section class="process-create">
+	  	<div class="container">
+            <ol class="breadcrumb">
+              <li><a id="process-url" href="/knowledgebase/admin/">All</a></li>
+              <li><a href="/process/{{data.process_id}}/show" class="active">{{data.process_name}}</a></li>
+              <li>{{data.sub_process_name}} Q'{{data.quarter}} {{data.year}}</li>
+            </ol>	  	
+			<div class="create-heading text-uppercase pull-left">
+				<h1 data-processid="{{data.process_id}}">{{data.process_name}}</h1>
+			</div>
+			<div class="clearfix"></div>
+			<div class="enabled">
+				<div class="white-bg">
+					<div class="red-bg clearfix">
+						<div class="create-heading pull-left">
+							<ul class="process-tab">
+								<li><a href="#" data-subprocessid="{{data.sub_process_id}}" data-quarter="{{data.quarter}}" data-year="{{data.year}}" class="active">{{data.sub_process_name}} Q'{{data.quarter}} {{data.year}}</a></li>
+							</ul>
+						</div>
+						<div class="edit-white pull-right" id="edit-subprocess">
+							<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+						</div>
+					</div>
+
+					<div class="padding-15">
+						<script type="text/javascript"> tasks = []</script>
+						<div class="program-type clearfix">
+							<div class="create-heading pull-left">
+								 <ul class="prgrm-tab">
+								 {% for key, val in data.programs.iteritems %}
+									<li><a href="#"  data-programtype-id="{{val.id}}" class="prg-type">{{key}}</a></li>
+								 {% endfor %}
+
+								 </ul>
+						    </div>
+								<div class="edit2 pull-right">
+									<!--<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>-->
+									<a href="#" id="add-programtypes"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
+								</div>
+						</div>	
+						<table class="table table-style" id="program-tasks">
+						</table>
+						<div class="gray-bg" style="">
+							<div class="sub-text clearfix">
+								<div class="create-heading pull-left">
+								<h3>Task Data </h3>
+								</div>
+								<div class="edit2 pull-right">
+									<!--<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>-->
+									<a href="#" id="add-columns"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
+								</div>
+							</div>
+							<div class="white-bg">
+								<div class="padding-15" id="columns">
+									<!--<a href="#" class="task-column tbl-btn" data-number="1" data-taskdata-id="">Column Name	</a>
+									<a href="#" class="task-column tbl-btn" data-number="2" data-taskdata-id=''>Column Name	</a>
+									<a href="#" class="task-column tbl-btn" data-number="3" data-taskdata-id=''>Column Name	</a>
+									<a href="#" class="task-column tbl-btn" data-number="4" data-taskdata-id=''>Column Name	</a>
+									<a href="#" class="task-column tbl-btn" data-number="5" data-taskdata-id=''>Column Name </a>-->
+								</div>
+							</div>
+						</div>
+
+						<div class="gray-bg" style="border-bottom: 1px solid #000;">
+							<div class="sub-text clearfix">
+								<div class="create-heading pull-left">
+								<h3>Task Additional Data </h3>
+								</div>
+								<div class="edit2 pull-right">
+									<!--<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>-->
+									<a href="#" id="add-addl-columns"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
+								</div>
+							</div>
+							<div class="white-bg">
+								<div class="padding-15" id="addl-columns">
+									<!--<a href="#" class="addl-column tbl-btn" data-number="1" data-additionaldata-id="">Title	</a>
+									<a href="#" class="addl-column tbl-btn" data-number="2" data-additionaldata-id=''>Title	</a>
+									<a href="#" class="addl-column tbl-btn" data-number="3" data-additionaldata-id=''>Title	</a>
+									<a href="#" class="addl-column tbl-btn" data-number="4" data-additionaldata-id=''>Title	</a>
+									<a href="#" class="addl-column tbl-btn" data-number="5" data-additionaldata-id=''>Title </a>-->
+								</div>
+							</div>
+						</div>
+
+						<div class="gray-bg" style="border-bottom: 1px solid #000;">
+							<div class="sub-text clearfix">
+								<div class="create-heading pull-left">
+								<h3>Carousel Updates </h3>
+								</div>
+								<div class="edit2 pull-right">
+									<!--<a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>-->
+									<a href="#" id="add-carousel-columns"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
+								</div>
+							</div>
+							<div class="white-bg">
+								<div class="padding-15" id="carousel-columns">
+									<!--<a href="#" class="carousel-column tbl-btn" data-number="1" data-carouseldata-id="">Column Name	</a>
+									<a href="#" class="carousel-column tbl-btn" data-number="2" data-carouseldata-id=''>Column Name	</a>
+									<a href="#" class="carousel-column tbl-btn" data-number="3" data-carouseldata-id=''>Column Name	</a>
+									<a href="#" class="carousel-column tbl-btn" data-number="4" data-carouseldata-id=''>Column Name	</a>
+									<a href="#" class="carousel-column tbl-btn" data-number="5" data-carouseldata-id=''>Column Name </a>-->
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	  </section>
+  
+  	  <div class="modal-style" style="width:100%">
+  		<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+		  <div class="modal-dialog" role="document" style="width: 80%;">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title">Table Heading</h4>
+		      </div>
+		      <div class="modal-body">
+		        <form id="taskDataForm">
+		          <input type="hidden" class="form-control" name='program_task' value='' >
+		          <input type="hidden" class="form-control" name='task_data_id' value='' >
+		          <input type="hidden" class="form-control" name='column_number' value='' >
+		          <div class="form-group">
+		            <input type="text" class="form-control" name="column_name" id="column-name" placeholder="Task Definition	">
+		            <p id="column-name-error" style="color:red"></p>
+		          </div>
+		          <h4 class="modal-title margin-bottom-10px" >Table Text</h4>
+		          <div class="form-group">
+		            <textarea class="form-control" name="column_data" id="message-text"></textarea>
+		          </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-primary" id="taskDataDelete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+			        <button type="submit" class="btn btn-primary" id="taskFormSubmit">Save</button>
+			      </div>
+		        </form>
+		      </div>
+		      <!--<div class="modal-footer">
+		        <button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+		        <button type="button" class="btn btn-primary">Save</button>
+		      </div>-->
+		    </div>
+		  </div>
+		</div>	
+	  </div>
+
+
+  	  <div class="modal-style" style="width:100%">
+  		<div class="modal fade" id="carouselModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+		  <div class="modal-dialog" role="document" style="width: 80%;">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title">Name</h4>
+		      </div>
+		      <div class="modal-body">
+		        <form id="carouselDataForm">
+		          <input type="hidden" class="form-control" name='sub_process_id' value='' >
+		          <input type="hidden" class="form-control" name='carousel_data_id' value='' >
+		          <div class="form-group">
+		            <input type="text" class="form-control" name="column_name" id="carousel-name" placeholder="">
+		            <p id="carousel-name-error" style="color:red"></p>
+		          </div>
+		          <h4 class="modal-title margin-bottom-10px" >Data</h4>
+		          <div class="form-group">
+		            <textarea class="form-control" name="column_data" id="carouseldata-text"></textarea>
+		          </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-primary" id="carouselDataDelete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+			        <button type="submit" class="btn btn-primary" id="carouselDataFormSubmit">Save</button>
+			      </div>
+		        </form>
+		      </div>
+		      <!--<div class="modal-footer">
+		        <button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+		        <button type="button" class="btn btn-primary">Save</button>
+		      </div>-->
+		    </div>
+		  </div>
+		</div>	
+	  </div>
+
+
+  	  <div class="modal-style" style="width:100%">
+  		<div class="modal fade" id="additionaldataModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+		  <div class="modal-dialog" role="document" style="width: 80%;">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title">Title</h4>
+		      </div>
+		      <div class="modal-body">
+		        <form id="additionalDataForm">
+		          <input type="hidden" class="form-control" name='program_task' value='' >
+		          <input type="hidden" class="form-control" name='additionaldata_id' value='' >
+		          <div class="form-group">
+		            <input type="text" class="form-control" name="column_name" id="additionaldata-name" placeholder="">
+		            <p id="additionaldata-name-error" style="color:red"></p>
+		          </div>
+		          <h4 class="modal-title margin-bottom-10px" >Text</h4>
+		          <div class="form-group">
+		            <textarea class="form-control" name="column_data" id="additionaldata-text"></textarea>
+		          </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-primary" id="additionalDataDelete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+			        <button type="submit" class="btn btn-primary" id="additionalDataFormSubmit">Save</button>
+			      </div>
+		        </form>
+		      </div>
+		      <!--<div class="modal-footer">
+		        <button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+		        <button type="button" class="btn btn-primary">Save</button>
+		      </div>-->
+		    </div>
+		  </div>
+		</div>	
+	  </div>
+
+
+  	  <div class="modal-style" style="width:100%">
+  		<div class="modal fade" id="addProgramDataModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+		  <div class="modal-dialog" role="document" style="width: 80%;">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title"></h4>
+		      </div>
+		      <div class="modal-body">
+		        <form id="addProgramDataForm">
+		        	{% csrf_token %}
+				    <div class="form-group progs">
+				    	<h4 class="modal-title margin-bottom-10px" >Program Type</h4>
+				        <div class="col-xs-5 form-group">
+				            <input type="text" class="form-control req" name="program_type_0_name" placeholder="Program Type" data-id=""/>
+				        </div>
+				        <div class="col-xs-5 form-group">
+				            <input type="text" class="form-control req" name="program_task_0_name" placeholder="Program Task" />
+				            <p class="task-error" style="color: #a94442;"></p>
+				        </div>
+				        <div class="col-xs-2">
+				        	<button type="button" class="btn btn-primary" id="programDataDelete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+				            <button type="button" class="btn btn-default addButton"><i class="fa fa-plus"></i></button>
+				        </div>
+				    </div>
+
+				    <!--The template for adding new field-->
+				    <div class="form-group hide" id="programTypeTemplate">
+				        <div class="col-xs-5 form-group">
+				            <input type="text" class="form-control" name="program-type-name" placeholder="Program Type"/ data-id="">
+				        </div>
+				        <div class="col-xs-5 form-group">
+				            <input type="text" class="form-control" name="program-task-name" placeholder="Program Task"  />
+				            <p class="task-error" style="color: #a94442;"></p>
+				        </div>
+				        <div class="col-xs-2">
+				        	<button type="button" class="btn btn-primary" id="programDataDelete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+				            <button type="button" class="btn btn-default removeButton"><i class="fa fa-minus"></i></button>
+				        </div>
+				    </div>
+				    <div class="clearfix"></div>
+				      <div class="modal-footer">
+				        <!--<button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>-->
+				        <button type="submit" class="btn btn-primary" id="addProgramDataSubmit">Save</button>
+				      </div>
+		        </form>
+		      </div>
+		      <!--<div class="modal-footer">
+		        <button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+		        <button type="button" class="btn btn-primary">Save</button>
+		      </div>-->
+		    </div>
+		  </div>
+		</div>	
+	  </div>
+
+
+  	  <div class="modal-style" style="width:100%">
+  		<div class="modal fade" id="subProcessEditModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+		  <div class="modal-dialog" role="document" style="width: 80%;">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title"></h4>
+		      </div>
+		      <div class="modal-body">
+		        <form id="subProcessEditForm">
+		        	{% csrf_token %}
+				    <div class="form-group">
+						<div class="form-group">
+					        <label for="sub-process-name" class="control-label col-sm-2">Sub Process Name</label>
+					        <div class="col-sm-9 form-group">
+					            <input type="text" class="form-control req" id="sub-process-name" name="sub_process_name" value="{{sub_process_form.data.name}}">
+					            <p id="sub-process-error" style="color:red"></p>
+					            
+					        </div>
+						</div>
+					    <div class="form-group">
+					        <label for="quarter" class="control-label col-sm-2">Sub Process Quarter </label>
+					        <div class="col-sm-2 form-group">
+					            <select class="form-control" id="quarter" name="quarter">
+					            <option id="1" value="1" >1</option>
+					            <option id="2" value="2" >2</option>
+					            <option id="3" value="3" >3</option>
+					            <option id="4" value="4" >4</option>
+					            </select>
+					    	</div>
+					    </div>
+					    <div class="form-group">
+					        <label for="quarter-year" class="control-label col-sm-2">Sub Process Year</label>
+					        <div class="col-sm-3 form-group">
+					        	<div class="input-group input-append date" id="quarter-year" >
+							        <input  type="text"  name="quarter_year" class="form-control req" >
+							        <span class="input-group-addon add-on"><span class="glyphicon glyphicon-calendar"></span></span>
+							        <p id="quarter-year-error" style="color:red"></p>
+							    </div>
+					        </div>
+					    </div>
+				    </div>
+
+				    <div class="clearfix"></div>
+				      <div class="modal-footer">
+				        <!--<button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>-->
+				        <button type="submit" class="btn btn-primary" id="subProcessEditSubmit">Save</button>
+				      </div>
+		        </form>
+		      </div>
+		      <!--<div class="modal-footer">
+		        <button type="button" class="btn btn-primary"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+		        <button type="button" class="btn btn-primary">Save</button>
+		      </div>-->
+		    </div>
+		  </div>
+		</div>	
+	  </div>
+
+	<div class="modal-style">
+	    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+	        <div class="modal-dialog" role="document">
+	            <div class="modal-content">
+	                <div class="modal-header">
+	                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+	                    </button>
+	                    <h4 class="modal-title2">Are you ABSOLUTELY sure?
+
+	</h4>
+	                </div>
+	                <div class="modal-body">
+				        
+				        <div class="facebox-alert">
+				    		Unexpected bad things will happen if you don’t read this!
+				  		</div>
+				  		<div class="del-confirm-msg">
+					        <p>This action <strong>CANNOT</strong> be undone. This will permanently delete the <strong>sreekanth-anubolu/Java-Basic-Programs</strong> repository, wiki, issues, and comments, and remove all collaborator associations.</p>
+					        <p>Please type in the name of the repository to confirm.</p>
+				        </div>
+				        <button type="submit" class="btn btn-block btn-danger btn-ok">I understand the consequences, delete this item</button>
+				      </div>
+	                <div class="modal-footer">
+	                    <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+  
+  
+  
+   
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="{% static 'manage_admin/js/jquery.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/bootstrap-datepicker.min.js' %}"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{% static 'manage_admin/js/formValidation.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/form_bootstrap.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'ckeditor/ckeditor.js' %}"></script>
+    <script src="{% static 'manage_admin/js/iziToast.min.js' %}"></script>
+	<script src="{% static 'manage_admin/js/bootstrap-tagsinput.min.js' %}"></script>
+    <!--<script src="{% static 'manage_admin/js/jquery-ui.min.js' %}"></script>-->
+	<script type="text/javascript">
+	$(document).ready(function(){
+	    CKEDITOR.replace('message-text');
+	    CKEDITOR.replace('carouseldata-text');
+	    CKEDITOR.replace('additionaldata-text');
+
+	    sub_process_name = "{{data.sub_process_name}}"
+
+	    current_url = window.location.href
+	    if (current_url.indexOf('?')!= -1 && current_url.split('?')[1].split('=')[1] == 'updated'){
+				iziToast.success({
+				    title: 'OK',
+				    message: 'Successfully updated sub process' ,
+				});
+	    }
+
+	    if (current_url.indexOf('?')!= -1 && current_url.split('?')[1].split('=')[0] == 'carousel' && current_url.split('?')[1].split('=')[1] == 'deleted'){
+				iziToast.success({
+				    title: 'OK',
+				    message: 'Successfully deleted carousel data' ,
+				});
+	    }
+
+	    if (current_url.indexOf('?')!= -1 && current_url.split('?')[1].split('=')[0] == 'additionaldata' && current_url.split('?')[1].split('=')[1] == 'deleted'){
+				iziToast.success({
+				    title: 'OK',
+				    message: 'Successfully deleted task additional data' ,
+				});
+	    }
+
+	    if (current_url.indexOf('?')!= -1 && current_url.split('?')[1].split('=')[0] == 'taskdata' && current_url.split('?')[1].split('=')[1] == 'deleted'){
+				iziToast.success({
+				    title: 'OK',
+				    message: 'Successfully deleted task data' ,
+				});
+	    }
+
+	    if (current_url.indexOf('?')!= -1 && current_url.split('?')[1].split('=')[0] == 'programdata' && current_url.split('?')[1].split('=')[1] == 'deleted'){
+				iziToast.success({
+				    title: 'OK',
+				    message: 'Successfully deleted Program Type and all its associated Program Tasks, Task Data and Task Additional Data.' ,
+				});
+	    }
+
+	    $("body").on("click", ".task-column", function(e){
+	    	e.preventDefault();
+	    	$that = $(this);
+	    	var data_id = $that.attr("data-taskdata-id");
+	    	var data = taskDataIds[parseInt(data_id)]
+	    	console.log(data)
+	    	var column_name = $that.text();
+	    	var column_number = $that.data("number");
+	    	if (data_id)
+	    		$('input[name=task_data_id]').val(data_id);
+	    	$('.task-column').removeClass('active');
+	    	$that.addClass('active');
+	    	if (data && data.length > 0){
+	    		$("#column-name").val(column_name);
+	    		CKEDITOR.instances["message-text"].setData(data);
+	    	}else{
+	    		$("#column-name").val('');
+	    		CKEDITOR.instances["message-text"].setData('');
+	    	}
+	    	//if(column_number)
+	    	$('input[name=column_number]').val(column_number);
+	    	/*else
+	    		$('input[name=column_number]').val('');*/
+  			$('#exampleModal').modal('show');
+  			return false;
+	    });
+
+	    $("body").on("click", ".carousel-column", function(e){
+	    	e.preventDefault();
+	    	$that = $(this);
+	    	var data_id = $that.attr("data-carouseldata-id");
+	    	sub_process = $('.process-tab a.active').attr('data-subprocessid');
+	    	$('input[name=sub_process_id]').val(sub_process);
+	    	var data = carouselDataIds[parseInt(data_id)]
+	    	console.log(data)
+	    	var column_name = $that.text();
+	    	if (data_id)
+	    		$('input[name=carousel_data_id]').val(data_id);
+	    	$('.carousel-column').removeClass('active');
+	    	$that.addClass('active');
+	    	
+	    	if (data && data.length > 0){
+	    		$("#carousel-name").val(column_name);
+	    		CKEDITOR.instances["carouseldata-text"].setData(data);
+	    	}else{
+	    		$("#carousel-name").val('');
+	    		CKEDITOR.instances["carouseldata-text"].setData('');
+	    	}
+  			$('#carouselModal').modal('show');
+  			return false;
+	    });
+
+	    $("body").on("click", ".addl-column", function(e){
+	    	e.preventDefault();
+	    	$that = $(this);
+	    	var data_id = $that.attr("data-additionaldata-id");
+	    	var data = additionalDataIds[parseInt(data_id)]
+	    	console.log(data)
+	    	var column_name = $that.text();
+	    	if (data_id)
+	    		$('input[name=additionaldata_id]').val(data_id);
+	    	$('.addl-column').removeClass('active');
+	    	$that.addClass('active');
+	    	
+	    	if (data && data.length > 0){
+	    		$("#additionaldata-name").val(column_name);
+	    		CKEDITOR.instances["additionaldata-text"].setData(data);
+	    	}else{
+	    		$("#additionaldata-name").val('');
+	    		CKEDITOR.instances["additionaldata-text"].setData('');
+	    	}
+  			$('#additionaldataModal').modal('show');
+  			return false;
+	    });
+
+
+	    taskDataIds = {}
+		var loadTaskData = function(task_id){
+			$.ajax({
+	            url: '/get-task-data/'+task_id,
+	            type: 'GET',
+	            cache: false,
+	            success: function(data) {
+	            	var data = data['data'];
+	            	if (data.length > 0){
+	            		$col = $("#columns");
+	            		$col.html('');
+	            		for(var i=0;i<data.length;i++){
+	            			 taskDataIds[data[i].data_id] = data[i].data
+	      					$col.append('<a href="#" data-number="'+data[i].column_number+'" class="task-column tbl-btn" data-taskdata-id="'+data[i].data_id+'">'+ data[i].column_name+'</a>');
+	            		}
+	            	}else{
+	            		$col = $("#columns");
+	            		$col.html('');
+	      				/*$col.append('<a href="#" class="task-column tbl-btn" data-number="1" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="2" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="3" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="4" data-taskdata-id="">Column Name	</a><a href="#" class="task-column tbl-btn" data-number="5" data-taskdata-id="">Column Name </a>');*/	          
+
+	            	}
+	            },
+	            error: function(xhr, status, error) {
+	                var err = eval("(" + xhr.responseText + ")");
+	                alert(err.Message);
+	                //alert("Something went wrong, please try after some time");
+	            }
+    		});	
+		}
+
+	    $('.prg-type').click(function (e) {
+	    	e.preventDefault();
+	    	$('.prg-type').removeClass('active');
+	    	$(this).addClass('active');
+	    	updateTaskTypes($(this).attr('data-programtype-id'));
+	    });
+
+	    $("body").on("click", ".prg-task", function(e){
+			e.preventDefault();
+	    	$('.prg-task').removeClass('active');
+	    	$(this).addClass('active');
+	    	loadTaskData($(this).data('programtype-id'));
+	    	updateAdditionaldata($(this).data('programtype-id'));
+	    });
+
+	    $('#add-columns').on('click',function(e) {
+	    	e.preventDefault();
+	    	if ($("#columns > a:last-child").length > 0){
+	    		var column_number = parseInt($("#columns > a:last-child").data("number")) + 1;
+	    	}
+	    	else{
+	    		var column_number = 1;
+	    	}
+	    	//var column_number = parseInt($("#columns > a:last-child").data("number")) + 1;
+	    	$('#columns').append('<a href="#" data-number="'+column_number+'" class="task-column tbl-btn" data-taskdata-id="" data-columndata="">Column Name</a>');
+	    });
+
+	    $('#add-carousel-columns').on('click',function(e) {
+	    	e.preventDefault();
+	    	$('#carousel-columns').append('<a href="#" data-number="" class="carousel-column tbl-btn" data-carouseldata-id="" >Column Name</a>');
+	    });
+
+	    $('#add-addl-columns').on('click',function(e) {
+	    	e.preventDefault();
+	    	if ($('.addl-column').length == 4){
+	    		$('#add-addl-columns').attr('disabled','disabled');
+				iziToast.warning({
+				    title: 'Caution',
+				    message: 'Only 4 Task additional data are allowed',
+				});	    		
+	    		//$('#add-addl-columns').attr('title','Only 4 Task additional data are allowed');
+	    	}
+	    	else{
+	    		$('#addl-columns').append('<a href="#" data-number="" class="addl-column tbl-btn" data-addldata-id="" >Title</a>');
+	    	}
+
+	    });
+
+    	function updateTaskTypes(program_type_id){
+    		$('#program-tasks').html("")
+    		$.ajax({
+	            url: '/get-program-tasks/'+program_type_id,
+	            type: 'GET',
+	            cache: false,
+	            success: function(data) {
+	            	if (data['data']){
+	            		td_html = ''
+	            		tsk_id = data['data'][0][Object.keys(data['data'][0])[0]];
+	            		for(var i=0;i<data['data'].length;i++){
+	            			task_name = Object.keys(data['data'][i])[0]
+	            			task_id = data['data'][i][task_name]
+	            			if (i == 0){
+
+	            				td_html += "<td><a href='#' class='prg-task active' data-programtype-id="+task_id +">" + task_name +"</a></td>";         			
+	            			}
+	            			else{
+	            				td_html += "<td><a href='#'  class='prg-task' data-programtype-id="+task_id +">" + task_name +"</a></td>"	            				
+	            			}
+	            		}
+	            		$('#program-tasks').append('<tr>' + td_html + '</tr>')
+	            		loadTaskData(tsk_id);
+	            		updateAdditionaldata(tsk_id);
+	            	}
+	            },
+	            error: function(xhr, status, error) {
+	                var err = eval("(" + xhr.responseText + ")");
+	                alert(err.Message);
+	                //alert("Something went wrong, please try after some time");
+	            }
+    		});	
+
+    	}
+
+		$('#exampleModal').on('shown.bs.modal', function(){
+            $('#taskDataForm').data('formValidation').resetForm();
+			//$(this).find('form').trigger('reset');
+			$('input[name=program_task]').val($('.prg-task.active').attr('data-programtype-id'));
+    		$("#cke_22").hide();
+    		$("#cke_15").hide();
+    		$("#cke_30").hide();
+    		$("#cke_35").hide();
+		});
+
+		$('#exampleModal').on('hidden.bs.modal', function (e) {
+			$('#taskDataForm input').val('');
+		});
+
+		$('#carouselModal').on('shown.bs.modal', function(){
+            $('#carouselDataForm').data('formValidation').resetForm();
+			//$(this).find('form').trigger('reset');
+			$('input[name=sub_process_id]').val($('input[name=sub_process_id]').val());
+    		$("#cke_22").hide();
+    		$("#cke_15").hide();
+    		$("#cke_30").hide();
+    		$("#cke_35").hide();
+		});
+
+
+		$('#carouselModal').on('hidden.bs.modal', function (e) {
+			$('#carouselDataForm input').val('');
+		});
+
+
+		$('#additionaldataModal').on('shown.bs.modal', function(){
+            $('#additionalDataForm').data('formValidation').resetForm();
+			//$(this).find('form').trigger('reset');
+			$('input[name=program_task]').val($('.prg-task.active').attr('data-programtype-id'));
+    		$("#cke_22").hide();
+    		$("#cke_15").hide();
+    		$("#cke_30").hide();
+    		$("#cke_35").hide();
+		});
+
+
+		$('#additionaldataModal').on('hidden.bs.modal', function (e) {
+			$('#additionalDataForm input').val('');
+		});
+
+
+    	if('.prg-type'){
+    		$('.prg-type:first').addClass('active');
+    	}
+
+    	updateTaskTypes($('.prgrm-tab > li > a:eq(0)').attr("data-programtype-id"));
+
+	$("#column-name").focusout(function(e) {
+		e.preventDefault();
+		if ($(this).val()) {
+			$.ajax({
+				url: '/get-column-name/',
+				method: 'POST',
+				data: {'task_id':$("input[name=program_task]").val(), 'column_name':$('#column-name').val(), 'task_data_id':$("input[name=task_data_id]").val()},
+				cache: false,
+				success : function(data) {
+					if(!data['success']){
+						$('#column-name-error').text(data['msg']);
+						$('#taskFormSubmit').prop('disabled', true);
+						return false
+					}else{
+						$('#column-name-error').text('');
+						$('#taskFormSubmit').prop('disabled', false);
+						return true
+					}
+
+				},
+	            error: function(xhr, status, error) {
+	                var err = eval("(" + xhr.responseText + ")");
+	                alert(err.Message);
+	                //alert("Something went wrong, please try after some time");
+	            }
+	    	});
+	    }		
+	})
+
+
+	$("#carousel-name").focusout(function(e) {
+		e.preventDefault();
+		if ($(this).val()) {
+			$.ajax({
+				url: '/get-carousel-column-name/',
+				method: 'POST',
+				data: {'subprocess_id':$("input[name=sub_process_id]").val(), 'column_name':$('#carousel-name').val(), 'carousel_data_id':$("input[name=carousel_data_id]").val()},
+				cache: false,
+				success : function(data) {
+					if(!data['success']){
+						$('#carousel-name-error').text(data['msg']);
+						$('#carouselDataFormSubmit').prop('disabled', true);
+						return false
+					}else{
+						$('#carousel-name-error').text('');
+						$('#carouselDataFormSubmit').prop('disabled', false);
+						return true
+					}
+
+				},
+	            error: function(xhr, status, error) {
+	                var err = eval("(" + xhr.responseText + ")");
+	                alert(err.Message);
+	                //alert("Something went wrong, please try after some time");
+	            }
+	    	});
+	    }		
+	})
+
+
+	$("#additionaldata-name").focusout(function(e) {
+		e.preventDefault();
+		if ($(this).val()) {
+			$.ajax({
+				url: '/get-addldata-column-name/',
+				method: 'POST',
+				data: {'task_id':$("input[name=program_task]").val(), 'column_name':$('#additionaldata-name').val(), 'addl_data_id':$("input[name=additionaldata_id]").val()},
+				cache: false,
+				success : function(data) {
+					if(!data['success']){
+						$('#additionaldata-name-error').text(data['msg']);
+						$('#additionalDataFormSubmit').prop('disabled', true);
+						return false
+					}else{
+						$('#additionaldata-name-error').text('');
+						$('#additionalDataFormSubmit').prop('disabled', false);
+						return true
+					}
+
+				},
+	            error: function(xhr, status, error) {
+	                var err = eval("(" + xhr.responseText + ")");
+	                alert(err.Message);
+	                //alert("Something went wrong, please try after some time");
+	            }
+	    	});
+	    }		
+	})
+
+
+     $('#taskDataForm')
+         .formValidation({
+             framework: 'bootstrap',
+             icon: {
+                 valid: 'glyphicon glyphicon-ok',
+                 invalid: 'glyphicon glyphicon-remove',
+                 validating: 'glyphicon glyphicon-refresh'
+             },
+             fields: {
+                 column_name: {
+                     validators: {
+                         notEmpty: {
+                             message: 'The field is required'
+                         },
+                     }
+                 }
+             }
+         })
+         .on('success.form.fv', function(e) {
+             // Save the form data via an Ajax request
+             e.preventDefault();
+             var data = CKEDITOR.instances["message-text"].getData();
+             if(data.length < 1){
+             	alert("Please provide data for the column.")
+             	$('#taskFormSubmit').prop('disabled', true);
+
+             }
+             else{ 
+             	$('#taskFormSubmit').removeClass('disabled');
+             	$('#taskFormSubmit').prop('disabled', false);
+	            var formData = new FormData(); 
+	            formData.append('program_task_id', $('input[name=program_task]').val());
+	            formData.append('task_data_id', $('input[name=task_data_id]').val());
+	            formData.append('column_name', $('#column-name').val());
+	            formData.append('column_data', data);
+	            formData.append('column_number', $('input[name=column_number]').val());
+
+				$.ajax({
+					url: '/add-task-data/',
+					method: 'POST',
+					data: formData,
+	                cache: false,
+	                contentType: false,
+	                processData: false,
+					success : function(data) {
+						if(data['success']){
+							$('.tbl-btn.active').attr('data-taskdata-id',data['task_data_id']);
+							$('.tbl-btn.active').text(data['column_name']);
+							$('.tbl-btn.active').attr('data-columndata',data['column_data']);
+							$('.tbl-btn.active').removeClass('active');
+							$('#exampleModal').modal('hide');
+							$('#taskDataForm')[0].reset();
+							$('#taskDataForm').data('formValidation').resetForm();
+							CKEDITOR.instances["message-text"].setData('');
+							loadTaskData(data["task_id"])
+	                         iziToast.success({
+	                            title: 'OK',
+	                            message: data['msg'] ,
+	                        });							
+						}
+						else{
+							iziToast.error({
+							    title: 'Error',
+							    message: data['msg'],
+							});							
+						}
+					},
+	                error: function(xhr, status, error) {
+	                    var err = eval("(" + xhr.responseText + ")");
+	                    alert(err.Message);
+	                }
+            	});
+
+             }
+             $('#taskFormSubmit').removeClass('disabled');
+             $('#taskFormSubmit').prop('disabled', false);
+
+         });
+
+     $('#carouselDataForm')
+         .formValidation({
+             framework: 'bootstrap',
+             icon: {
+                 valid: 'glyphicon glyphicon-ok',
+                 invalid: 'glyphicon glyphicon-remove',
+                 validating: 'glyphicon glyphicon-refresh'
+             },
+             fields: {
+                 column_name: {
+                     validators: {
+                         notEmpty: {
+                             message: 'The field is required'
+                         },
+                     }
+                 }
+             }
+         })
+         .on('success.form.fv', function(e) {
+             // Save the form data via an Ajax request
+             e.preventDefault();
+             var data = CKEDITOR.instances["carouseldata-text"].getData();
+             if(data.length < 1){
+             	alert("Please provide data for the column.")
+             	$('#carouselDataFormSubmit').prop('disabled', true);
+
+             }
+             else{ 
+             	$('#carouselDataFormSubmit').removeClass('disabled');
+             	$('#carouselDataFormSubmit').prop('disabled', false);
+	            var formData = new FormData(); 
+	            formData.append('sub_process_id', $('input[name=sub_process_id]').val());
+	            formData.append('carousel_data_id', $('input[name=carousel_data_id]').val());
+	            formData.append('column_name', $('#carousel-name').val());
+	            formData.append('column_data', data);
+
+				$.ajax({
+					url: '/add-carousel-data/',
+					method: 'POST',
+					data: formData,
+	                cache: false,
+	                contentType: false,
+	                processData: false,
+					success : function(data) {
+						if(data['success']){
+							$('.carousel-column.active').attr('data-carouseldata-id',data['carousel_data_id']);
+							$('.carousel-column.active').text(data['column_name']);
+							$('.carousel-column.active').attr('data-columndata',data['column_data']);
+							$('.carousel-column.active').removeClass('active');
+							$('#carouselModal').modal('hide');
+							$('#carouselDataForm')[0].reset();
+							$('#carouselDataForm').data('formValidation').resetForm();
+							CKEDITOR.instances["carouseldata-text"].setData('');
+							updateCarouseldata($('.process-tab a.active').attr('data-subprocessid'));
+							iziToast.success({
+							    title: 'OK',
+							    message: data['msg'] ,
+							});
+							//loadTaskData(data["task_id"])
+						}
+						else{
+							iziToast.error({
+							    title: 'Error',
+							    message: data['msg'],
+							});							
+						}
+					},
+	                error: function(xhr, status, error) {
+	                    var err = eval("(" + xhr.responseText + ")");
+	                    alert(err.Message);
+	                }
+            	});
+
+             }
+             $('#carouselDataFormSubmit').removeClass('disabled');
+             $('#carouselDataFormSubmit').prop('disabled', false);
+
+         });
+
+
+     $('#additionalDataForm')
+         .formValidation({
+             framework: 'bootstrap',
+             icon: {
+                 valid: 'glyphicon glyphicon-ok',
+                 invalid: 'glyphicon glyphicon-remove',
+                 validating: 'glyphicon glyphicon-refresh'
+             },
+             fields: {
+                 column_name: {
+                     validators: {
+                         notEmpty: {
+                             message: 'The field is required'
+                         },
+                     }
+                 }
+             }
+         })
+         .on('success.form.fv', function(e) {
+             // Save the form data via an Ajax request
+             e.preventDefault();
+             var data = CKEDITOR.instances["additionaldata-text"].getData();
+             if(data.length < 1){
+             	alert("Please provide data for the column.")
+             	$('#additionalDataFormSubmit').prop('disabled', true);
+
+             }
+             else{ 
+             	$('#additionalDataFormSubmit').removeClass('disabled');
+             	$('#additionalDataFormSubmit').prop('disabled', false);
+	            var formData = new FormData(); 
+	            formData.append('program_task_id', $('input[name=program_task]').val());
+	            formData.append('additionaldata_id', $('input[name=additionaldata_id]').val());
+	            formData.append('column_name', $('#additionaldata-name').val());
+	            formData.append('column_data', data);
+
+				$.ajax({
+					url: '/add-addldata/',
+					method: 'POST',
+					data: formData,
+	                cache: false,
+	                contentType: false,
+	                processData: false,
+					success : function(data) {
+						if(data['success']){
+							$('.addl-column.active').attr('data-addldata-id',data['addl_data_id']);
+							$('.addl-column.active').text(data['column_name']);
+							$('.addl-column.active').attr('data-columndata',data['column_data']);
+							$('.addl-column.active').removeClass('active');
+							$('#additionaldataModal').modal('hide');
+							$('#additionalDataForm')[0].reset();
+							$('#additionalDataForm').data('formValidation').resetForm();
+							CKEDITOR.instances["additionaldata-text"].setData('');
+							updateAdditionaldata(data["task_id"]);
+							iziToast.success({
+							    title: 'OK',
+							    message: data['msg'] ,
+							});							
+						}
+						else{
+							iziToast.error({
+							    title: 'Error',
+							    message: data['msg'],
+							});							
+						}
+					},
+	                error: function(xhr, status, error) {
+	                    var err = eval("(" + xhr.responseText + ")");
+	                    alert(err.Message);
+	                }
+            	});
+
+             }
+             $('#additionalDataFormSubmit').removeClass('disabled');
+             $('#additionalDataFormSubmit').prop('disabled', false);
+
+         });
+
+
+        carouselDataIds = {}
+
+		var updateCarouseldata = function(sub_process_id){
+			$.ajax({
+	            url: '/get-carousel-data/'+sub_process_id,
+	            type: 'GET',
+	            success: function(data) {
+	            	var data = data['data'];
+	            	console.log(data)
+	            	if (data.length > 0){
+	            		$col = $("#carousel-columns");
+	            		$col.html('');
+	            		for(var i=0;i<data.length;i++){
+	            			carouselDataIds[data[i].data_id] = data[i].data
+	      					$col.append('<a href="#" data-number="" class="carousel-column tbl-btn" data-carouseldata-id="'+data[i].data_id+'">'+ data[i].column_name+'</a>');
+	            		}
+	            	}else{
+	            		$col = $("#carousel-columns");
+	            		$col.html('');
+	      				/*$col.append('<a href="#" class="carousel-column tbl-btn" data-number="1" data-carouseldata-id="">Column Name	</a><a href="#" class="carousel-column tbl-btn" data-number="2" data-carouseldata-id="">Column Name	</a><a href="#" class="carousel-column tbl-btn" data-number="3" data-carouseldata-id="">Column Name	</a><a href="#" class="carousel-column tbl-btn" data-number="4" data-carouseldata-id="">Column Name	</a><a href="#" class="carousel-column tbl-btn" data-number="5" data-carouseldata-id="">Column Name </a>');	 */         
+
+	            	}
+	            },
+	            error: function(xhr, status, error) {
+	                var err = eval("(" + xhr.responseText + ")");
+	                alert(err.Message);
+	                //alert("Something went wrong, please try after some time");
+	            }
+    		});	
+		}
+
+         updateCarouseldata($('.process-tab a.active').attr('data-subprocessid'));
+
+         $("body").on("click", ".process-tab", function(e){
+         	updateCarouseldata($('.process-tab a.active').attr('data-subprocessid'));
+         })
+
+        additionalDataIds = {}
+
+		var updateAdditionaldata = function(task_id){
+			$.ajax({
+	            url: '/get-addldata/'+task_id,
+	            type: 'GET',
+	            success: function(data) {
+	            	var data = data['data'];
+	            	console.log(data)
+	            	if (data.length > 0){
+	            		$col = $("#addl-columns");
+	            		$col.html('');
+	            		for(var i=0;i<data.length;i++){
+	            			additionalDataIds[data[i].data_id] = data[i].data
+	      					$col.append('<a href="#" data-number="" class="addl-column tbl-btn" data-additionaldata-id="'+data[i].data_id+'">'+ data[i].column_name+'</a>');
+	            		}
+	            	}else{
+	            		$col = $("#addl-columns");
+	            		$col.html('');
+	      				/*$col.append('<a href="#" class="addl-column tbl-btn" data-number="1" data-additionaldata-id="">Title	</a><a href="#" class="addl-column tbl-btn" data-number="2" data-additionaldata-id="">Title </a><a href="#" class="addl-column tbl-btn" data-number="3" data-additionaldata-id="">Title	</a><a href="#" class="addl-column tbl-btn" data-number="4" data-additionaldata-id="">Title	</a><a href="#" class="addl-column tbl-btn" data-number="5" data-additionaldata-id="">Title </a>');*/	          
+
+	            	}
+	            },
+	            error: function(xhr, status, error) {
+	                var err = eval("(" + xhr.responseText + ")");
+	                alert(err.Message);
+	                //alert("Something went wrong, please try after some time");
+	            }
+    		});	
+		}
+
+	    $('#add-programtypes').on('click',function(e) {
+	    	e.preventDefault();
+	    	sub_process_id = $('.process-tab a.active').attr('data-subprocessid');
+			$.ajax({
+	            url: '/get-subprocess-programdata/'+sub_process_id,
+	            type: 'GET',
+	            success: function(data) {
+	            	var data = data['data'];
+	            	programTypeIndex = 0
+	            	if (data.length > 0){
+	            		program_data = $('#addProgramDataForm div.form-group.progs:not(:first)')
+	            		program_data.remove();
+	            		for(var i=0;i<data.length;i++){
+	            			program_type = data[i]['p_type_name']
+							tasks = Object.keys(data[i]['program_tasks']).map(function(key) {
+							    return data[i]['program_tasks'][key];
+							});
+							program_tasks = tasks.join();
+	            			if (i == 0){
+	            				$('input[name=program_type_0_name]').val(program_type);
+	            				$('input[name=program_type_0_name]').attr('data-id',data[i]['p_type_id']);
+	            				$('input[name=program_task_0_name]').val(program_tasks);
+	            				$('input[name=program_task_0_name]').attr('value',program_tasks);
+	            				$('input[name=program_task_0_name]').tagsinput('items');
+	            			}else{
+						        programTypeIndex++;
+						        var $template = $('#programTypeTemplate'),
+						            $clone = $template
+						            .clone()
+						            .removeClass('hide')
+						            .addClass("progs")
+						            .removeAttr('id')
+						            .attr('data-programType-index', programTypeIndex)
+						            .insertBefore($template);
+
+						        // Update the name attributes
+						        $clone
+						            .find('[name="program-type-name"]').attr('name', 'program_type_'+programTypeIndex+'_name').end()
+						            .find('[name="program-task-name"]').attr('name', 'program_task_'+programTypeIndex+'_name').end()
+
+						        // Add new fields
+						        // Note that we also pass the validator rules for new field as the third parameter
+
+						        $('#addProgramDataForm')
+						            .formValidation('addField', 'program_type_'+programTypeIndex+'_name', typeValidators)
+						            .formValidation('addField', 'program_task_'+programTypeIndex+'_name', taskValidators)	
+
+						        $('input[name=program_type_'+ i + '_name]').val(program_type);
+	            				$('body').find('input[name=program_type_'+ i + '_name]').attr('data-id',data[i]['p_type_id'])
+	            				$('input[name=program_task_'+ i + '_name]').val(program_tasks);
+	            				$('input[name=program_task_'+ i + '_name]').attr('value',program_tasks);
+	            				$('input[name=program_task_'+ i + '_name]').tagsinput('items');
+								$('#addProgramDataForm')
+    								.formValidation('enableFieldValidators', 'program_task_'+ i + '_name', true, 'notEmpty');	            				          
+	            			}
+	            			$('#addProgramDataModal').modal('show');
+	            		}
+	            	}else{
+	            		program_data = $('#addProgramDataForm div.form-group.progs:not(:first)')
+	            		program_data.remove();
+	            		$('input[name=program_task_0_name]').tagsinput('items');
+	            		$('#addProgramDataModal').modal('show');         
+
+	            	}
+	            },
+	            error: function(xhr, status, error) {
+	                var err = eval("(" + xhr.responseText + ")");
+	                alert(err.Message);
+	                //alert("Something went wrong, please try after some time");
+	            }
+    		});	
+
+	    });
+
+		programTypeIndex = 0;
+
+	    // Add button click handler
+	    $(".addButton").on('click', function() {
+	        programTypeIndex++;
+	        var $template = $('#programTypeTemplate'),
+	            $clone = $template
+	            .clone()
+	            .removeClass('hide')
+	            .addClass("progs")
+	            .removeAttr('id')
+	            .attr('data-programType-index', programTypeIndex)
+	            .insertBefore($template);
+
+	        // Update the name attributes
+	        $clone
+	            .find('[name="program-type-name"]').attr('name', 'program_type_'+programTypeIndex+'_name').end()
+	            .find('[name="program-task-name"]').attr('name', 'program_task_'+programTypeIndex+'_name').end()
+
+	        // Add new fields
+	        // Note that we also pass the validator rules for new field as the third parameter
+
+	        $('#addProgramDataForm')
+	            .formValidation('addField', 'program_type_'+programTypeIndex+'_name', typeValidators)
+	            .formValidation('addField', 'program_task_'+programTypeIndex+'_name', taskValidators)
+
+	        $('input[name=program_task_'+programTypeIndex+'_name]').tagsinput('items');
+	    });
+
+	    // Remove button click handler
+	    $("body").on('click', '.removeButton', function() {
+	        var $row  = $(this).parents('.form-group'),
+            index = $row.attr('data-programType-index');
+
+	        // Remove fields
+	        $('#addProgramDataForm')
+	            .formValidation('removeField', $row.find('program_type_'+index+'_name'))
+	            .formValidation('removeField', $row.find('program_task_'+index+'_name'))
+	    
+	        // Remove element containing the fields
+        	$row.remove();
+
+        	// to remove disabled class from addProgramDataForm submit
+		    $('#addProgramDataForm :input.req').each(function(){
+		        if($(this).val() == "" ) return false;
+		        $('#addProgramDataSubmit').removeClass('disabled');
+		        $('#addProgramDataSubmit').prop('disabled',false);
+		    })
+	    });
+
+	    var typeValidators = {
+	        validators: {
+	            notEmpty: {
+	                message: 'Program Type is required'
+	            },
+                callback: {
+                    message: 'Only one Program Type is allowed',
+                    callback: function(value, validator) {
+                        if (value.indexOf(',') > -1) {
+                            validator.updateStatus('typeValidators', 'INVALID');
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    }
+                }
+	        }
+	    },
+	    taskValidators = {
+	        validators: {
+	            notEmpty: {
+	                message: 'Program Task is required'
+	            },
+
+	        }
+	    }
+
+		//$('body').find('#addProgramDataForm')
+        /*$('input[name^="program_type_"]')
+            // Revalidate the program types field when it is changed
+            .change(function (e) {
+                $('#addProgramDataForm').formValidation('revalidateField', $(this).attr('name'));
+            })*/
+
+        $("body").find('#addProgramDataForm').on('change', '[name^="program_type_"]', function() {
+        	$('body').find('#addProgramDataForm').formValidation('revalidateField', $(this).attr('name'));
+        })
+            
+        $("body").find('#addProgramDataForm').on('change', '[name^="program_task_"]', function() {
+            // Revalidate the program tasks field when it is changed
+            $('body').find('#addProgramDataForm').formValidation('revalidateField', $(this).attr('name'));
+	        /*$('#addProgramDataForm')
+	            .formValidation('addField', $(this).attr('name'), taskValidators)*/
+			$(this).parent().find('p').text('');
+	        $('#addProgramDataSubmit').removeClass('disabled');
+	        $('#addProgramDataSubmit').prop('disabled',false);
+            if ($(this).val() == '' ){
+				$(this).parent().find('p').text('Program Task is required')
+            	$('#addProgramDataSubmit').addClass('disabled');
+		        $('#addProgramDataSubmit').prop('disabled',true);            	
+            }
+            if (program_type_error){
+            	$('#addProgramDataSubmit').addClass('disabled');
+		        $('#addProgramDataSubmit').prop('disabled',true);            	
+            }
+            /*else{
+				$(this).parent().find('p').text('');
+		        $('#addProgramDataSubmit').removeClass('disabled');
+		        $('#addProgramDataSubmit').prop('disabled',false);            	
+            }
+            if (program_type_error){
+            	$('#addProgramDataSubmit').addClass('disabled');
+		        $('#addProgramDataSubmit').prop('disabled',true);            	
+            }
+            else{
+            	$('#addProgramDataSubmit').removeClass('disabled');
+		        $('#addProgramDataSubmit').prop('disabled',false);
+            }*/
+            //console.log($(this).tagsinput('items').length == 0)
+           	//$('body').find('#addProgramDataForm').formValidation('revalidateField', $(this).attr('name'));
+            /*if ($(this).tagsinput('items').length == 0){
+            	$('#task-error').text('Program Task is required')
+            	$('#addProgramDataSubmit').addClass('disabled');
+		        $('#addProgramDataSubmit').prop('disabled',true);
+            }
+            else{
+            	$('#task-error').text('');
+		        $('#addProgramDataSubmit').removeClass('disabled');
+		        $('#addProgramDataSubmit').prop('disabled',false);
+            }*/
+        })
+            
+        program_type_error = false
+	     $('#addProgramDataForm')
+	         .formValidation({
+	            fields: {
+	                'program_type_0_name': typeValidators,
+	                'program_task_0_name': taskValidators,
+	            }
+	         })
+	         .on('success.form.fv', function(e) {
+	             // Save the form data via an Ajax request
+	             e.preventDefault();
+	             	var empty_program_task = $("input[name^='program_task_']").filter(function() { return $(this).val() == ""; });
+	             	console.log(empty_program_task.length)
+	             	if (empty_program_task.length){
+	             		$.each(empty_program_task, function( index, value ) {
+							$(this).parent().find('p').text('Program Task is required')
+						});
+						$('#addProgramDataSubmit').addClass('disabled');
+					    $('#addProgramDataSubmit').prop('disabled',true);
+						p_type_error = true
+				        return;
+	             	}
+	             	else{
+	             		$.each($("input[name^='program_task_']"), function( index, value ) {
+	             			$(this).parent().find('p').text('');
+	             		});
+	        			$('#addProgramDataSubmit').removeClass('disabled');
+	        			$('#addProgramDataSubmit').prop('disabled',false);	             		
+	             	}
+			        var formData = new FormData();
+			        //var file = $('input[name^="image_ref"]')[0].files[0];
+			        //formData.append('file', file);
+			        formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+			        
+			        var processData = {};
+			        processData['sub_process_id'] = $('.process-tab a.active').attr('data-subprocessid');
+			        programs = {}
+			        prg_type_id = {}
+			        p_type_error = false
+			        $(".progs").each(function(){
+			        	var prgName = $(this).find("div:eq(0) > input:eq(0)").val().toString();
+
+			        	var prgId = $(this).find("div:eq(0) > input:eq(0)").attr('data-id');
+			        	if(!programs[prgName]){
+				        	var prgVals = $(this).find("div:eq(1) > input:eq(0)").val();
+				        	if(prgVals.endsWith(","))
+				        		prgVals = prgVals.slice(0,-1)
+				        	programs[prgName] = prgVals.split(",");
+				        	prg_type_id[prgName] = prgId
+				        }else{
+				        	$err = $(this).find("div:eq(0) > small:eq(0)");
+				        	$err.text(prgName + " already exists in programs.").css("color","#c92127").show();
+				        	p_type_error = true
+				        	return;
+				        }
+			        });
+					processData['programs'] = programs;
+					processData['prg_type_id'] = prg_type_id;
+					formData.append('processData', JSON.stringify(processData));
+					if (!p_type_error){  
+				        $.ajax({
+				                url: '/add-subprocess-programdata/'+sub_process_id,
+				                type: 'POST',
+				                data: formData,
+				                cache: false,
+				                contentType: false,
+				                processData: false,
+				                success: function(data) {
+				                	if (data['success']){
+				                		window.location='/process/'+ data['process_id']+'/sp/'+data['sub_process_url_name']+'/edit'
+				                	}
+				                	else{
+				                		$('#span-msg').text(data['msg']);
+				                		$('#msg-info').show();
+
+				                	}
+				                },
+				                error: function(xhr, status, error) {
+				                    var err = eval("(" + xhr.responseText + ")");
+				                    alert(err.Message);
+				                    //alert("Something went wrong, please try after some time");
+				                }
+				            })
+				    }
+
+
+	         })
+		// This event is triggered when the field doesn't pass any validator
+		    .on('err.validator.fv', function(e, data) {
+		    	program_type_error = true
+		        // data.field     --> The field name
+		        // data.element   --> The field element
+		        // data.validator --> The validator name
+		        // data.result    --> The data returned by the validator
+
+		        // Do something ...
+		    })
+		    .on('success.validator.fv', function(e, data) {
+		    	program_type_error = false
+		    	if ($('.task-error:contains("Program Task is required")').length){
+		        	$('#addProgramDataSubmit').addClass('disabled');
+		        	$('#addProgramDataSubmit').prop('disabled',true);
+		    	}
+		        // data.field     --> The field name
+		        // data.element   --> The field element
+		        // data.validator --> The validator name
+		        // data.result    --> The data returned by the validator
+
+		        // Do something ...
+		    });
+
+		$('#addProgramDataModal').on('hidden.bs.modal', function (e) {
+			$('#addProgramDataForm input').val('');
+		});	  
+		
+		$('#addProgramDataModal').on('shown.bs.modal', function(){
+            $('#addProgramDataForm').data('formValidation').resetForm();
+		}); 
+
+		$('#edit-subprocess').on('click',function(e) {
+			e.preventDefault();
+			sub_process = $('.process-tab a.active');
+			sub_process_id = sub_process.attr('data-subprocessid');
+			quarter = sub_process.attr('data-quarter');
+			year = sub_process.attr('data-year');
+			$('#sub-process-name').val(sub_process_name);
+			$('#quarter').val(quarter);
+			$('input[name=quarter_year]').val(parseInt(year))
+			$('#subProcessEditModal').modal('show');
+		});
+
+	    $('#quarter-year')
+	        .datepicker({
+	            format: "yyyy",
+				viewMode: "years", 
+				minViewMode: "years"
+	        })
+	        .on('changeDate', function(e) {
+	            // Revalidate the date field
+	            $('#quarter-year').val(e.date.getFullYear());
+	            $('#subProcessEditForm').formValidation('revalidateField', 'quarter_year');
+	        });
+
+			 $('#subProcessEditForm')
+			     .formValidation({
+			        fields: {
+			            sub_process_name:{
+			                validators: {
+			                    notEmpty: {
+			                        message: 'Sub Process Name is required'
+			                    },
+
+			                }
+
+			            },
+			            quarter_year:{
+			                validators: {
+			                    notEmpty: {
+			                        message: 'Sub Process Year is required'
+			                    },
+
+			                }
+
+			            },
+			        }
+			     })
+			     .on('success.form.fv', function(e) {
+			         // Save the form data via an Ajax request
+			         e.preventDefault();
+				        var formData = new FormData();
+				        formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+				        formData.append('sub_process_name', $('#sub-process-name').val());
+				        formData.append('quarter', $('#quarter').val());
+				        formData.append('quarter_year',$('input[name=quarter_year]').val());
+				        sub_process_id = $('.process-tab a.active').attr('data-subprocessid');
+				        $.ajax({
+				                url: '/edit-subprocess/'+sub_process_id,
+				                type: 'POST',
+				                data: formData,
+				                cache: false,
+				                contentType: false,
+				                processData: false,
+				                success: function(data) {
+				                	if (data['success']){
+				                		window.location='/process/'+ data['process_id']+'/sp/'+data['sub_process_url_name']+'/edit/?sub_process=updated'
+			                             iziToast.success({
+			                                title: 'OK',
+			                                message: data['msg'] ,
+			                            });				                		
+				                	}
+				                	else{
+			                             iziToast.error({
+			                                title: 'Error',
+			                                message: data['msg'] ,
+			                            });
+
+				                	}
+				                },
+				                error: function(xhr, status, error) {
+				                    var err = eval("(" + xhr.responseText + ")");
+				                    alert(err.Message);
+				                    //alert("Something went wrong, please try after some time");
+				                }
+				            })
+
+
+			     });
+
+		$('#carouselDataDelete').on('click', function() {
+			carousel_data_id = $('input[name=carousel_data_id]').val();
+			var formData = new FormData();
+			formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+			formData.append('sub_process_id', $('input[name=sub_process_id]').val());
+	        if (carousel_data_id){
+	        	carousel_data_column = $('.carousel-column.tbl-btn.active').text();
+	        	$('.del-confirm-msg').html('');
+	        	$('.del-confirm-msg').html('<p>This action <strong>CANNOT</strong> be undone. This will permanently delete the carousel data with column name <strong style="font-weight: bold;">'+carousel_data_column + '</strong>');
+	        	$('#deleteConfirmationModal').modal('show');
+				$('#deleteConfirmationModal').on('click', '.btn-ok', function(e) {
+			        $.ajax({
+			                url: '/delete-carouseldata/'+carousel_data_id,
+			                type: 'POST',
+			                data: formData,
+			                cache: false,
+			                contentType: false,
+			                processData: false,
+			                success: function(data) {
+			                	if (data['success']){
+			                		$('#carouselModal').modal('hide');
+					                window.location='/process/'+ data['process_id']+'/sp/'+data['sub_process_url_name']+'/edit/?carousel=deleted'				                		
+			                	}
+			                	else{
+		                             iziToast.success({
+		                                title: 'Error',
+		                                message: data['msg'] ,
+		                            });
+
+			                	}
+			                },
+			                error: function(xhr, status, error) {
+			                    var err = eval("(" + xhr.responseText + ")");
+			                    alert(err.Message);
+			                    //alert("Something went wrong, please try after some time");
+			                }
+			            })	
+			    });
+		    }		
+		});
+
+		$('#additionalDataDelete').on('click', function() {
+			additional_data_id = $('input[name=additionaldata_id]').val();
+			var formData = new FormData();
+			formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+			formData.append('program_task_id', $('input[name=program_task]').val());
+	        if (additional_data_id){
+	        	addl_data_column = $('.addl-column.tbl-btn.active').text();
+	        	$('.del-confirm-msg').html('');
+	        	$('.del-confirm-msg').html('<p>This action <strong>CANNOT</strong> be undone. This will permanently delete the task addititonal data with title <strong style="font-weight: bold;">'+addl_data_column + '</strong>');
+	        	$('#deleteConfirmationModal').modal('show');
+				$('#deleteConfirmationModal').on('click', '.btn-ok', function(e) {
+			        $.ajax({
+			                url: '/delete-addldata/'+additional_data_id,
+			                type: 'POST',
+			                data: formData,
+			                cache: false,
+			                contentType: false,
+			                processData: false,
+			                success: function(data) {
+			                	if (data['success']){
+			                		$('#additionaldataModal').modal('hide');
+					                window.location='/process/'+ data['process_id']+'/sp/'+data['sub_process_url_name']+'/edit/?additionaldata=deleted'				                		
+			                	}
+			                	else{
+		                             iziToast.success({
+		                                title: 'Error',
+		                                message: data['msg'] ,
+		                            });
+
+			                	}
+			                },
+			                error: function(xhr, status, error) {
+			                    var err = eval("(" + xhr.responseText + ")");
+			                    alert(err.Message);
+			                    //alert("Something went wrong, please try after some time");
+			                }
+			            })	
+			    });
+		    }		
+		});
+
+		$('#taskDataDelete').on('click', function() {
+			task_data_id = $('input[name=task_data_id]').val();
+			var formData = new FormData();
+			formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+			formData.append('program_task_id', $('input[name=program_task]').val());
+	        if (task_data_id){
+	        	task_data_column = $('.task-column.tbl-btn.active').text();
+	        	$('.del-confirm-msg').html('');
+	        	$('.del-confirm-msg').html('<p>This action <strong>CANNOT</strong> be undone. This will permanently delete the task data with column name <strong style="font-weight: bold;">'+task_data_column + '</strong>');
+	        	$('#deleteConfirmationModal').modal('show');
+				$('#deleteConfirmationModal').on('click', '.btn-ok', function(e) {
+			        $.ajax({
+			                url: '/delete-taskdata/'+task_data_id,
+			                type: 'POST',
+			                data: formData,
+			                cache: false,
+			                contentType: false,
+			                processData: false,
+			                success: function(data) {
+			                	if (data['success']){
+			                		$('#exampleModal').modal('hide');
+					                window.location='/process/'+ data['process_id']+'/sp/'+data['sub_process_url_name']+'/edit/?taskdata=deleted'				                		
+			                	}
+			                	else{
+		                             iziToast.success({
+		                                title: 'Error',
+		                                message: data['msg'] ,
+		                            });
+
+			                	}
+			                },
+			                error: function(xhr, status, error) {
+			                    var err = eval("(" + xhr.responseText + ")");
+			                    alert(err.Message);
+			                    //alert("Something went wrong, please try after some time");
+			                }
+			            })
+				});
+		    }		
+		});
+
+		$("body").on("click", "#programDataDelete", function(e){
+			program_type_id = $(this).parent().parent().find(".form-group:first > input[name^='program_type']").attr('data-id')
+			var formData = new FormData();
+			formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+			formData.append('program_ids', [parseInt(program_type_id)]);
+	        if (program_type_id){
+	        	program_type = $(this).parent().parent().find(".form-group:first > input[name^='program_type']").val();
+	        	$('.del-confirm-msg').html('');
+	        	$('.del-confirm-msg').html('<p>This action <strong>CANNOT</strong> be undone. This will permanently delete the Program Type with name <strong style="font-weight: bold;">'+program_type + '</strong>'+ ' and all its associated <strong style="font-weight: bold;">Program Tasks</strong>, <strong style="font-weight: bold;">Task Data</strong> and <strong style="font-weight: bold;">Task Additional Data</strong>');
+	        	$('#deleteConfirmationModal').modal('show');
+				$('#deleteConfirmationModal').on('click', '.btn-ok', function(e) {
+			        $.ajax({
+			                url: '/programtype/delete',
+			                type: 'POST',
+			                data: formData,
+			                cache: false,
+			                contentType: false,
+			                processData: false,
+			                success: function(data) {
+			                	if (data['success']){
+			                		$('#addProgramDataModal').modal('hide');
+					                window.location='/process/'+ data['process_id']+'/sp/'+data['sub_process_url_name']+'/edit/?programdata=deleted'				                		
+			                	}
+			                	else{
+		                             iziToast.success({
+		                                title: 'Error',
+		                                message: data['msg'] ,
+		                            });
+
+			                	}
+			                },
+			                error: function(xhr, status, error) {
+			                    var err = eval("(" + xhr.responseText + ")");
+			                    alert(err.Message);
+			                    //alert("Something went wrong, please try after some time");
+			                }
+			            })
+				});
+		    }	
+		});
+
+		/*$('input').on('beforeItemRemove', function(event) {
+			debugger
+		  // event.item: contains the item
+		  // event.cancel: set to true to prevent the item getting removed
+		});*/
+
+    });	
+
+
+	</script>
+	</body>
+	</html>

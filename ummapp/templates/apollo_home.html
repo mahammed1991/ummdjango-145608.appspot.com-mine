@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<title>UMM - Tool</title>
+	{% load staticfiles %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.css'%}">
+    
+	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap.min.css'%}">
+	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap-theme.min.css'%}">
+	<link href="{% static 'manage_admin/css/font-awesome.min.css' %}" rel="stylesheet">
+
+	<link rel="stylesheet" type="text/css" href="{% static 'css/looper.css'%}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/new_custom.css'%}">
+</head>
+
+<body>
+	<header class="top-section">
+	  <div class="container-fluid">
+		  <div class="row">
+		  	  <div class="col-md-4">
+				<a href="/"><img src="{% static 'manage_admin/images/regalix_logo.jpg' %}" alt=""></a>
+			  </div>
+			  <div class="col-md-8">
+				  <ul>
+					  <li>{{ user.get_full_name|default:user.username }} </li>		  
+					  <li><a href="{% url 'auth:logout' %}?next=/"><i class="fa fa-power-off" aria-hidden="true"></i></a></li>
+					  {% if is_manager %}
+					  	<li><a href="/knowledgebase/admin/"><i class="fa fa-users" aria-hidden="true"></i></a></li>
+					  {% endif %}	
+				  </ul>
+			  </div>
+		  </div>
+	</header>
+	<section class="top-nav">
+	  <div class="container-fluid">
+		  <ul>
+			  <!--<li><a href="/">Advertiser Goals</a></li>-->
+			  {% for sub_process in sub_processs %}
+			  	<li><a href="/process/{{sub_process.process.id}}/sp/{{sub_process.url_name}}/view" data-processid="{{sub_process.id}}" class="process">{{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</a></li>
+			  {% endfor %}
+			  {% if faq %}
+			  <li><a href="#" id="home-faq"  class="" >FAQ</a></li>
+			  {% endif %}
+			  {% if qf %}
+			  <li><a href="#" id="home-qf"  class="" >Quality Framework</a></li>
+			  {% endif %}
+		  </ul>
+	  </div>
+	</section>
+
+	<section class="sub-category-section">
+	  <div class="container-fluid">
+		   <!-- Nav tabs -->
+		  <ul class="nav nav-tabs prgrm-tab" role="tablist">
+			{% for ptype in program_types %}
+			<li role="presentation"><a  href="#tab{{ ptype.id }}" aria-controls="tab{{ ptype.id }}" role="tab" data-toggle="tab" data-programtype-id="{{ ptype.id }}" class="prg-type ">{{ ptype.name }}</a>
+			</li>
+			<!--<script>
+		    	 cateList.push({{ category.id }});
+		     </script>-->	
+		    {% endfor %}
+		  </ul>
+
+		  <!-- Tab panes -->
+		  <div class="tab-content">
+			<div role="tabpanel" class="sub-task" id="program-tasks">
+			</div>
+		  </div>
+	  </div>
+	</section>
+
+	<section class="sub-row">
+	  <div class="container-fluid">
+			  <div class="col-lg-7 no-padding">
+				  <div class="faq-bg">
+					  <ul>
+					  </ul>
+				  </div>
+			  </div>
+			  <div class="col-lg-5 no-padding">
+				  <div class="combo-bg">
+					  <div id="text-carousel" class="carousel slide" data-ride="carousel">
+					<!-- Wrapper for slides -->
+						<div class="row">
+							<div class="carousel-inner" data-toggle="modal" data-target="#myModal2">
+							</div>
+						</div>
+	<!-- Controls --> <a class="left carousel-control" href="#text-carousel" data-slide="prev">
+					<span class="glyphicon glyphicon-chevron-left"></span>
+				  </a>
+				 <a class="right carousel-control" href="#text-carousel" data-slide="next">
+					<span class="glyphicon glyphicon-chevron-right"></span>
+				  </a>
+
+					</div>
+				  </div>
+			  </div>
+	  </div>
+	</section>
+	<section class="table-setting">
+		<div class="container-fluid">
+			<table class="table table-bordered">
+				<thead>
+					<tr id="key_row">
+					
+				    </tr>
+				</thead>
+				<tbody>
+					<tr id="value_row">
+					
+				    </tr>
+				</tbody>
+			</table>
+		</div>
+	</section>
+
+	<section class="recommendations-section">
+		  <div class="container-fluid">
+		  	  <div class="white-bg">
+			  	<h2>Elevator Pitch</h2>
+			  	<p id="elevator_data"></p>
+			  </div>
+		  </div>
+	  </section>
+
+<div class="container modal fade modal-box-css" id="myModal" style="margin-top: 20px;">
+	<div role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel"></h4>
+			</div>
+			<div class="modal-body">
+				<div class="tabbable"> 
+					<ul class="nav nav-tabs">
+						<!--<li><a href="#epitch"  data-toggle="tab">Email Pitch Guidelines</a></li>
+                        <li><a href="#impl" data-toggle="tab">Implementation Guide</a></li>
+                        <li><a href="#faq" data-toggle="tab">FAQ's</a></li>-->
+                    </ul>
+                    <div class="tab-content">
+                    	<!--<div class="tab-pane " id="epitch">
+                    		
+                    	</div>
+                    	<div class="tab-pane" id="impl">
+                    		
+                    	</div>
+                        <div class="tab-pane " id="faq">
+        	
+                        </div>-->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container modal fade" id="myModal2" style="margin-top: 20px;">
+	<div role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Combo Update</h4>
+			</div>
+			<div class="modal-body">
+				<div class="table-responsive">
+					<table class="table mytable">
+						
+					</table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container modal fade" id="myModal3" style="margin-top: 20px;">
+	<div role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel" data-target="#myModal3">Budget Bands</h4>
+			</div>
+			<div class="modal-body budget-body">
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+</div>
+	<script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/looper.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
+	<!--<script type="text/javascript" src="{% static 'js/script.js' %}"></script>-->
+	<script type="text/javascript">
+
+		$(document).ready(function(){
+			sub_process = "{{sub_process.id}}"
+			$('.process[data-processid='+ sub_process + "]").addClass('active');
+			updateCarouseldata(sub_process);
+	    	if('.prg-type'){
+	    		$('.prg-type:first').parent().addClass('active');
+	    	}
+
+		    $('.prg-type').click(function (e) {
+		    	e.preventDefault();
+		    	//$('.prg-type').removeClass('make-active');
+		    	//$(this).addClass('make-active');
+		    	updateTaskTypes($(this).attr('data-programtype-id'));
+		    });	
+
+		    $("body").on("click", ".prg-task", function(e){
+				e.preventDefault();
+		    	$('.prg-task').removeClass('active').css('background','#777777');
+		    	$(this).addClass('active').css('background','#009b59');
+		    	$('#addl-data').text('More about '+ $(this).text())
+		    	loadTaskData($(this).data('programtype-id'));
+		    	updateCarouseldata(sub_process);
+		    	updateAdditionaldata($(this).data('programtype-id'));
+		    });
+
+
+			var loadTaskData = function(task_id){
+				$.ajax({
+		            url: '/get-task-data/'+task_id,
+		            type: 'GET',
+		            success: function(data) {
+		            	$('#key_row').html('')
+		            	$('#value_row').html('')
+		            	var data = data['data'];
+		            	if (data.length > 0){
+		            		$column_name = $('#key_row');
+		            		$column_value = $('#value_row');
+		            		for(var i=0;i<data.length;i++){
+		            			column_data = data[i].data.replace(/&nbsp;/g, ' ');
+		            			$column_name.append('<th data-number="'+data[i].column_number+'" class="task-column tbl-btn"  style="max-width:50px;min-width:30px;width:32px;" data-taskdata-id="'+data[i].data_id+'">'+ data[i].column_name+'</th>')
+		            			$column_value.append('<td data-number="'+data[i].column_number+'" class="task-column tbl-btn" style="word-wrap: break-word;max-width:85px;" data-taskdata-id="'+data[i].data_id+'">'+ column_data +'</td>');
+		            		}
+		            	}
+
+		            },
+		            error: function(xhr, status, error) {
+		                var err = eval("(" + xhr.responseText + ")");
+		                alert(err.Message);
+		                //alert("Something went wrong, please try after some time");
+		            }
+	    		});	
+			}
+
+			function updateTaskTypes(program_type_id){
+				$('#program-tasks').html("")
+	    		$.ajax({
+		            url: '/get-program-tasks/'+program_type_id,
+		            type: 'GET',
+		            success: function(data) {
+		            	if (data['data']){
+		            		td_html = ''
+		            		tsk_id = data['data'][0][Object.keys(data['data'][0])[0]];
+		            		for(var i=0;i<data['data'].length;i++){
+		            			task_name = Object.keys(data['data'][i])[0]
+		            			task_id = data['data'][i][task_name]
+		            			if (i == 0){
+		            				td_html += "<a href='#' class='prg-task active sub-task-link' data-programtype-id="+task_id +">" + task_name +"</a>";         			
+		            			}
+		            			else{
+		            				td_html += "<a href='#'  class='prg-task sub-task-link' data-programtype-id="+task_id +">" + task_name +"</a>"	            				
+		            			}
+		            		}
+		            		$('#program-tasks').append(td_html);
+		            		$('#addl-data').text('More about '+ $('.prg-task.active').text());
+		            		loadTaskData(tsk_id);
+		            		updateAdditionaldata(tsk_id)
+		            	}
+		            },
+		            error: function(xhr, status, error) {
+		                var err = eval("(" + xhr.responseText + ")");
+		                alert(err.Message);
+		                //alert("Something went wrong, please try after some time");
+		            }
+	    		});
+			}
+	        updateTaskTypes($('.prgrm-tab > li > a:eq(0)').attr("data-programtype-id"));
+
+		    $("body").on("click", ".process", function(e){
+		    	e.preventDefault()
+		    	selected_sub_process = $(this).attr('data-processid');
+		    	url = $(this).attr('href');
+	    		$.ajax({
+		            url: $(this).attr('href'),
+		            type: 'GET',
+		            success: function(data) {
+		            	window.location.href = url;
+		            	$('.process').removeClass('active');
+		            	$('.process[data-processid='+ selected_sub_process + "]").addClass('active');
+
+		            },
+		            error: function(xhr, status, error) {
+		                var err = eval("(" + xhr.responseText + ")");
+		                alert(err.Message);
+		                //alert("Something went wrong, please try after some time");
+		            }	
+
+		        });	    	
+		    	
+
+		    });
+
+			function updateCarouseldata(sub_process_id){
+				$.ajax({
+		            url: '/get-carousel-data/'+sub_process_id,
+		            type: 'GET',
+		            success: function(data) {
+		            	var data = data['data'];
+		            	if (data.length > 0){
+				            $('.looper').looper({
+				            	 interval: 3000
+				            });
+				            $('.carousel-inner').html('');
+				            for(i=0; i<data.length; i++)
+				            {	
+				                mytag=document.createElement('a');
+				                mytag.setAttribute('id',data[i].data_id);
+				                //mytag.setAttribute('class', "item");
+				                mytag.innerHTML = data[i].column_name;
+				                active_class = ''
+				                if (i == 0){
+				                	active_class = 'active'
+				                }
+				                $('.carousel-inner').append("<div class='item "+ active_class + "'>"+"<p><a id='"+data[i].data_id + "'>"+data[i].column_name +"</a></p></div>")
+				                $('.myclass').append(mytag);
+				            }
+				            $('.carousel-inner').click(function(){
+				                $('.mytable').empty();
+				                for(i=0; i<data.length; i++)
+				                {
+				                    tablerow = document.createElement('tr');
+				                    tablerow.setAttribute('class',"myrow" + i);
+				                    $('.mytable').append(tablerow);
+				                    newlink1=document.createElement('td');
+				                    newlink1.innerHTML = data[i].column_name
+				                    $('.myrow' + i).append(newlink1)
+				                    newlink2=document.createElement('td');
+				                    newlink2.innerHTML = data[i].data
+				                    $('.myrow'+ i).append(newlink2)
+				                }
+				            });
+		            	}
+		            	else{
+		            		$('.carousel-inner').html('');
+		            	}
+
+		            },
+		            error: function(xhr, status, error) {
+		                var err = eval("(" + xhr.responseText + ")");
+		                alert(err.Message);
+		                //alert("Something went wrong, please try after some time");
+		            }
+	    		});	
+			}
+
+			$("body").on("click", "#addl-data", function(e){
+				e.preventDefault()
+				$("#myModalLabel").html($('.prg-task.active').html());
+				task_id = $('.prg-task.active').attr('data-programtype-id');
+				selected_add_data = $(this).attr('data-additionaldata-id');
+				$.ajax({
+		            url: '/get-addldata/'+task_id,
+		            type: 'GET',
+		            success: function(data) {
+		            	$('#myModal').find('.nav.nav-tabs').html('');
+		            	$('#myModal').find('.tab-content').html('');
+		            	li_html = ''
+		            	div_html = ''
+		            	for(var i=0;i<data['data'].length;i++){
+		            		li_html = '<li><a href="" class="addl-data" data-id='+data['data'][i]['data_id'] + ' data-toggle="tab">'+ data['data'][i]['column_name'] + '</a></li>'
+		            		div_html = '<div class="tab-pane"  data-id='+data['data'][i]['data_id'] + ' id="">' + data['data'][i]['data'].replace(/&nbsp;/g, ' ') + '</div>'
+		            		$('#myModal').find('.nav.nav-tabs').append(li_html);
+		            		$('#myModal').find('.tab-content').append(div_html);
+			            	if (selected_add_data == parseInt(data['data'][i]['data_id'])){
+			            		$('#myModal').find('.nav.nav-tabs li > a[data-id='+ data['data'][i]['data_id']+ ']').parent().addClass('active');
+			            		$('#myModal').find('.tab-content div[data-id='+ data['data'][i]['data_id']+ ']').addClass('active');
+			            		/*$('#myModal').find('.nav.nav-tabs li:first').addClass('active');
+			            		$('#myModal').find('.tab-content div:first').addClass('active');*/
+			            	}
+		            	}
+		            	$("#myModal").show();
+		            },			
+		            error: function(xhr, status, error) {
+		                var err = eval("(" + xhr.responseText + ")");
+		                alert(err.Message);
+		                //alert("Something went wrong, please try after some time");
+		            }
+    			});	
+			})
+
+			$("body").on("click", '[class^="addl-data"]', function(e){
+				$('.tab-pane').removeClass('active')
+				$('[class^="addl-data"]').removeClass('active');
+				$(this).addClass('active');
+				$(".tab-pane[data-id='"+ $(this).attr('data-id')).addClass('active');
+			})
+
+			$('#myModal').on('hidden.bs.modal', function (e) {
+				$('#myModal').find('.nav.nav-tabs').html()
+		        $('#myModal').find('.tab-content').html('');
+			});
+
+			additionalDataIds = {}
+
+			var updateAdditionaldata = function(task_id){
+				$.ajax({
+		            url: '/get-addldata/'+task_id,
+		            type: 'GET',
+		            success: function(data) {
+		            	var data = data['data'];
+		            	if (data.length > 0){
+		            		$cols = $('.faq-bg > ul');
+		            		$cols.html('');
+		            		for(var i=0;i<data.length;i++){
+		            			additionalDataIds[data[i].data_id] = data[i].data
+		      					$cols.append('<li><a href="#" data-toggle="modal" data-target="#myModal" id="addl-data" data-additionaldata-id="'+data[i].data_id+'">'+ data[i].column_name+'</a></li>');
+		            		}
+		            	}else{
+							$cols = $('.faq-bg > ul');
+		            		$cols.html('');
+
+		            	}
+		            },
+		            error: function(xhr, status, error) {
+		                var err = eval("(" + xhr.responseText + ")");
+		                alert(err.Message);
+		                //alert("Something went wrong, please try after some time");
+		            }
+	    		});	
+			}
+
+			
+	    });
+
+
+//function to get all faq question and answer
+	    $("#home-faq").click(function(){
+	    	
+	    	$('.process').removeClass('active');
+	    	$('#home-faq').addClass('active');
+	    	$('#home-qf').removeClass('active');
+	    	window.location='/faq/home_view/'
+	    })
+
+//function to get all quality frameworks
+        $("#home-qf").click(function(){
+            
+            $('.process').removeClass('active');
+            $('#home-faq').removeClass('active');
+            $('#home-qf').addClass('active');
+            window.location='/qf/home/'
+        })	
+
+	</script>
+</body>
+</html>
+
+
