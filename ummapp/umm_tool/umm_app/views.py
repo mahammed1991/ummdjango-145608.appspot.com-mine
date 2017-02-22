@@ -1391,40 +1391,6 @@ def faq_update(request):
             resp = {'success':False, 'msg':'failed'}
             return HttpResponse(json.dumps(resp), content_type="application/json")
 
-@login_required
-def faq_delete(request):
-    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
-        if request.method == 'GET':
-            faq_data = json.loads(request.POST.get("faqData"))
-            try:
-                faq = Faq.objects.get(pk=int(faq_data.get('program_answer_edit_id')))
-
-                try:
-                    program_type = ProgramType.objects.get(pk=int(faq_data.get('program_type_id'))) 
-                except Exception as e:
-                    program_type = None
-                    pass
-                try:
-                    task = ProgramTask.objects.get(pk=int(faq_data.get('program_task_id')))
-                except Exception as e:
-                    task = None
-                    pass
-
-                faq.program_type = program_type
-                faq.program_task = task
-                faq.question = faq_data.get('question')
-                faq.answer = faq_data.get('answer')
-                faq.modified_by =  User.objects.get(email=request.user.email)
-                faq.save()
-
-                resp = {'success':True, 'msg':''}
-                return HttpResponse(json.dumps(resp), content_type="application/json")
-            except:
-                resp = {'success':False, 'msg':'failed eception'}
-                return HttpResponse(json.dumps(resp), content_type="application/json")
-        else:
-            resp = {'success':False, 'msg':'failed'}
-            return HttpResponse(json.dumps(resp), content_type="application/json")
 
 @login_required
 def faq_delete(request):
@@ -1478,3 +1444,50 @@ def get_faq(request):
             return HttpResponse(json.dumps({'success':True, 'msg':'successfuly data fetched','faq':faq }), content_type="application/json")
         except:
             return HttpResponse(json.dumps({'success':False, 'msg':'exception','faq':'no data'}), content_type="application/json")
+
+
+@login_required
+def user_question(request):
+    context = {}
+    success = False
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        print request.POST
+        if request.POST:
+            faq_data = json.loads(request.POST.get("faqData"))
+            try:
+                faq = Faq()
+                try:
+                    program_type = ProgramType.objects.get(pk=int(faq_data.get('program_type_id')))
+                    faq.program_type = program_type
+                except Exception as e:
+                    pass
+                try:
+                    task = ProgramTask.objects.get(pk=int(faq_data.get('program_task')))
+                    faq.program_task = task
+                except Exception as e:
+                    pass
+
+                faq.question = faq_data.get('question')
+                faq.created_by = User.objects.get(email=request.user.email)
+                faq.modified_by = User.objects.get(email=request.user.email)
+                faq.save()
+
+                print "mailing start"
+                from google.appengine.api import mail
+                mail.send_mail(sender="swassets@regalix-inc.com",
+                              to="mashraf<mashraf@regalix-inc.com>",
+                              subject="testing google app engine mail",
+                              body="Hello, world!")
+                print "mailing end"
+
+
+                resp = {'success':True, 'msg':'Question Posted'}
+                return HttpResponse(json.dumps(resp), content_type="application/json")
+            except Exception as ex:
+                resp = {'success':False, 'msg':'not saved, server'}
+                return HttpResponse(json.dumps(resp), content_type="application/json")
+        else:
+            context = RequestContext(request, {'request': request, 'user': request.user, 'success':True})
+            return render(request, "manage_admin/create_faq.html", context_instance = context)
+    else:
+        raise PermissionDenied

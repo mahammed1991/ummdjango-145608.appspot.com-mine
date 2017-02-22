@@ -15,6 +15,7 @@
     <!--<link href="{% static 'manage_admin/css/jquery-ui.css' %}" rel="stylesheet">-->
     <link href="{% static 'manage_admin/css/datepicker.min.css' %}" rel="stylesheet">
     <link href="{% static 'manage_admin/css/formValidation.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'manage_admin/css/iziToast.min.css'%}">
 
   </head>
 
@@ -78,12 +79,19 @@
 							{% endif %}
 
 							<td>{{ data.question }}</td>
+							
+
+							{% if data.answer == None  %}
+							<td style="color:red">Not answered yet</td>
+							{% else %}
 							<td>{{ data.answer }}</td>
+							{% endif %}
+
 							<td>
-		            		<button data-toggle="modal"  type="button" 
-		           			class="btn" onclick="editFaq({{data.id}})"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
-							<button data-toggle="modal" type="button" class="btn" id="" onclick="deletFaq({{data.id}})">
-							<i class="fa fa-trash-o" aria-hidden="true"></i></button>
+			            		<button data-toggle="modal"  type="button" 
+			           			class="btn" onclick="editFaq({{data.id}})"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+								<button data-toggle="modal" type="button" class="btn" id="" onclick="deletFaq({{data.id}})">
+								<i class="fa fa-trash-o" aria-hidden="true"></i></button>
 							</td>
 						</tr>
 							{% endfor %}
@@ -183,6 +191,9 @@
 
 <script type="text/javascript">
 
+$('.close').click(function(){	
+	$('#editFaqForm').data('formValidation').resetForm();
+})
 
 function editFaq(key){
     info = {'faq_key':key}
@@ -191,7 +202,7 @@ function editFaq(key){
 		data:info,
 		url:'/faq/edit/',
 		success:function(data){
-			console.log(data)
+			
 			$("#program-type-edit").html('');
 			$("#program-type-edit").html('<option value="others">Others</option>');
 			for (i=0; i<data['program_type_all'].length; i++){
@@ -361,6 +372,10 @@ function editFaq(key){
 			                processData: false,
 			                success: function(data) {
 			                	if (data['success']){
+			                		iziToast.success({
+			                                title: 'Saved',
+			                                message: 'Updated, Page Reloads' ,
+			                        });
 			                		window.location='/faq/all'
 			                	}
 			                	else{

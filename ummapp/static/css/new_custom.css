@@ -9,7 +9,7 @@
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {margin: 0; padding: 0; border: 0; font-size: 100%; font: inherit; vertical-align: baseline;}
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display: block;}
-body { line-height: 1; font-family: 'Open Sans', sans-serif; font-size: 13px; color: #444; background: #eeeeee; letter-spacing: 1px}
+body { line-height: 1; font-family: 'Open Sans', sans-serif; font-size: 13px; color: #444; background: #eeeeee;}
 ol, ul { list-style: none; margin-bottom: 10px}
 blockquote, q { quotes: none; }
 blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; }
@@ -137,11 +137,16 @@ a.sub-task-link.active{background: #4caf50; }
 .recommendations-section .white-bg .panel-heading a { padding: 0px 0; }
 .recommendations-section .white-bg .panel-group { margin-bottom: 0; }
 .recommendations-section .white-bg .panel-group .panel+ .panel {margin-top: 0}
-.recommendations-section .white-bg .panel-title { font-size: 14px; color: #444; font-weight: 600}
-.recommendations-section .white-bg .panel-body p{padding: 0 45px 10px 10px;color: #444; font-size:14px; line-height:24px ;margin-bottom :0px; }
-.recommendations-section .white-bg .panel-body p{background-color: #b3d9ff;border-color:#0047b3;border-style: solid;border-width: 1px; }
-.recommendations-section .white-bg .panel-group .panel-heading+ .panel-collapse > .list-group, .faq .panel-group .panel-heading+ .panel-collapse > .panel-body {border-top: 0 none;}
+.recommendations-section .white-bg .panel-title { font-size: 14px; color: #444;font-weight: 600}
+.recommendations-section .white-bg .panel-body p{padding: 0 45px 10px 10px;color:#c92127 ; font-size:14px; line-height:24px ;margin-bottom :0px; }
+.recommendations-section .white-bg .panel-group .panel-heading+ .panel-collapse > .list-group, .faq .panel-group .panel-heading+ .panel-collapse > .panel-body {border-top: 1px solid #ddd;}
 .no-faq{font-weight: 600;}
+.alter-msg{ color: #fff; background: #039be5; padding: 15px}
+.alter-msg .fa-exclamation-triangle{ padding-right: 20px; font-size: 24px}
+
+/* ask a question*/
+.ask-q{ position:fixed; bottom:15px; left: 0px; cursor: pointer; font-size: 24px; text-align: center; line-height: 38px; width:120px}
+.ask-q a{ color: #fff;width: 40px; height: 40px; border-radius: 50%; background:#039be5; display: inline-block}
 
 /*Responsive Start*/
 @media only screen and (min-width: 992px) and (max-width: 1219px) {

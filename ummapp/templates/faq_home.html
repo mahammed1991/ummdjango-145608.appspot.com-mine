@@ -10,9 +10,15 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap.min.css'%}">
 	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap-theme.min.css'%}">
 	<link href="{% static 'manage_admin/css/font-awesome.min.css' %}" rel="stylesheet">
-
+	<link href="{% static 'manage_admin/css/formValidation.min.css' %}" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="{% static 'css/looper.css'%}">
 	<link rel="stylesheet" type="text/css" href="{% static 'css/new_custom.css'%}">
+	<link rel="stylesheet" href="{% static 'manage_admin/css/iziToast.min.css'%}">
+
+	<style type="text/css">
+	</style>
+	
+		
 
 </head>
 
@@ -158,24 +164,80 @@
 <section class="recommendations-section">
 	<div class="container-fluid">
 		<div class="white-bg">
-			<div class="panel-group fqa-adding-table" id="accordion" style="height:300px; overflow-y: scroll;">
+			<div class="panel-group fqa-adding-table" id="accordion" >
       			<!-- FAQ will be added here in javascript -->
-
-      					
-						    
+			</div> 			    
 			</div>
-
     	</div>
-	</div>
-		  
 </section>
 
+<!-- Modal user question -->
+<div class="modal fade modal-style" id="faqpopup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Ask A Question</h4>
+      </div>
+      <form id="userQuestionForm">
+      {% csrf_token %}
+      <div class="modal-body" style="height:300px;">
+          <div class="form-group row">
+          		<label for="program-type-user-q" class="col-sm-3">Program Type</label>
+	            <div class="col-sm-6">
+		           <select class="form-control program-type-user-q">
+					  {% for ptype in program_types %}
+						 <option data-programtype-id="{{ ptype.id }}">{{ ptype.name }}</option>
+		    		  {% endfor %}
+				    </select>
+			     </div>
+		  </div><br>
+
+		   <div class="form-group row">
+          		<label for="program-task-user-q" class="col-sm-3">Program Task</label>
+	            <div class="col-sm-6" >
+		           <select class="form-control program-task-user-q" name="program-task-user-q">
+					  <option>others</option>
+					  
+				    </select>
+			     </div>
+		  </div><br>
+
+      
+      		<div class="form-group row">
+	           <label for="question-user-q" class="col-sm-3">Question</label>
+	          
+	            <div class="col-sm-6">
+					<input type="text" class="form-control question-user-q" id="" name="question_user_q">
+			    </div>
+			 </div><br>
+			 <div class="row">
+			  <div class="col-sm-5" ></div>
+     			<!-- <button type="submit" class="btn btn-default">Submit</button> -->
+     			<input type="submit" class="btn btn-primary" id="" vlaue="Submit"></input>
+			 </div>
+      </div>
+     </form>
+     
+    </div>
+  </div>
+</div>
+
+<div class="ask-q"  data-toggle="modal" data-target="#faqpopup">
+	<a href="#" data-toggle="tooltip" id="ask-a-question" data-placement="top" title="Ask a Question?">
+		<i class="fa fa-question" aria-hidden="true">
+		</i>
+	</a>
+</div>
 
 </body>
 	<script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/looper.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
+    <script src="{% static 'manage_admin/js/formValidation.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/form_bootstrap.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/iziToast.min.js' %}"></script>
 	<!--<script type="text/javascript" src="{% static 'js/script.js' %}"></script>-->
 
 	<script type="text/javascript">
@@ -213,7 +275,7 @@
 		  function updateTaskTypes(program_type_id){
 				$('#program-tasks').html("")
 				if(program_type_id == 'other'){
-					$('#program-tasks').append("<a href='#'  class=' active sub-task-link' data-programtype-id=''>other</a>");
+					$('#program-tasks').append("<a href='#'  class=' active sub-task-link' data-programtype-id=''>Other</a>");
 				}else if(program_type_id == undefined){
 					alert("something went wrong !")
 				}
@@ -261,12 +323,9 @@
 			    		url:'/faq/get_faq/?task_id='+task_id,
 			    		type:'GET',
 			    		success:function(data){
-			    			console.log(data)
 
 			    			if(data['success']){
-			    				
 			    				updateFaq(data);
-
 			    			}
 			    			else{
 			    				alert("Something went wrong, please try after some time")
@@ -291,8 +350,8 @@
 			for (i=0;i<data['faq'].length;i++){
 
 			fqa = "<div class='panel'><div class='panel-heading'><h4 class='panel-title'><a class='accordion-toggle' data-toggle='collapse' data-parent='#accordion' href='#collapse"+i+"  '>"+
-               "<span class='glyphicon glyphicon-plus pull-right collapsed1'></span>"+count+") "+data['faq'][i]['q']+"</a></h4>"+
-  		"<div id='collapse"+i+"' class='panel-collapse collapse'><div class='panel-body'><p>Ans) "+data['faq'][i]['a']+"</p>"+
+               "<span class='glyphicon glyphicon-plus pull-right collapsed1'></span>Q "+count+" ) "+data['faq'][i]['q']+"</a></h4>"+
+  		"<div id='collapse"+i+"' class='panel-collapse collapse'><div class='panel-body'><p> "+data['faq'][i]['a']+"</p>"+
         "</div></div></div>"				
 					$('.fqa-adding-table').append(fqa);
 				count = 1 + count
@@ -300,19 +359,145 @@
 			}
 			else{
 
-				fqa = "<div class='alert alert-info no-faq'><strong>Info!</strong> No FAQ's added for selected program tasks.</div>"
+				fqa = "<div class='no-faq alter-msg'>"+
+"<i class='fa fa-exclamation-triangle' aria-hidden='true'></i>No FAQ for selected task type please change the task type.</div></div>"
+ 
+
 				$('.fqa-adding-table').append(fqa)
 			}
 
-			
-			
 		  }
-		});// end of document ready function
+		
 
 
 
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+
+$('.program-type-user-q').click(function (e) {
+		    	e.preventDefault();
+		    	console.log($(this).attr('data-programtype-id'));
+		    	updateTaskTypesUserQuestion($('.program-type-user-q :selected').attr('data-programtype-id'));
+});
+
+$('#userQuestionForm')
+		.formValidation({
+			        framework: 'bootstrap',
+			        icon: {
+			            valid: 'glyphicon glyphicon-ok',
+			            validating: 'glyphicon glyphicon-refresh'
+			        },
+			        fields: {
+			            question_user_q: {
+			                validators: {
+			                    notEmpty: {
+			                        message: 'Question is required'
+			                    }, 
+			                }
+			            },
+			            
+			        }
+			    })
+		.on('success.form.fv', function(e) {
+		             // Save the form data via an Ajax request
+		             e.preventDefault();
+				        var formData = new FormData();
+				        
+				        formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+				        
+				        var faqData = {};
+				        
+				        if ($('#program-type-user-q').val() == 'others'){
+				        faqData['program_type_id'] = null
+				        }
+				        else{
+				        	faqData['program_type_id'] = $(".program-type-user-q :selected").attr('data-programtype-id');
+				        }
+
+				        if ($('#program-task-user-q').val() == 'others'){
+				        faqData['program_task'] = null
+				        }
+				        else{
+				        	faqData['program_task'] = $(".program-task-user-q :selected").attr('data-programtype-id');
+				        }
+
+				        faqData['question'] = $('.question-user-q').val();
+				        
+				        formData.append('faqData', JSON.stringify(faqData));
+				          
+					        $.ajax({
+					                url: '/faq/faq_creater/user_question/',
+					                type: 'POST',
+					                data: formData,
+					                cache: false,
+					                contentType: false,
+					                processData: false,
+					                success: function(data) {
+					                	if (data['success']){
+					                		//window.location='/faq/all'
+					                		$('.question-user-q').val('');
+					                		$('#faqpopup').modal('hide');
+						                		iziToast.success({
+			                                title: 'Saved',
+			                                message: data['msg'] ,
+			                            });
+
+					                	}
+					                	else{
 
 
+					                	}
+					                },
+					                error: function(xhr, status, error) {
+					                    var err = eval("(" + xhr.responseText + ")");
+					                    alert(err.Message);
+					                    
+					                }
+					            })
+		         });
+	
 
+function updateTaskTypesUserQuestion(program_type_id){
+	
+				$('.program-task-user-q').html("")
+				if(program_type_id == 'other'){
+					$('.program-task-user-q').append("<data-programtype-id='other'>Other</a>");
+				}else if(program_type_id == undefined){
+					alert("something went wrong !")
+				}
+				else{
 
+	    		$.ajax({
+		            url: '/get-program-tasks/'+program_type_id,
+		            type: 'GET',
+		            success: function(data) {
+		            	if (data['data']){
+		            		td_html = ''
+		            		tsk_id = data['data'][0][Object.keys(data['data'][0])[0]];
+		            		for(var i=0;i<data['data'].length;i++){
+		            			task_name = Object.keys(data['data'][i])[0]
+		            			task_id = data['data'][i][task_name]
+		            			if (i == 0){
+		            				td_html += "<option class='' data-programtype-id="+task_id +">" + task_name +"</option>"; 
+		            				      			
+		            			}
+		            			else{
+		            				td_html += "<option class='' data-programtype-id="+task_id +">" + task_name +"</option>"	            				
+		            			}
+		            		}
+		            		$('.program-task-user-q').append(td_html);
+		            		var check_task_active = true;
+		            	}
+		            },
+		            error: function(xhr, status, error) {
+		                var err = eval("(" + xhr.responseText + ")");
+		                alert(err.Message);
+		                
+		            }
+	    		 });
+			   }				
+			  }
+
+});// end of document ready function
 	</script>

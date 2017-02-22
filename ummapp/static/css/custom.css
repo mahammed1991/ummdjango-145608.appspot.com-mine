@@ -389,3 +389,95 @@ a.logout {
 }
 
 
+
+
+.login-box{ padding: 40px 20px; background: rgba(255,255,255,0.6); position: fixed;width: 100%;max-width: 400px;top: 50%;left: 50%; -webkit-transform: translate(-50%, -50%);transform: translate(-50%, -50%); text-align: center;}
+.login-box .box:before, .login-box .box:after {
+    content: '';
+    width: 68px;
+    height: 68px;
+    position: absolute;
+    border-top: 1px solid #cc2c32;
+    border-left: 1px solid #cc2c32;
+}
+.login-box .box:before {
+    top: 10px;
+    left: 10px;
+}
+.login-box .box:after {
+    top: 20px;
+    left: 20px;
+}
+
+
+/*login page css*/
+.login-box .box2:before, .login-box .box2:after {
+    content: '';
+    width: 68px;
+    height: 68px;
+    position: absolute;
+    border-bottom: 1px solid #cc2c32;
+    border-right: 1px solid #cc2c32;
+}
+.login-box .box2:before {
+    bottom: 10px;
+    right: 10px;
+}
+.login-box .box2:after {
+    bottom: 20px;
+    right: 20px;
+}
+
+.btn-social { margin-top: 20px;
+    position: relative;
+    text-align:left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; padding:10px 20px 10px 52px
+}
+.btn-social>:first-child {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 38px;
+    line-height: 38px;
+    font-size: 1.6em;
+    text-align: center;
+    border-right: 1px solid rgba(0,0,0,0.2);
+}
+.btn-google {
+    color: #fff;
+    background-color: #dd4b39;
+    border-color: rgba(0,0,0,0.2);
+}
+.btn-social:hover{ color: #fff}
+
+.login-box p{ font-size: 18px;color: #444;}
+.login-box h1 {
+   font-size: 180px;
+   font-weight: 700 ;
+   color: #444;
+   line-height: 0.8; margin-top: 30px
+}
+.login-box h1 span {
+   color: #039be5;
+}
+
+.login-box .cmn-btn2 {
+   margin-top: 40px;
+   display: inline-block;
+}
+.login-box .cmn-btn2 {
+   background: #039be5 none repeat scroll 0 0;
+   border: 2px solid #039be5;
+   border-radius: 2px;
+   color: #fff;
+   font-size: 13px;
+   padding: 12px 38px;
+   text-transform: uppercase; text-decoration: none;
+}
+
+/* end of login page css*/
+
+
