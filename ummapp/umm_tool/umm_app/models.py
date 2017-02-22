@@ -248,7 +248,21 @@ class ProgramAdditionData(models.Model):
         unique_together = ('program_task', 'name')
 
     def __unicode__(self):
-        return "%s %s %s %s" % (self.program_task, self.name)
+        return "%s %s" % (self.program_task, self.name)
+
+
+class Faq(models.Model):
+    program_type = models.ForeignKey(ProgramType, null=True, blank=True)
+    program_task = models.ForeignKey(ProgramTask, null=True, blank=True)
+    question = models.TextField()
+    answer = models.TextField()
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User, related_name='faq_created_by', null=False)
+    modified_by = models.ForeignKey(User, related_name='faq_modified_by', null=False)
+
+    def __unicode__(self):
+         return "%s %s %s %s" % (self.program_type, self.program_task, self.question, self.answer)
 
 
 class QualityFramework(models.Model):
@@ -261,4 +275,6 @@ class QualityFramework(models.Model):
 
     def __unicode__(self):
         return "%s %s" % (self.name, self.data)
+
+
 

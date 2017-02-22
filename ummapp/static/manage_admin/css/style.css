@@ -13,7 +13,7 @@ table {border-collapse: collapse;border-spacing: 0;}
 
 .top-white-bg{ background:#fff; border-bottom: 1px solid #e9e9e9; padding: 15px 0}
 a.logo{ display:block; margin-top: 7px}
-a.process-btn{ display:inline-block; background: #c92127; text-decoration: none; color: #fff; font-weight: 700; padding: 7px 20px; text-transform: uppercase; border-radius: 2px; margin-right: 40px}
+a.process-btn{ display:inline-block; background: #c92127; text-decoration: none; color: #fff; font-weight: 700; padding: 7px 20px; text-transform: uppercase; border-radius: 2px; margin-right: 10px}
 a.logout{ font-size:16px; color: #000; margin-top: 5px; margin-right: 20px;}
 
 .process-box{ padding: 30px 0px;}
@@ -215,6 +215,13 @@ modal-style .btn {
     font-weight: 700;
     border-radius: 2px; text-transform: uppercase;
 }
+
+/*admin faq table css*/
+.faq-table th{ font-weight: 700; background:#c92127;color:#fff;}
+.faq-table .fa{ color: #000 }
+.faq-table th:nth-child(1){ width: 10em; }
+.faq-table th:nth-child(2) { width: 10em; }
+.faq-table th:nth-child(5) { width: 9em; }
 /*Responsive Start*/
 @media only screen and (min-width: 992px) and (max-width: 1219px) {
     

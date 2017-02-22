@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponse, redirect
-from .models import ExtraTask, Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, GoalTaskMap, Question, Process, SubProcess, ProgramType, ProgramTask, TaskData, SubProcessLevelUpdates, ProgramAdditionData
+from .models import ExtraTask, Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, GoalTaskMap, Question, Process, SubProcess, ProgramType, ProgramTask, TaskData, SubProcessLevelUpdates, ProgramAdditionData, Faq, QualityFramework
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
@@ -437,14 +437,26 @@ def show_process_data(request, process_id, sprocess_name):
     if request.method == "GET":
         is_manager = True if request.user.groups.filter(name='CHAPERONE-MANAGER') else False
         sub_process = SubProcess.objects.get(process=process_id,url_name=sprocess_name)
+            
         if sub_process:
             program_types = ProgramType.objects.filter(subprocess=sub_process).order_by('created_date')
             sub_processs = SubProcess.objects.filter(is_disabled=False)
-        context = RequestContext(request, 
-                    {'request': request, 'user': request.user,'sub_process':sub_process,
+        response = {'request': request, 'user': request.user,'sub_process':sub_process,
                     'program_types':program_types,'sub_processs':sub_processs,
                     'is_manager':is_manager
-                    })
+                    }
+        faq = Faq.objects.all().count()
+        if faq > 0:
+            response['faq'] = True
+        else:
+            pass
+        context = RequestContext(request, response)
+        qf = QualityFramework.objects.all().count()
+        if qf > 0:
+            response['qf'] = True
+        else:
+            pass
+        context = RequestContext(request, response)
         return render(request, "apollo_home.html", context_instance=context) 
     """
     else:
@@ -703,7 +715,6 @@ def get_subprocess_programdata(request, sub_process_id):
         for task in program_task:
             program_task_dict[task.id] = task.name
         program_data_dict['program_tasks'] = program_task_dict
-        print program_data_dict,'program_data_dict'
         tasks = [{task.id: task.name} for task in program_task]
         program_data.append(program_data_dict)
     return HttpResponse(json.dumps({"data":program_data, "success":True, "msg":""}), content_type="application/json") 
@@ -1238,5 +1249,361 @@ def delete_subprocess_level_data(request, data_id):
         except:
             resp = {"success": False, "msg": "Something went wrong. Please try after sometime"}
         return HttpResponse(json.dumps(resp), content_type="application/json")
+    else:
+        raise PermissionDenied
+
+
+
+@login_required
+def faq_handler(request):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        program_type = ProgramType.objects.all().filter(is_disabled=False)
+        # program_task = ProgramTask.objects.all().filter(is_disabled=False)
+        context = RequestContext(request, {'request': request, 'user': request.user,'program_type':program_type, 'program_task':"Others"})
+        return render(request, "manage_admin/create_faq.html", context_instance=context) 
+    else:
+        raise PermissionDenied
+
+
+@login_required
+def faq_creater(request):
+    context = {}
+    success = False
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+    
+        if request.POST:
+            faq_data = json.loads(request.POST.get("faqData"))
+            try:
+                faq = Faq()
+                try:
+                    program_type = ProgramType.objects.get(pk=int(faq_data.get('program_type_id')))
+                    faq.program_type = program_type
+                except Exception as e:
+                    pass
+                try:
+                    task = ProgramTask.objects.get(pk=int(faq_data.get('program_task')))
+                    faq.program_task = task
+                except Exception as e:
+                    pass
+
+                faq.question = faq_data.get('question')
+                faq.answer = faq_data.get('answer')
+                faq.created_by = User.objects.get(email=request.user.email)
+                faq.modified_by =  User.objects.get(email=request.user.email)
+                faq.save()
+
+                resp = {'success':True, 'msg':'saved'}
+                return HttpResponse(json.dumps(resp), content_type="application/json")
+            except Exception as ex:
+                resp = {'success':False, 'msg':'not saved, server'}
+                return HttpResponse(json.dumps(resp), content_type="application/json")
+        else:
+            context = RequestContext(request, {'request': request, 'user': request.user, 'success':True})
+            return render(request, "manage_admin/create_faq.html", context_instance = context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+def faq_all(request):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        faq = Faq.objects.all()
+        context = RequestContext(request, {'request': request, 'user': request.user,'faq':faq,})
+        return render(request, "manage_admin/list_faq.html", context_instance=context) 
+    else:
+        raise PermissionDenied
+
+
+@login_required
+def faq_edit(request):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.is_ajax:
+            key = request.GET.get('faq_key')
+            program_type = ProgramType.objects.all().filter(is_disabled=False)
+            program_type_list = list()
+            
+            for each in program_type:
+                temp = {}
+                temp['program_type'] = each.name
+                temp['program_type_key'] = each.id
+                program_type_list.append(temp)
+
+            resp = {}
+            try:
+                faq = Faq.objects.get(pk=key)
+
+                if faq.program_type is not None:
+                    resp['program_type'] = faq.program_type.name
+                    resp['program_type_id'] = faq.program_type.id 
+                else:
+                    resp['program_type']  = "others"
+                    resp['program_type_id'] = None
+
+                if faq.program_task is not None:
+                        resp['program_task'] = faq.program_task.name
+                        resp['program_task_id'] = faq.program_task.id 
+                else:
+                    resp['program_task']  = "others"
+                    resp['program_task_id'] = None
+
+                resp['question'] = faq.question
+                resp['answer'] = faq.answer
+                resp['success'] = True
+                resp['msg'] = 'succesfuly edited'
+                resp['program_type_all'] = program_type_list
+                return HttpResponse(json.dumps(resp), content_type="application/json")
+            except Exception as e:
+                resp = {'success':False, 'msg':'Not edited, exception','program_type_all':program_type_list }
+                return HttpResponse(json.dumps(resp), content_type="application/json")
+        else:
+            resp = {'success':False, 'msg':'faild to edit'}
+            return HttpResponse(json.dumps(resp), content_type="application/json")
+    else:
+        raise PermissionDenied
+
+
+@login_required
+def faq_update(request):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.method == 'POST':
+            faq_data = json.loads(request.POST.get("faqData"))
+            try:
+                faq = Faq.objects.get(pk=int(faq_data.get('program_answer_edit_id')))
+
+                try:
+                    program_type = ProgramType.objects.get(pk=int(faq_data.get('program_type_id'))) 
+                except Exception as e:
+                    program_type = None
+                    pass
+                try:
+                    task = ProgramTask.objects.get(pk=int(faq_data.get('program_task_id')))
+                except Exception as e:
+                    task = None
+                    pass
+
+                faq.program_type = program_type
+                faq.program_task = task
+                faq.question = faq_data.get('question')
+                faq.answer = faq_data.get('answer')
+                faq.modified_by =  User.objects.get(email=request.user.email)
+                faq.save()
+
+                resp = {'success':True, 'msg':''}
+                return HttpResponse(json.dumps(resp), content_type="application/json")
+            except:
+                resp = {'success':False, 'msg':'failed eception'}
+                return HttpResponse(json.dumps(resp), content_type="application/json")
+        else:
+            resp = {'success':False, 'msg':'failed'}
+            return HttpResponse(json.dumps(resp), content_type="application/json")
+
+@login_required
+def faq_delete(request):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.method == 'GET':
+            faq_data = json.loads(request.POST.get("faqData"))
+            try:
+                faq = Faq.objects.get(pk=int(faq_data.get('program_answer_edit_id')))
+
+                try:
+                    program_type = ProgramType.objects.get(pk=int(faq_data.get('program_type_id'))) 
+                except Exception as e:
+                    program_type = None
+                    pass
+                try:
+                    task = ProgramTask.objects.get(pk=int(faq_data.get('program_task_id')))
+                except Exception as e:
+                    task = None
+                    pass
+
+                faq.program_type = program_type
+                faq.program_task = task
+                faq.question = faq_data.get('question')
+                faq.answer = faq_data.get('answer')
+                faq.modified_by =  User.objects.get(email=request.user.email)
+                faq.save()
+
+                resp = {'success':True, 'msg':''}
+                return HttpResponse(json.dumps(resp), content_type="application/json")
+            except:
+                resp = {'success':False, 'msg':'failed eception'}
+                return HttpResponse(json.dumps(resp), content_type="application/json")
+        else:
+            resp = {'success':False, 'msg':'failed'}
+            return HttpResponse(json.dumps(resp), content_type="application/json")
+
+@login_required
+def faq_delete(request):
+       if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.method == 'GET':
+            try:
+                faq = Faq.objects.get(pk=int(request.GET.get('faq_id')))
+                faq.delete()
+                resp = {'success':True, 'msg':'Successfully deleted'}
+                return HttpResponse(json.dumps(resp), content_type="application/json")
+            except Exception as e:
+                resp = {'success':False, 'msg':'failed Eception '}
+                return HttpResponse(json.dumps(resp), content_type="application/json")
+        else:
+            resp = {'success':False, 'msg':'failed'}
+            return HttpResponse(json.dumps(resp), content_type="application/json")
+
+        
+@login_required
+def faq_home_view(request):
+    is_manager = True if request.user.groups.filter(name='CHAPERONE-MANAGER') else False
+    sub_processs = SubProcess.objects.filter(is_disabled=False)
+    faq = Faq.objects.filter(program_type__isnull=False)
+    program_type_ids = list()
+    program_type_ids = [each.program_type.id for each in faq]
+    # for each in faq:
+    #     program_type_ids.append(each.program_type.id) 
+    program_types = ProgramType.objects.filter(is_disabled=False, pk__in=program_type_ids)
+    
+    if Faq.objects.filter(program_type__isnull=True).count() > 0:
+        context = RequestContext(request, {'sub_processs':sub_processs, 'program_types':program_types, 'others':True, 'is_manager':is_manager})
+    else:
+        context = RequestContext(request, {'sub_processs':sub_processs, 'program_types':program_types,'is_manager':is_manager})
+
+    qf = QualityFramework.objects.all().count()
+    if qf > 0:
+        context['qf'] = True
+    else:
+        pass
+
+    return render(request, "faq_home.html", context_instance=context) 
+
+
+@login_required
+def get_faq(request):
+    if request.GET.get('task_id') != 'other':
+        try:
+            faq = Faq.objects.filter(program_task=int(request.GET.get('task_id')))
+            faq = [{'q':each.question,'a':each.answer} for each in faq]
+            return HttpResponse(json.dumps({'success':True, 'msg':'successfuly data fetched','faq':faq }), content_type="application/json")
+        except:
+            return HttpResponse(json.dumps({'success':False, 'msg':'exception','faq':'no data'}), content_type="application/json")
+    else:
+        try:
+            faq = Faq.objects.filter(program_task=None, program_type=None)
+            faq = [{'q':each.question,'a':each.answer} for each in faq]
+            return HttpResponse(json.dumps({'success':True, 'msg':'successfuly data fetched','faq':faq }), content_type="application/json")
+        except:
+            return HttpResponse(json.dumps({'success':False, 'msg':'exception','faq':'no data'}), content_type="application/json")
+
+
+@login_required
+def qf_home(request):
+    is_manager = True if request.user.groups.filter(name='CHAPERONE-MANAGER') else False
+    sub_processs = SubProcess.objects.filter(is_disabled=False)
+    qualityframeworks = QualityFramework.objects.all()
+    
+    if Faq.objects.filter(program_type__isnull=True).count() > 0:
+        context = RequestContext(request, {'sub_processs':sub_processs, 'qualityframeworks':qualityframeworks, 'others':True, 'is_manager':is_manager})
+    else:
+        context = RequestContext(request, {'sub_processs':sub_processs, 'qualityframeworks':qualityframeworks,'is_manager':is_manager})
+
+    return render(request, "qf_home.html", context_instance=context) 
+
+@login_required
+def qualityframework_handler(request):
+    context = {}
+    success = False
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.POST:
+            qualityframework_data = json.loads(request.POST.get("qfData"))
+           
+            qf = QualityFramework()
+                    
+            qf.name = qualityframework_data.get("name")
+            qf.data = qualityframework_data.get("data")
+            qf.created_by = User.objects.get(email=request.user.email)
+            qf.modified_by =  User.objects.get(email=request.user.email)
+
+            qf.save()
+            context = {'success':True, 'msg':'QualityFramework created successfully'}
+            return HttpResponse(json.dumps(context), content_type="application/json")       
+        else:
+            context = RequestContext(request, {'request': request, 'user': request.user, 'success':True})
+            return render(request, "manage_admin/create_qualityframework.html", context_instance = context) 
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@csrf_exempt
+def get_qualityframework_name(request):
+    context = {}
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.POST:
+            try:
+                process = QualityFramework.objects.get(name=request.POST.get('name'))
+                context['msg'] = "QualityFramework with the name already exists"
+            except QualityFramework.DoesNotExist:
+                context['msg'] = ''
+            return HttpResponse(json.dumps(context), content_type="application/json")
+    else:
+        raise PermissionDenied
+
+
+@login_required
+def get_qualityframework(request):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        qualityframeworks = QualityFramework.objects.all()
+        context = RequestContext(request, {'request': request, 'user': request.user,'qualityframeworks':qualityframeworks})
+        return render(request, "manage_admin/qualityframeworks.html", context_instance = context) 
+    else:
+        raise PermissionDenied
+
+
+@login_required
+def delete_qualityframework(request, qf_id):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        context = {}
+        if request.method == "GET":
+            try:
+                qf_data = QualityFramework.objects.get(id=qf_id)
+                qf_data.delete()
+
+                context = {'success':True, 'msg': 'Quality Framework deleted successfully.'}
+            except Exception as e:
+                context = {'success':False,'msg':'Something went wrong, please try after some time'}                    
+            return HttpResponse(json.dumps(context), content_type="application/json")            
+    else:
+        raise PermissionDenied
+
+
+@login_required
+def get_qf_data(request, qf_id):
+    qf_data = QualityFramework.objects.get(id=qf_id)
+    qfdata = {
+        'name':qf_data.name,
+        'data':qf_data.data,
+        'id':qf_data.id,
+    }
+    return HttpResponse(json.dumps({"data":qfdata, "success":True, "msg":""}), content_type="application/json")    
+
+@login_required
+def qf_update(request):
+    context = {}
+    success = False
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.POST:
+            qualityframework_data = json.loads(request.POST.get("qfData"))
+            
+            qf_id = request.POST.get('qf_id')
+            qf = QualityFramework.objects.get(id=qf_id)
+
+            qf.name = qualityframework_data.get("name")
+            qf.data = qualityframework_data.get("data")
+            qf.created_by = User.objects.get(email=request.user.email)
+            qf.modified_by =  User.objects.get(email=request.user.email)
+
+            qf.save()
+            context = {'success':True, 'msg':'QualityFramework updated successfully'}
+            return HttpResponse(json.dumps(context), content_type="application/json")       
+        else:
+            context = RequestContext(request, {'request': request, 'user': request.user, 'success':True})
+            return render(request, "manage_admin/create_qualityframework.html", context_instance = context) 
     else:
         raise PermissionDenied
