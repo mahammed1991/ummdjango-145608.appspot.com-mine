@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponse, redirect
-from .models import ExtraTask, Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, GoalTaskMap, Question, Process, SubProcess, ProgramType, ProgramTask, TaskData, SubProcessLevelUpdates, ProgramAdditionData, Faq
+from .models import ExtraTask, Quarter, Category, Task, AdditionData, ColumnData, ComboUpdate, BudgetBand, Goal, GoalTaskMap, Question, Process, SubProcess, ProgramType, ProgramTask, TaskData, SubProcessLevelUpdates, ProgramAdditionData, Faq, QualityFramework
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
@@ -448,6 +448,12 @@ def show_process_data(request, process_id, sprocess_name):
         faq = Faq.objects.all().count()
         if faq > 0:
             response['faq'] = True
+        else:
+            pass
+        context = RequestContext(request, response)
+        qf = QualityFramework.objects.all().count()
+        if qf > 0:
+            response['qf'] = True
         else:
             pass
         context = RequestContext(request, response)
@@ -1459,6 +1465,12 @@ def faq_home_view(request):
     else:
         context = RequestContext(request, {'sub_processs':sub_processs, 'program_types':program_types,'is_manager':is_manager})
 
+    qf = QualityFramework.objects.all().count()
+    if qf > 0:
+        context['qf'] = True
+    else:
+        pass
+
     return render(request, "faq_home.html", context_instance=context) 
 
 
@@ -1478,3 +1490,120 @@ def get_faq(request):
             return HttpResponse(json.dumps({'success':True, 'msg':'successfuly data fetched','faq':faq }), content_type="application/json")
         except:
             return HttpResponse(json.dumps({'success':False, 'msg':'exception','faq':'no data'}), content_type="application/json")
+
+
+@login_required
+def qf_home(request):
+    is_manager = True if request.user.groups.filter(name='CHAPERONE-MANAGER') else False
+    sub_processs = SubProcess.objects.filter(is_disabled=False)
+    qualityframeworks = QualityFramework.objects.all()
+    
+    if Faq.objects.filter(program_type__isnull=True).count() > 0:
+        context = RequestContext(request, {'sub_processs':sub_processs, 'qualityframeworks':qualityframeworks, 'others':True, 'is_manager':is_manager})
+    else:
+        context = RequestContext(request, {'sub_processs':sub_processs, 'qualityframeworks':qualityframeworks,'is_manager':is_manager})
+
+    return render(request, "qf_home.html", context_instance=context) 
+
+@login_required
+def qualityframework_handler(request):
+    context = {}
+    success = False
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.POST:
+            qualityframework_data = json.loads(request.POST.get("qfData"))
+           
+            qf = QualityFramework()
+                    
+            qf.name = qualityframework_data.get("name")
+            qf.data = qualityframework_data.get("data")
+            qf.created_by = User.objects.get(email=request.user.email)
+            qf.modified_by =  User.objects.get(email=request.user.email)
+
+            qf.save()
+            context = {'success':True, 'msg':'QualityFramework created successfully'}
+            return HttpResponse(json.dumps(context), content_type="application/json")       
+        else:
+            context = RequestContext(request, {'request': request, 'user': request.user, 'success':True})
+            return render(request, "manage_admin/create_qualityframework.html", context_instance = context) 
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@csrf_exempt
+def get_qualityframework_name(request):
+    context = {}
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.POST:
+            try:
+                process = QualityFramework.objects.get(name=request.POST.get('name'))
+                context['msg'] = "QualityFramework with the name already exists"
+            except QualityFramework.DoesNotExist:
+                context['msg'] = ''
+            return HttpResponse(json.dumps(context), content_type="application/json")
+    else:
+        raise PermissionDenied
+
+
+@login_required
+def get_qualityframework(request):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        qualityframeworks = QualityFramework.objects.all()
+        context = RequestContext(request, {'request': request, 'user': request.user,'qualityframeworks':qualityframeworks})
+        return render(request, "manage_admin/qualityframeworks.html", context_instance = context) 
+    else:
+        raise PermissionDenied
+
+
+@login_required
+def delete_qualityframework(request, qf_id):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        context = {}
+        if request.method == "GET":
+            try:
+                qf_data = QualityFramework.objects.get(id=qf_id)
+                qf_data.delete()
+
+                context = {'success':True, 'msg': 'Quality Framework deleted successfully.'}
+            except Exception as e:
+                context = {'success':False,'msg':'Something went wrong, please try after some time'}                    
+            return HttpResponse(json.dumps(context), content_type="application/json")            
+    else:
+        raise PermissionDenied
+
+
+@login_required
+def get_qf_data(request, qf_id):
+    qf_data = QualityFramework.objects.get(id=qf_id)
+    qfdata = {
+        'name':qf_data.name,
+        'data':qf_data.data,
+        'id':qf_data.id,
+    }
+    return HttpResponse(json.dumps({"data":qfdata, "success":True, "msg":""}), content_type="application/json")    
+
+@login_required
+def qf_update(request):
+    context = {}
+    success = False
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        if request.POST:
+            qualityframework_data = json.loads(request.POST.get("qfData"))
+            
+            qf_id = request.POST.get('qf_id')
+            qf = QualityFramework.objects.get(id=qf_id)
+
+            qf.name = qualityframework_data.get("name")
+            qf.data = qualityframework_data.get("data")
+            qf.created_by = User.objects.get(email=request.user.email)
+            qf.modified_by =  User.objects.get(email=request.user.email)
+
+            qf.save()
+            context = {'success':True, 'msg':'QualityFramework updated successfully'}
+            return HttpResponse(json.dumps(context), content_type="application/json")       
+        else:
+            context = RequestContext(request, {'request': request, 'user': request.user, 'success':True})
+            return render(request, "manage_admin/create_qualityframework.html", context_instance = context) 
+    else:
+        raise PermissionDenied

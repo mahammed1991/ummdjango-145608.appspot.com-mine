@@ -25,15 +25,19 @@
     <section class="top-white-bg">
 		<div class="container">
 			<div class="row">
-				<div class="col-xs-4 col-md-6 col-sm-6">
+				<div class="col-md-1">
 					<a href="/knowledgebase/admin/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a>
 				</div>
-				<div class="col-xs-8 col-md-6 col-sm-6">
-					<a href="{% url 'auth:logout' %}?next=/" class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
-					<a href="/" class="logout  pull-right" target="_blank"><i class="fa fa-home" aria-hidden="true"></i></a>
+				<div class="col-md-9">
 					<a href="/process/create/" class="process-btn pull-right">Create New Process</a>
                     <a href="/faq/create/" class="process-btn pull-right">Create FAQ</a>
+                    <a href="/qualityframework/create/" class="process-btn pull-right">Create Quality Framework</a>
+                    
 				</div>
+                <div class="col-md-2">
+                    <a href="{% url 'auth:logout' %}?next=/" class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
+                    <a href="/" class="logout  pull-right" target="_blank"><i class="fa fa-home" aria-hidden="true"></i></a>
+                </div>
 			</div>
 		</div>
 	</section>

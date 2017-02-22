@@ -43,6 +43,9 @@
 			  {% if faq %}
 			  <li><a href="#" id="home-faq"  class="" >FAQ</a></li>
 			  {% endif %}
+			  {% if qf %}
+			  <li><a href="#" id="home-qf"  class="" >Quality Framework</a></li>
+			  {% endif %}
 		  </ul>
 	  </div>
 	</section>
@@ -451,15 +454,18 @@
 	    	
 	    	$('.process').removeClass('active');
 	    	$('#home-faq').addClass('active');
+	    	$('#home-qf').removeClass('active');
 	    	window.location='/faq/home_view/'
-	    })	
+	    })
 
-
-
-	
-
-
-
+//function to get all quality frameworks
+        $("#home-qf").click(function(){
+            
+            $('.process').removeClass('active');
+            $('#home-faq').removeClass('active');
+            $('#home-qf').addClass('active');
+            window.location='/qf/home/'
+        })	
 
 	</script>
 </body>

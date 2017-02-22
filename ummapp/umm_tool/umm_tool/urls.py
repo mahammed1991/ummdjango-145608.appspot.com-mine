@@ -82,6 +82,15 @@ urlpatterns = [
     url(r'^faq/faq_update/', 'umm_app.views.faq_update', name='faq_update'),
     url(r'^faq/faq_delete/', 'umm_app.views.faq_delete', name='faq_delete'),
     url(r'^faq/home_view/', 'umm_app.views.faq_home_view', name='faq_home_view'),
-    url(r'faq/get_faq/', 'umm_app.views.get_faq', name='get_faq')
+    url(r'faq/get_faq/', 'umm_app.views.get_faq', name='get_faq'),
+
+    #Quality Framework
+    url(r'^qf/home/', 'umm_app.views.qf_home', name='qf_home'),
+    url(r'^qualityframework/create/$','umm_app.views.qualityframework_handler', name='qualityframework_handler'),
+    url(r'^get-qualityframework-name/$','umm_app.views.get_qualityframework_name', name='get_qualityframework_name'),
+    url(r'^qualityframework/all/$','umm_app.views.get_qualityframework', name='get_qualityframework'),
+    url(r'^qf/qf_delete/(?P<qf_id>[0-9]+)$', 'umm_app.views.delete_qualityframework'),
+    url(r'^get-qf-data/(?P<qf_id>[0-9]+)','umm_app.views.get_qf_data',name='get_qf_data'),
+    url(r'^qualityframework/update/','umm_app.views.qf_update',name='qf_update'),
     
 ]

@@ -265,4 +265,16 @@ class Faq(models.Model):
          return "%s %s %s %s" % (self.program_type, self.program_task, self.question, self.answer)
 
 
+class QualityFramework(models.Model):
+    name = models.CharField(max_length=250, unique=True)
+    data = models.TextField()    
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User, related_name='qualityframework_created_by', null=False)
+    modified_by = models.ForeignKey(User, related_name='qualityframework_modified_by', null=False)    
+
+    def __unicode__(self):
+        return "%s %s" % (self.name, self.data)
+
+
 

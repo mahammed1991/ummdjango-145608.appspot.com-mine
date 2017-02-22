@@ -31,6 +31,7 @@
 					  	<li><a href="/knowledgebase/admin/"><i class="fa fa-users" aria-hidden="true"></i></a></li>
 					  {% endif %}	
 
+
 				  </ul>
 			  </div>
 		  </div>
@@ -43,6 +44,9 @@
 			  	<li><a href="/process/{{sub_process.process.id}}/sp/{{sub_process.url_name}}/view" data-processid="{{sub_process.id}}" class="process">{{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</a></li>
 			  {%endfor %}
 			  <li><a href="#" id="home-faq"  class="active" >FAQ</a></li>
+			  {% if qf %}
+			  <li><a href="#" id="home-qf"  class="" >Quality Framework</a></li>
+			  {% endif %}
 		  </ul>
 	  </div>
 	</section>
@@ -307,7 +311,22 @@
 			
 			
 		  }
+
+		
+
+//function to get all quality frameworks
+        $("#home-qf").click(function(){
+            
+            $('.process').removeClass('active');
+            $('#home-faq').removeClass('active');
+            $('#home-qf').addClass('active');
+            window.location='/qf/home/'
+        })	
+
 		});// end of document ready function
+
+
+
 
 
 
