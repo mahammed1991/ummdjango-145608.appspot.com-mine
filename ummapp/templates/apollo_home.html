@@ -39,7 +39,13 @@
 			  <!--<li><a href="/">Advertiser Goals</a></li>-->
 			  {% for sub_process in sub_processs %}
 			  	<li><a href="/process/{{sub_process.process.id}}/sp/{{sub_process.url_name}}/view" data-processid="{{sub_process.id}}" class="process">{{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</a></li>
-			  {%endfor %}
+			  {% endfor %}
+			  {% if faq %}
+			  <li><a href="#" id="home-faq"  class="" >FAQ</a></li>
+			  {% endif %}
+			  {% if qf %}
+			  <li><a href="#" id="home-qf"  class="" >Quality Framework</a></li>
+			  {% endif %}
 		  </ul>
 	  </div>
 	</section>
@@ -198,6 +204,7 @@
     <script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
 	<!--<script type="text/javascript" src="{% static 'js/script.js' %}"></script>-->
 	<script type="text/javascript">
+
 		$(document).ready(function(){
 			sub_process = "{{sub_process.id}}"
 			$('.process[data-processid='+ sub_process + "]").addClass('active');
@@ -238,7 +245,7 @@
 		            		for(var i=0;i<data.length;i++){
 		            			column_data = data[i].data.replace(/&nbsp;/g, ' ');
 		            			$column_name.append('<th data-number="'+data[i].column_number+'" class="task-column tbl-btn"  style="max-width:50px;min-width:30px;width:32px;" data-taskdata-id="'+data[i].data_id+'">'+ data[i].column_name+'</th>')
-		            			$column_value.append('<td data-number="'+data[i].column_number+'" class="task-column tbl-btn" style="word-wrap: break-word;max-width:65px;" data-taskdata-id="'+data[i].data_id+'">'+ column_data +'</td>');
+		            			$column_value.append('<td data-number="'+data[i].column_number+'" class="task-column tbl-btn" style="word-wrap: break-word;max-width:85px;" data-taskdata-id="'+data[i].data_id+'">'+ column_data +'</td>');
 		            		}
 		            	}
 
@@ -439,7 +446,26 @@
 			}
 
 			
-	    });	
+	    });
+
+
+//function to get all faq question and answer
+	    $("#home-faq").click(function(){
+	    	
+	    	$('.process').removeClass('active');
+	    	$('#home-faq').addClass('active');
+	    	$('#home-qf').removeClass('active');
+	    	window.location='/faq/home_view/'
+	    })
+
+//function to get all quality frameworks
+        $("#home-qf").click(function(){
+            
+            $('.process').removeClass('active');
+            $('#home-faq').removeClass('active');
+            $('#home-qf').addClass('active');
+            window.location='/qf/home/'
+        })	
 
 	</script>
 </body>
