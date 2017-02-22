@@ -190,18 +190,19 @@
       {% csrf_token %}
       <div class="modal-body" style="height:300px;">
           <div class="form-group row">
-          		<label for="program-type-user-q" class="col-sm-3">Program Type</label>
+          		<label for="program-type-user-q" class="col-sm-3">Program Type:</label>
 	            <div class="col-sm-6">
 		           <select class="form-control program-type-user-q">
 					  {% for ptype in program_types %}
 						 <option data-programtype-id="{{ ptype.id }}">{{ ptype.name }}</option>
 		    		  {% endfor %}
+						 <option data-programtype-id="other">Others</option>
 				    </select>
 			     </div>
 		  </div><br>
 
 		   <div class="form-group row">
-          		<label for="program-task-user-q" class="col-sm-3">Program Task</label>
+          		<label for="program-task-user-q" class="col-sm-3">Program Task:</label>
 	            <div class="col-sm-6" >
 		           <select class="form-control program-task-user-q" name="program-task-user-q">
 					  <option>others</option>
@@ -212,10 +213,10 @@
 
       
       		<div class="form-group row">
-	           <label for="question-user-q" class="col-sm-3">Question</label>
+	           <label for="question-user-q" class="col-sm-3">Question:</label>
 	          
 	            <div class="col-sm-6">
-					<input type="text" class="form-control question-user-q" id="" name="question_user_q">
+					<input style="height:70px !important" type="text" class="form-control question-user-q" id="" name="question_user_q">
 			    </div>
 			 </div><br>
 			 <div class="row">
@@ -399,7 +400,7 @@ $(function () {
 
 $('.program-type-user-q').click(function (e) {
 		    	e.preventDefault();
-		    	console.log($(this).attr('data-programtype-id'));
+		    	/*console.log($(this).attr('data-programtype-id'));*/
 		    	updateTaskTypesUserQuestion($('.program-type-user-q :selected').attr('data-programtype-id'));
 });
 
@@ -484,7 +485,7 @@ function updateTaskTypesUserQuestion(program_type_id){
 	
 				$('.program-task-user-q').html("")
 				if(program_type_id == 'other'){
-					$('.program-task-user-q').append("<data-programtype-id='other'>Other</a>");
+					$('.program-task-user-q').append("<option data-programtype-id='other'>Others</option>");
 				}else if(program_type_id == undefined){
 					alert("something went wrong !")
 				}
@@ -508,6 +509,7 @@ function updateTaskTypesUserQuestion(program_type_id){
 		            				td_html += "<option class='' data-programtype-id="+task_id +">" + task_name +"</option>"	            				
 		            			}
 		            		}
+		            		td_html += "<option data-programtype-id='other'>Others</option>"
 		            		$('.program-task-user-q').append(td_html);
 		            		var check_task_active = true;
 		            	}

@@ -1602,13 +1602,11 @@ def user_question(request):
                 faq.modified_by = User.objects.get(email=request.user.email)
                 faq.save()
 
-                print "mailing start"
                 from google.appengine.api import mail
                 mail.send_mail(sender="swassets@regalix-inc.com",
-                              to="mashraf<mashraf@regalix-inc.com>",
-                              subject="testing google app engine mail",
-                              body="Hello, world!")
-                print "mailing end"
+                              to="<mashraf@regalix-inc.com>",
+                              subject="CHAPERONE User Question (" +request.user.email+")",
+                              body= "Question is"+faq_data.get('question') +" \n*** temp This is an automatically generated email, please do not reply ***")
 
                 resp = {'success':True, 'msg':'Question Posted'}
                 return HttpResponse(json.dumps(resp), content_type="application/json")
