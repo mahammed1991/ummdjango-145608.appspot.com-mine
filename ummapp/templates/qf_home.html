@@ -27,9 +27,11 @@
 				  <ul>
 					  <li>{{ user.get_full_name|default:user.username }} </li>		  
 					  <li><a href="{% url 'auth:logout' %}?next=/"><i class="fa fa-power-off" aria-hidden="true"></i></a></li>
+
 					  {% if is_manager %}
 					  	<li><a href="/knowledgebase/admin/"><i class="fa fa-users" aria-hidden="true"></i></a></li>
 					  {% endif %}	
+					  
 
 				  </ul>
 			  </div>
