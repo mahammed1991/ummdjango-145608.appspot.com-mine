@@ -23,6 +23,7 @@ class Migration(migrations.Migration):
                 ('modified_date', models.DateTimeField(auto_now=True)),
                 ('created_by', models.ForeignKey(related_name='qualityframework_created_by', to=settings.AUTH_USER_MODEL)),
                 ('modified_by', models.ForeignKey(related_name='qualityframework_modified_by', to=settings.AUTH_USER_MODEL)),
+            
             ],
         ),
     ]
