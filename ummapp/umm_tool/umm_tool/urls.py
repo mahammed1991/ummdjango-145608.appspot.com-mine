@@ -78,6 +78,7 @@ urlpatterns = [
     url(r'^faq/create/$','umm_app.views.faq_handler', name='faq_handler'),
     url(r'^faq/faq_creater/$','umm_app.views.faq_creater', name='faq_creater'),
     url(r'^faq/all/','umm_app.views.faq_all', name='faq_all'),
+    url(r'^faq/no-answers/all','umm_app.views.get_faq_unanswered', name='get_faq_unanswered'),
     url(r'^faq/edit/', 'umm_app.views.faq_edit', name='faq_edit'), 
     url(r'^faq/faq_update/', 'umm_app.views.faq_update', name='faq_update'),
     url(r'^faq/faq_delete/', 'umm_app.views.faq_delete', name='faq_delete'),

@@ -1307,7 +1307,7 @@ def faq_creater(request):
 @login_required
 def faq_all(request):
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
-        faq = Faq.objects.all()
+        faq = Faq.objects.all().exclude(answer__exact='')
         context = RequestContext(request, {'request': request, 'user': request.user,'faq':faq,})
         return render(request, "manage_admin/list_faq.html", context_instance=context) 
     else:
@@ -1618,3 +1618,13 @@ def user_question(request):
             return render(request, "manage_admin/create_faq.html", context_instance = context)
     else:
         raise PermissionDenied
+
+
+def get_faq_unanswered(request):
+    if request.user.groups.filter(name='CHAPERONE-MANAGER'):
+        faq = Faq.objects.filter(answer__exact='')
+        context = RequestContext(request, {'request': request, 'user': request.user,'faq':faq,})
+        return render(request, "manage_admin/get_faq_with_no_answers.html", context_instance=context) 
+    else:
+        raise PermissionDenied
+

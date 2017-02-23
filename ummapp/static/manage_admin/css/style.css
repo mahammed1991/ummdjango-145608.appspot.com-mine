@@ -222,7 +222,21 @@ modal-style .btn {
 .faq-table th:nth-child(1){ width: 10em; }
 .faq-table th:nth-child(2) { width: 10em; }
 .faq-table th:nth-child(5) { width: 9em; }
+
+/*bellow css is for get_faq_with_no_answers.html*/
+.faq-table-no-answers th{ font-weight: 700; background:#c92127;color:#fff;}
+.faq-table-no-answers .fa{ color: #000 }
+.faq-table-no-answers th:nth-child(1){ width: 12em; }
+.faq-table-no-answers th:nth-child(2) { width: 12em; }
+.faq-table-no-answers th:nth-child(3) { width: 12em; }
+.faq-table-no-answers th:nth-child(4) { width: 12em; }
+.faq-table-no-answers th:nth-child(6) { width: 10em; }
 /*Responsive Start*/
+
+.no-faq-unswered{font-weight: 600;}
+.alter-msg{ color: #fff; background: #039be5; padding: 15px}
+.alter-msg .fa-exclamation-triangle{ padding-right: 20px; font-size: 24px}
+
 @media only screen and (min-width: 992px) and (max-width: 1219px) {
     
 }

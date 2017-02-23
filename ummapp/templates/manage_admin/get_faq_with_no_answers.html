@@ -35,16 +35,16 @@
     <section class="top-white-bg">
 		<div class="container">
 			<div class="row">
-				<div class="col-xs-4 col-md-4 col-sm-6">
+				<div class="col-xs-4 col-md-6 col-sm-6">
 					<a href="/knowledgebase/admin/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a>
 				</div>
-				<div class="col-xs-8 col-md-8 col-sm-6">
+				<div class="col-xs-8 col-md-6 col-sm-6">
 					<a href="{% url 'auth:logout' %}?next=/" class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
 					<a href="/" class="logout  pull-right" target="_blank"><i class="fa fa-home" aria-hidden="true"></i></a>
 					<a href="/knowledgebase/admin/" class="logout  pull-right"><i class="fa fa-users " aria-hidden="true"></i></a>
 					<a href="/process/create/" class="process-btn pull-right">Create New Process</a>
                     <a href="/faq/create/" class="process-btn pull-right">Create FAQ</a>
-					<a href="/faq/no-answers/all" class="process-btn pull-right">FAQ Un-Answered</a>
+                    <a href="/faq/all/" class="process-btn pull-right">FAQ List</a>
                     
 					
 					  
@@ -59,17 +59,24 @@
 					
 			<div class="white-bg" style="height:500px; overflow-y: scroll;">
 				<div class="padding-15">
+
+			
 							
-					<table class="table table-bordered faq-table">
+					<table class="table table-bordered faq-table-no-answers">
 						<tr>
+							<th>Created By</th>
+							<th>Created Date</th>
 							<th>Program Type</th>
 							<th>Program Task</th>
-							<th>Question</th>
-							<th>Answer</th>
+							<th>Un-Answered Question</th>
 							<th>Action</th>
 						</tr>
 							{% for data in faq %}
 						<tr>
+						
+							<td>{{ data.created_by.email }}</td>
+							<td>{{ data.created_date }}</td>
+
 							{% if data.program_type == None  %}
 							<td>Others</td>
 							{% else %}
@@ -83,14 +90,7 @@
 							{% endif %}
 
 							<td>{{ data.question }}</td>
-							
-
-							{% if data.answer == None  %}
-							<td style="color:red">Not answered yet</td>
-							{% else %}
-							<td>{{ data.answer }}</td>
-							{% endif %}
-
+						
 							<td>
 			            		<button data-toggle="modal"  type="button" 
 			           			class="btn" onclick="editFaq({{data.id}})"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
@@ -99,10 +99,19 @@
 							</td>
 						</tr>
 							{% endfor %}
-					</table>	
-				</div>
+					</table>
+
+					{% if not faq %}
+					<div class='no-faq-unswered alter-msg'>
+						<i class='fa fa-exclamation-triangle' aria-hidden='true'></i>
+						No Question has been posted yet.
+					</div>
+					{% endif %}
+
+				</div>	
 			</div>
 		</div>
+	</div>
 			  
 	<div class="modal-style">
 	    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
@@ -296,7 +305,11 @@ function editFaq(key){
 		            success: function(data) {
 		            
 		            	if (data['success']){
-		            		window.location='/faq/all'
+		            		iziToast.success({
+			                                title: 'Deleted',
+			                                message: 'Deleted, Page Reloads' ,
+			                        });
+		            		window.location='/faq/no-answers/all'
 		            	}
 		            	else{
 		            	}

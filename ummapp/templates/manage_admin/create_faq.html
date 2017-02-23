@@ -21,15 +21,16 @@
     <section class="top-white-bg">
 		<div class="container">
 			<div class="row">
-				<div class="col-xs-4 col-md-6 col-sm-6">
+				<div class="col-xs-4 col-md-4 col-sm-6">
 					<a href="/knowledgebase/admin/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a>
 				</div>
-				<div class="col-xs-8 col-md-6 col-sm-6">
+				<div class="col-xs-8 col-md-8 col-sm-6">
 					<a href="{% url 'auth:logout' %}?next=/" class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
 					<a href="/" class="logout  pull-right" target="_blank"><i class="fa fa-home" aria-hidden="true"></i></a>
 					<a href="/knowledgebase/admin/" class="logout  pull-right"><i class="fa fa-users " aria-hidden="true"></i></a> 
 					<a href="/process/create/" class="process-btn pull-right">Create New Process</a>
                     <a href="/faq/all/" class="process-btn pull-right">FAQ list</a>
+                    <a href="/faq/no-answers/all" class="process-btn pull-right">FAQ Un-Answered</a>
 				</div>
 			</div>
 		</div>
