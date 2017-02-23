@@ -148,6 +148,8 @@ a.sub-task-link.active{background: #4caf50; }
 .ask-q{ position:fixed; bottom:15px; left: 0px; cursor: pointer; font-size: 24px; text-align: center; line-height: 38px; width:120px}
 .ask-q a{ color: #fff;width: 40px; height: 40px; border-radius: 50%; background:#039be5; display: inline-block}
 
+.qf-table td{ border: 1px solid #333; padding: 8px; }
+.qf-table table{margin-bottom: 10px;}
 /*Responsive Start*/
 @media only screen and (min-width: 992px) and (max-width: 1219px) {
 }
