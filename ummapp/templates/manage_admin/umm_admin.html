@@ -1,0 +1,154 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Processes</title>
+
+    <!-- Bootstrap -->
+    <link href="{% static 'manage_admin/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'manage_admin/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'manage_admin/css/style.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'manage_admin/css/iziToast.min.css'%}">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <section class="top-white-bg">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-1">
+					<a href="/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a>
+				</div>
+				<div class="col-md-9">
+					<a href="/process/create/" class="process-btn pull-right">Create New Process</a>
+                    <a href="/faq/create/" class="process-btn pull-right">Create FAQ</a>
+                    <a href="/qualityframework/create/" class="process-btn pull-right">Create Quality Framework</a>
+                    
+				</div>
+                <div class="col-md-2">
+                    <a href="{% url 'auth:logout' %}?next=/" class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
+                    <a href="/" class="logout  pull-right" target="_blank"><i class="fa fa-home" aria-hidden="true"></i></a>
+                </div>
+			</div>
+		</div>
+	</section>
+	
+	  <section class="process-box">
+	  	<div class="container">
+			<div class="row">
+				{% for process in processes %}
+				<div class="col-xs-6 col-md-3 col-sm-3 ">
+					
+						<div class="white-bg">
+                        <div class="dropdown">
+							  <a href="#" class="pull-right" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-cog" aria-hidden="true"></i></a>
+							  <ul class="dropdown-menu pull-right" aria-labelledby="dropdownMenu1" style="margin-top: 20px;" data-pid="{{process.id}}">
+								<li><a class="delete-process" href="#">Delete</a></li>
+							  </ul>
+							</div>						
+							<h1><a href="/process/{{process.id}}/show">{{process.name}}</a></h1>
+							<!--img src="{% static 'manage_admin/images/apollo.jpg' %}" alt=""-->
+						</div>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+	  </section>
+
+    <div class="modal-style">
+        <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title2">Are you ABSOLUTELY sure?
+
+    </h4>
+                    </div>
+                    <div class="modal-body">
+                        
+                        <div class="facebox-alert">
+                            Unexpected bad things will happen if you don’t read this!
+                        </div>
+                        <div class="del-confirm-msg">
+                            <p>This action <strong>CANNOT</strong> be undone. This will permanently delete the <strong>sreekanth-anubolu/Java-Basic-Programs</strong> repository, wiki, issues, and comments, and remove all collaborator associations.</p>
+                            <p>Please type in the name of the repository to confirm.</p>
+                        </div>
+                        <button type="submit" class="btn btn-block btn-danger btn-ok">I understand the consequences, delete this item</button>
+                      </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+  
+  
+   
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="{% static 'manage_admin/js/jquery.min.js' %}"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{% static 'manage_admin/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/iziToast.min.js' %}"></script>
+    <!--<script src="{% static 'manage_admin/js/scripts.js' %}"></script> -->
+    <script type="text/javascript">
+        $("body").on('click', '.delete-process', function(e){
+            e.preventDefault();
+            var $that = $(this).parent().parent();
+            var $parent = $that.parent().parent().parent();
+            var pid = $that.data('pid');
+            var apiURL = "/process/"+pid+"/delete";
+
+            process_name = $parent.find('h1').text()
+            $('.del-confirm-msg').html('');
+            $('.del-confirm-msg').html('<p>This action <strong>CANNOT</strong> be undone. This will permanently delete the process with name <strong style="font-weight: bold;">'+process_name + '</strong> all its associated <strong style="font-weight: bold;">Sub Processes</strong>, <strong style="font-weight: bold;">Program Types</strong>, <strong style="font-weight: bold;">Program Tasks</strong>, <strong style="font-weight: bold;">Task Data</strong> ,<strong style="font-weight: bold;">Task Additional Data</strong> and <strong style="font-weight: bold;">Carousel updates</strong>');
+
+            $('#deleteConfirmationModal').modal('show');
+            $('#deleteConfirmationModal').on('click', '.btn-ok', function(e) {
+                if(pid){
+                    $parent.remove();
+                    $.ajax({
+                        url: apiURL,
+                        type: 'POST',
+                        cache: false,
+                        success: function(res) {
+                                if(res.success){
+                                   $('#deleteConfirmationModal').modal('hide'); 
+                                   iziToast.success({
+                                    title: 'OK',
+                                    message: res.msg,
+                                });
+                                }
+
+                        },
+                        error: function(xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            alert(err.Message);
+                            location.reload();
+                            //alert("Something went wrong, please try after some time");
+                        }
+
+                    });
+                }else{
+                    iziToast.error({
+                                    title: 'Error',
+                                    message: "Oops!! This shouldn't have happened" ,
+                                });
+                }
+            });
+        });
+    </script>
+  </body>
+</html>

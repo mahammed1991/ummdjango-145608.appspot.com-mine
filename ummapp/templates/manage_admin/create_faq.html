@@ -1,0 +1,258 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Create New Process</title>
+
+    <!-- Bootstrap -->
+    <link href="{% static 'manage_admin/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'manage_admin/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'manage_admin/css/style.css' %}" rel="stylesheet">
+    <!--<link href="{% static 'manage_admin/css/jquery-ui.css' %}" rel="stylesheet">-->
+    <link href="{% static 'manage_admin/css/datepicker.min.css' %}" rel="stylesheet">
+    <link href="{% static 'manage_admin/css/formValidation.min.css' %}" rel="stylesheet">
+
+  </head>
+  <body>
+    <section class="top-white-bg">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-4 col-md-4 col-sm-6">
+					<a href="/knowledgebase/admin/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a>
+				</div>
+				<div class="col-xs-8 col-md-8 col-sm-6">
+					<a href="{% url 'auth:logout' %}?next=/" class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
+					<a href="/" class="logout  pull-right" target="_blank"><i class="fa fa-home" aria-hidden="true"></i></a>
+					<a href="/knowledgebase/admin/" class="logout  pull-right"><i class="fa fa-users " aria-hidden="true"></i></a> 
+					<a href="/process/create/" class="process-btn pull-right">Create New Process</a>
+                    <a href="/faq/all/" class="process-btn pull-right">FAQ list</a>
+                    <a href="/faq/no-answers/all" class="process-btn pull-right">FAQ Un-Answered</a>
+				</div>
+			</div>
+		</div>
+	</section>
+	
+	  <section class="process-create">
+	  	<div class="container">
+
+	  	<!-- <div class="alert alert-warning" role="alert" id="msg-info" style="display:none;">
+			        <button type="button" class="close"  aria-label="Close" id="btn-close"><span aria-hidden="true">&times;</span></button>
+			        <span id="span-msg"></span>
+		</div> -->
+
+			<form id="FaqForm" method="post" class="form-horizontal" enctype="multipart/form-data">
+					{% csrf_token %}
+				 <div class="form-group">
+						        <label for="program-type" class="control-label col-sm-2">Program Type</label>
+						        <div class="col-sm-3">
+						            <select class="form-control" id="program-type">
+
+						            <option id=""  value="others" >Others</option>
+						            {% for data in program_type %}
+						            <option data-programtype-id="{{data.id}}" value="{{data.id}}" >{{data.name}}</option>
+						            {% endfor %} 
+						            </select>
+						    	</div>
+				</div>
+
+				 <div class="form-group">
+						        <label for="program-tasks" class="control-label col-sm-2">Program Task </label>
+						        <div class="col-sm-3">
+						            <select class="form-control" id="program-tasks" name="quarter">
+								            <option id="" value="others" >Others</option>
+								    </select>
+						    	</div>
+				</div>
+
+				   <div class="form-group">
+				        <label for="question" class="control-label col-sm-2">Question</label>
+				        <div class="col-sm-5">
+				            <input type="text" class="form-control req" id="question" name="question" value="">
+				        </div>
+		   		  </div>
+
+		   		  <div class="form-group">
+				        <label for="answer" class="control-label col-sm-2">Answer</label>
+				        <div class="col-sm-5">
+				            <textarea id="answer" class="form-control" name="answer"></textarea>
+				            
+				        </div>
+		   		 </div>
+
+		   		 <div class="form-group">
+				        <label for="submit" class="control-label col-sm-2"></label>
+				        <div class="col-sm-5">
+				             <input type="submit" class="btn btn-primary add" id="process-submit"></input>
+				            
+				        </div>
+		   		 </div>
+
+			</form>
+		</div>
+
+		
+	  </section>
+
+
+ </body>
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="{% static 'manage_admin/js/jquery.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/bootstrap-datepicker.min.js' %}"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{% static 'manage_admin/js/formValidation.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/form_bootstrap.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'ckeditor/ckeditor.js' %}"></script>
+    <script src="{% static 'manage_admin/js/iziToast.min.js' %}"></script>
+	<script src="{% static 'manage_admin/js/bootstrap-tagsinput.min.js' %}"></script>
+    <!--<script src="{% static 'manage_admin/js/jquery-ui.min.js' %}"></script>-->
+	 
+
+
+	  <script type="text/javascript">
+
+// Ajax function for fetching program task
+ $(document).ready(function() {
+
+
+	  	function updateTaskTypes(program_type_id){
+    		$('#program-tasks').html("")
+    		$.ajax({
+	            url: '/get-program-tasks/'+program_type_id,
+	            type: 'GET',
+	            cache: false,
+	            success: function(data) {
+	            	console.log(data['data']);
+	            	if (data['data'].length > 0){
+	            		option_html = ''
+	            		
+	            		for(var i=0;i<data['data'].length;i++){
+	            			task_name = Object.keys(data['data'][i])[0]
+							task_id = data['data'][i][task_name]
+	            			option_html += "<option value='"+task_id+"'>"+task_name+"</option>" 
+	            		}
+	            		$('#program-tasks').append( option_html );
+	            	}
+	            	else{
+	            		$('#program-tasks').html("");
+	            		$('#program-tasks').append( "<option value='others' >Others</option>" ); 
+	            		$("#program-type").val("others");
+	            	}
+	            },
+	            error: function(xhr, status, error) {
+	                var err = eval("(" + xhr.responseText + ")");
+	                alert(err.Message);
+	               
+	            }
+    		});	
+
+    	}
+
+
+    	 $("#program-type").change(function () {
+	   		if ( $("#program-type").val() !== "others" ){
+	   			var program_type_id = $("#program-type :selected").attr("data-programtype-id");
+	 			updateTaskTypes(program_type_id)
+	   		}
+	   		else{
+	   			$("#program-type").val("others");
+	   			$('#program-tasks').html("");
+	   			$('#program-tasks').append( "<option value='others' >Others</option>" ); 
+	   		}
+	    });
+
+
+    	
+			    $('#FaqForm').formValidation({
+			        framework: 'bootstrap',
+			        icon: {
+			            valid: 'glyphicon glyphicon-ok',
+			            invalid: 'glyphicon glyphicon-remove',
+			            validating: 'glyphicon glyphicon-refresh'
+			        },
+			        fields: {
+			            question: {
+			                validators: {
+			                    notEmpty: {
+			                        message: 'Question is required'
+			                    }, 
+			                }
+			            },
+			            answer: {
+			                validators: {
+			                    notEmpty: {
+			                        message: 'Answer is required'
+			                    }
+			                }
+			            }
+			        }
+			    })
+				.on('success.form.fv', function(e) {
+		             // Save the form data via an Ajax request
+		             e.preventDefault();
+				        var formData = new FormData();
+				        //var file = $('input[name^="image_ref"]')[0].files[0];
+				        //formData.append('file', file);
+				        formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+				        
+				        var faqData = {};
+				        
+				        if ($('#program-type').val() == 'others'){
+				        faqData['program_type_id'] = null
+				        }
+				        else{
+				        	faqData['program_type_id'] = $("#program-type :selected").attr("data-programtype-id");
+				        }
+
+				        if ($('#program-tasks').val() == 'others'){
+				        faqData['program_task'] = null
+				        }
+				        else{
+				        	faqData['program_task'] = $('#program-tasks').val();
+				        }
+
+				        //faqData['program_type_id'] = $("#program-type :selected").attr("data-programtype-id");
+				        //faqData['program_type_id'] = "test"
+				        //faqData['program_task'] = $('#program-tasks').val();
+				        faqData['question'] = $('#question').val();
+				        faqData['answer'] = $('#answer').val();
+
+
+				        formData.append('faqData', JSON.stringify(faqData));
+				          
+					        $.ajax({
+					                url: '/faq/faq_creater/',
+					                type: 'POST',
+					                data: formData,
+					                cache: false,
+					                contentType: false,
+					                processData: false,
+					                success: function(data) {
+					                	if (data['success']){
+					                		window.location='/faq/all'
+
+					              
+					                	}
+					                	else{
+					                		$('#span-msg').text(data['msg']);
+					                		$('#msg-info').show();
+
+					                	}
+					                },
+					                error: function(xhr, status, error) {
+					                    var err = eval("(" + xhr.responseText + ")");
+					                    alert(err.Message);
+					                    
+					                }
+					            })
+		         });
+	})
+
+	  </script>
+

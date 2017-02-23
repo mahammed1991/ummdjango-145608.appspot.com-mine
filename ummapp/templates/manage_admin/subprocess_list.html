@@ -1,0 +1,288 @@
+
+{% load staticfiles %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Sub Processes</title>
+
+    <!-- Bootstrap -->
+    <link href="{% static 'manage_admin/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'manage_admin/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'manage_admin/css/style.css' %}" rel="stylesheet">
+    <!--<link href="{% static 'manage_admin/css/jquery-ui.css' %}" rel="stylesheet">-->
+    <link href="{% static 'manage_admin/css/datepicker.min.css' %}" rel="stylesheet">
+    <link href="{% static 'manage_admin/css/formValidation.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'manage_admin/css/iziToast.min.css'%}">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+      .toggle.ios, .toggle-on.ios, .toggle-off.ios { border-radius: 20px; }
+      .toggle.ios .toggle-handle { border-radius: 20px; }
+    </style>
+  </head>
+  <body>
+    <section class="top-white-bg">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-4 col-md-6 col-sm-6">
+                    <a href="/knowledgebase/admin/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a>
+                </div>
+                <div class="col-xs-8 col-md-6 col-sm-6">
+                    <a href="{% url 'auth:logout' %}?next=/" class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
+                    <a href="/" class="logout  pull-right" target="_blank"><i class="fa fa-home" aria-hidden="true"></i></a>
+                    <a id="newsp" href="#" class="process-btn pull-right">Add Sub Process</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+      <section class="process-box2">
+        <div class="container">
+            <ol class="breadcrumb">
+              <li><a id="process-url" href="/knowledgebase/admin/">All</a></li>
+              <li class="active">{{subprocess_name}}</li>
+            </ol>
+            <div class="row" id="sp-container">
+                <div id="sp-template"class="col-xs-6 col-md-3 col-sm-3" style="display:none">
+                    <div class="white-bg" >
+                        <div class="dropdown">
+							  <a href="#" class="pull-right" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-cog" aria-hidden="true"></i></a>
+							  <ul class="dropdown-menu pull-right" aria-labelledby="dropdownMenu1" style="margin-top: 20px;">
+								<li><a class="duplicate-sp" href="#">Duplicate</a></li>
+								<li><a class="delete-sp" href="#">Delete</a></li>
+							  </ul>
+							</div>
+                         <div class="row">
+                             <div class="col-sm-12" style="font-family: monospace;">
+                                <div class="subprocess-holder form-group"></div>
+                             </div>
+                             <div class="col-sm-12">
+                                <div class="year-holder form-group"></div>
+                             </div>
+                             <div class="col-sm-8">
+                                <div class="checkbox"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="responsive" class="modal fade" tabindex="-1" data-width="760" style="display: none;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">Create Process</h4>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h4>Some Input</h4>
+                    <p><input class="form-control" type="text"></p>
+                    <p><input class="form-control" type="text"></p>
+                    <p><input class="form-control" type="text"></p>
+                    <p><input class="form-control" type="text"></p>
+                    <p><input class="form-control" type="text"></p>
+                    <p><input class="form-control" type="text"></p>
+                    <p><input class="form-control" type="text"></p>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button id="close" type="button" data-dismiss="modal" class="btn btn-default">Close</button>
+                <button id="save" type="button" class="btn btn-primary">Save changes</button>
+              </div>
+            </div>    
+        </div>
+      </section>
+        <div class="modal-style">
+            <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title2">Are you ABSOLUTELY sure?
+
+        </h4>
+                        </div>
+                        <div class="modal-body">
+                            
+                            <div class="facebox-alert">
+                                Unexpected bad things will happen if you don’t read this!
+                            </div>
+                            <div class="del-confirm-msg">
+                                <p>This action <strong>CANNOT</strong> be undone. This will permanently delete the <strong>sreekanth-anubolu/Java-Basic-Programs</strong> repository, wiki, issues, and comments, and remove all collaborator associations.</p>
+                                <p>Please type in the name of the repository to confirm.</p>
+                            </div>
+                            <button type="submit" class="btn btn-block btn-danger btn-ok">I understand the consequences, delete this item</button>
+                          </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <script src="{% static 'manage_admin/js/jquery.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/bootstrap-toggle.js' %}"></script>
+    <script src="{% static 'manage_admin/js/bootstrap-datepicker.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/formValidation.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/form_bootstrap.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/iziToast.min.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+
+            $("#newsp").attr("href", "/process/create/?process={{subprocess_name}}&id=" + location.pathname.split("/")[2])
+
+            var getSubProcesses = function(e){
+                $.ajax({
+                    url: '/process/'+ location.pathname.split("/")[2]+'/show',
+                    type: 'GET',
+                    cache: false,
+                    success: function(data) {
+                        $.each(data, function (index,value) {
+                            renderSPTemplate(value)
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        alert(err.Message);
+                        //alert("Something went wrong, please try after some time");
+                    }   
+                    
+                });
+            };
+
+            getSubProcesses();
+
+         
+        });
+
+        function renderSPTemplate(value){
+            var $template = $("#sp-template").clone().prop("id", ""+value.sp_id);
+            $template.show();
+            $template.find(".dropdown-menu").attr("data-pid", ""+value.process_id);
+            $template.find(".dropdown-menu").attr("data-spurl", value.url_name);
+            $template.find(".subprocess-holder").html("<a href='/process/"+value.process_id +"/sp/"+ value.url_name+"/edit'><h3>" +value.name +"</h3></a>")
+            $template.find(".year-holder").html("<h4>"+value.quarter.year +" - "+value.quarter.quarter+" Quarter</h4>")
+            $template.find(".checkbox").html('<input id="'+value.sp_id+'cb" type="checkbox" class="status" data-toggle="toggle" data-style="ios" data-size="small"> ');
+            $("#sp-container").append($template);
+            var currentToggle = $("body").find("#"+value.sp_id+"cb");
+            currentToggle.bootstrapToggle('on');
+            if(value.is_disabled)
+                currentToggle.bootstrapToggle('off');
+        }
+
+        $("body").on('click', '.duplicate-sp', function(e){
+            e.preventDefault();
+            var $that = $(this).parent().parent();
+            var pid = $that.data('pid');
+            var spurl = $that.data('spurl');
+            var apiURL = "/process/"+pid+"/sp/"+spurl +"/clone";
+            $.ajax({
+                url: apiURL,
+                type: 'POST',
+                cache: false,
+                success: function(res) {
+                        if(res.success){
+                             renderSPTemplate(res.data);
+                             //location.reload();
+                        }
+                        iziToast.success({
+                            title: 'OK',
+                            message: res.msg,
+                        });
+                },
+                error: function(xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(err.Message);
+                    //alert("Something went wrong, please try after some time");
+                }
+
+            });
+        });
+
+        $("body").on('click', '.delete-sp', function(e){
+            e.preventDefault();
+            var $that = $(this).parent().parent();
+            var $parent = $that.parent().parent().parent();
+            var pid = $that.data('pid');
+            var spid = $parent.attr('id');
+            var apiURL = "/process/"+pid+"/sp/"+spid +"/delete";
+
+            sub_process_name = $that.parent().parent().find('.row a').text();
+            $('.del-confirm-msg').html('');
+            $('.del-confirm-msg').html('<p>This action <strong>CANNOT</strong> be undone. This will permanently delete the sub process with name <strong style="font-weight: bold;">'+sub_process_name + '</strong> all its associated <strong style="font-weight: bold;">Program Types</strong>, <strong style="font-weight: bold;">Program Tasks</strong>, <strong style="font-weight: bold;">Task Data</strong> ,<strong style="font-weight: bold;">Task Additional Data</strong> and <strong style="font-weight: bold;">Carousel updates</strong>');
+
+            $('#deleteConfirmationModal').modal('show');
+            $('#deleteConfirmationModal').on('click', '.btn-ok', function(e) {
+                if(spid && pid){
+                    $parent.remove();
+                    $.ajax({
+                        url: apiURL,
+                        type: 'POST',
+                        cache: false,
+                        success: function(res) {
+                                if(res.success){
+                                   $('#deleteConfirmationModal').modal('hide');  
+                                   iziToast.success({
+                                    title: 'OK',
+                                    message: res.msg,
+                                });
+                                }
+
+                        },
+                        error: function(xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            alert(err.Message);
+                            location.reload();
+                            //alert("Something went wrong, please try after some time");
+                        }
+
+                    });
+                }else{
+                    iziToast.error({
+                                    title: 'Error',
+                                    message: "Oops!! This shouldn't have happened" ,
+                                });
+                }
+            });
+        });
+
+        $("body").on("click", ".toggle", function(e){
+            e.preventDefault();
+            var spId = $(this).find("input").attr("id").slice(0,-2)
+            // false is when turned to disabled and true is when enabled 
+            var isEnabled = $(this).hasClass("off");
+            $.ajax({
+                    url: '/process/'+ spId+'/subprocesses?enable='+isEnabled,
+                    type: 'GET',
+                    cache: false,
+                    success: function(data) {
+                             iziToast.success({
+                                title: 'OK',
+                                message: data.msg ,
+                            });
+                    },
+                    error: function(xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        alert(err.Message);
+                        //alert("Something went wrong, please try after some time");
+                    }   
+                    
+                });
+
+        });
+    </script>
+  </body>
+</html>
+{% endblock %}

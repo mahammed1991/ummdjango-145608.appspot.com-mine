@@ -1,0 +1,425 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Create New Process</title>
+
+    <!-- Bootstrap -->
+    <link href="{% static 'manage_admin/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'manage_admin/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'manage_admin/css/style.css' %}" rel="stylesheet">
+    <!--<link href="{% static 'manage_admin/css/jquery-ui.css' %}" rel="stylesheet">-->
+    <link href="{% static 'manage_admin/css/datepicker.min.css' %}" rel="stylesheet">
+    <link href="{% static 'manage_admin/css/formValidation.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'manage_admin/css/iziToast.min.css'%}">
+
+  </head>
+
+      <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="{% static 'manage_admin/js/jquery.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/bootstrap-datepicker.min.js' %}"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{% static 'manage_admin/js/formValidation.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/form_bootstrap.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'ckeditor/ckeditor.js' %}"></script>
+    <script src="{% static 'manage_admin/js/iziToast.min.js' %}"></script>
+	<script src="{% static 'manage_admin/js/bootstrap-tagsinput.min.js' %}"></script>
+    <!--<script src="{% static 'manage_admin/js/jquery-ui.min.js' %}"></script>-->
+
+  <body>
+    <section class="top-white-bg">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-4 col-md-6 col-sm-6">
+					<a href="/knowledgebase/admin/" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a>
+				</div>
+				<div class="col-xs-8 col-md-6 col-sm-6">
+					<a href="{% url 'auth:logout' %}?next=/" class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
+					<a href="/" class="logout  pull-right" target="_blank"><i class="fa fa-home" aria-hidden="true"></i></a>
+					<a href="/knowledgebase/admin/" class="logout  pull-right"><i class="fa fa-users " aria-hidden="true"></i></a>
+					<a href="/process/create/" class="process-btn pull-right">Create New Process</a>
+                    <a href="/faq/create/" class="process-btn pull-right">Create FAQ</a>
+                    <a href="/faq/all/" class="process-btn pull-right">FAQ List</a>
+                    
+					
+					  
+				</div>
+				
+			</div>
+		</div>
+	</section>
+	
+	<section class="process-create">
+		<div class="container">
+					
+			<div class="white-bg" style="height:500px; overflow-y: scroll;">
+				<div class="padding-15">
+
+			
+							
+					<table class="table table-bordered faq-table-no-answers">
+						<tr>
+							<th>Created By</th>
+							<th>Created Date</th>
+							<th>Program Type</th>
+							<th>Program Task</th>
+							<th>Un-Answered Question</th>
+							<th>Action</th>
+						</tr>
+							{% for data in faq %}
+						<tr>
+						
+							<td>{{ data.created_by.email }}</td>
+							<td>{{ data.created_date }}</td>
+
+							{% if data.program_type == None  %}
+							<td>Others</td>
+							{% else %}
+							<td>{{ data.program_type }}</td>
+							{% endif %}
+
+							{% if data.program_task == None  %}
+							<td>Others</td>
+							{% else %}
+							<td>{{ data.program_task }}</td>
+							{% endif %}
+
+							<td>{{ data.question }}</td>
+						
+							<td>
+			            		<button data-toggle="modal"  type="button" 
+			           			class="btn" onclick="editFaq({{data.id}})"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+								<button data-toggle="modal" type="button" class="btn" id="" onclick="deletFaq({{data.id}})">
+								<i class="fa fa-trash-o" aria-hidden="true"></i></button>
+							</td>
+						</tr>
+							{% endfor %}
+					</table>
+
+					{% if not faq %}
+					<div class='no-faq-unswered alter-msg'>
+						<i class='fa fa-exclamation-triangle' aria-hidden='true'></i>
+						No Question has been posted yet.
+					</div>
+					{% endif %}
+
+				</div>	
+			</div>
+		</div>
+	</div>
+			  
+	<div class="modal-style">
+	    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+	        <div class="modal-dialog" role="document">
+	            <div class="modal-content">
+	                <div class="modal-header">
+	                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+	                    </button>
+	                    <h4 class="modal-title2">Are you ABSOLUTELY sure? </h4>
+	                </div>
+	                <div class="modal-body">
+				        
+				        <div class="facebox-alert">
+				    		Unexpected bad things will happen if you don’t read this!
+				  		</div>
+				  		<div class="del-confirm-msg">
+					        <p>This action <strong>CANNOT</strong> be undone. This will permanently delete the <strong>sreekanth-anubolu/Java-Basic-Programs</strong> repository, wiki, issues, and comments, and remove all collaborator associations.</p>
+					        <p>Please type in the name of the repository to confirm.</p>
+				        </div>
+				        <button type="submit" class="btn btn-block btn-danger btn-ok">I understand the consequences, delete this item</button>
+				      </div>
+	                <div class="modal-footer">
+	                    <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+  
+
+	<div id="editModal" class="modal fade" role="dialog" style="">
+  		<div class="modal-dialog">
+    		<div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title">Question and Aanwer</h4>
+			      </div>
+			      <div class="modal-body">
+			        <form id="editFaqForm" method="POST">			      
+	          				{% csrf_token %}
+						<div class="form-group">
+					   		<label for="program-type-edit"  class="control-label col-sm-3">Program Type</label>
+					        <div class="col-sm-6">
+					            <select name="program-type-edit" name="program-type-edit" class="form-control" id="program-type-edit">
+
+					            </select>
+					    	</div>
+						</div>
+						<br></br>
+			         
+		            	<div class="form-group">
+					    	<label for="program-task-edit"  class="control-label col-sm-3">Program Task</label>
+					        <div class="col-sm-6">
+					            <select name="program-task-edit" class="form-control" id="program-task-edit">
+
+					            </select>
+					    	</div>
+						</div>
+						<br></br>
+			         
+			          <label for="program-question-edit">Question</label>
+			          <div class="form-group">
+			           <input type="text" class="form-control" name="program-question-edit" id="program-question-edit">
+			          </div>
+
+			          
+			          <div class="form-group">
+			           <input type="hidden" class="form-control" name="program-answer-edit-id" id="program-answer-edit-id">
+			          </div>
+
+
+			          <label for="program-answer-edit">Answer</label>
+			          <div class="form-group">
+			           <textarea name="program-answer-edit" id="program-answer-edit" class="form-control" ></textarea>
+			          </div>
+
+					    <div class="modal-footer">
+					        <!-- <button type="submit" class="btn btn-primary" onclick="updateFaq({{data.id}})"">Save</button> -->
+					        <input type="submit" class="btn btn-primary add" id="process-submit"></input>
+					    </div>
+			        </form>
+			    </div>
+			</div>
+  		</div>
+	</div>
+
+
+	</section>
+</body>
+
+<script type="text/javascript">
+
+$('.close').click(function(){	
+	$('#editFaqForm').data('formValidation').resetForm();
+})
+
+function editFaq(key){
+    info = {'faq_key':key}
+	$.ajax({
+		type:'GET',
+		data:info,
+		url:'/faq/edit/',
+		success:function(data){
+			
+			$("#program-type-edit").html('');
+			$("#program-type-edit").html('<option value="others">Others</option>');
+			for (i=0; i<data['program_type_all'].length; i++){
+				data['program_type_all'][i]['program_type']
+				if (data.program_type == data['program_type_all'][i]['program_type'] ){
+					$("#program-type-edit").append("<option data-programtype-id='"+data.program_type_id+"' selected>"+data.program_type+"</option>");
+				}
+				else{
+				$("#program-type-edit").append("<option data-programtype-id='"+data['program_type_all'][i]['program_type_key']+"'>"+data['program_type_all'][i]['program_type']+"</option>");
+					}
+			}
+			
+			if(data.program_type ==undefined){
+				$("#program-task-edit").append("<option selected>Others</option>");
+			}else{
+				$("#program-task-edit").append("<option data-programtask-id='"+data.program_task_id+"' selected>"+data.program_task+"</option>");
+			}
+			$("#program-question-edit").val(data.question);
+			$("#program-answer-edit").val(data.answer);
+			$("#program-answer-edit-id").val(key);
+			$('#editModal').modal('show');
+
+		},
+		error:function(xhr, status, error){
+
+			var err = eval("(" + xhr.responseText + ")");
+	        alert(err.Message);
+
+			}
+		})
+	}
+
+	$("#program-type-edit").change(function () {
+	   		if ( $("#program-type-edit").val() !== "others" ){
+	   			var program_type_id = $("#program-type-edit :selected").attr("data-programtype-id");
+	 			updateTaskTypes(program_type_id)
+	   		}
+	   		else{
+	   			$('#program-task-edit').html("");
+	   			$('#program-task-edit').append( "<option value='others' >Others</option>" ); 
+	   			$("#program-type-edit").val("others");
+	   		}
+	});
+
+
+	
+	function updateTaskTypes(program_type_id){
+    	$("#program-task-edit").html("")
+    		$.ajax({
+	            url: '/get-program-tasks/'+program_type_id,
+	            type: 'GET',
+	            cache: false,
+	            success: function(data) {
+	            	$("#program-task-edit").html('<option value="others">Others</option>');
+	            	if (data['data'].length > 0){
+	            		option_html = ''
+	            		for(var i=0;i<data['data'].length;i++){
+	            			task_name = Object.keys(data['data'][i])[0]
+							task_id = data['data'][i][task_name]
+	            			option_html += "<option data-programtask-id='"+task_id+"'>"+task_name+"</option>" 
+	            		}
+	            		$('#program-task-edit').append( option_html );
+	            	}
+	            	else{
+	            		$("#program-task-edit").html("");
+	            		$("#program-task-edit").append( "<option data-programtask-id='others' >Others</option>" ); 
+	            		$("#program-type-edit").val("others");
+	            	}
+	            },
+	            error: function(xhr, status, error) {
+	                var err = eval("(" + xhr.responseText + ")");
+	                alert(err.Message);
+	            }
+    		});	
+    }
+
+
+    	function deletFaq(faq_id){
+    		$('.del-confirm-msg').html('');
+	        $('.del-confirm-msg').html('<p>This action <strong>CANNOT</strong> be undone. This will permanently delete the this FAQ.');
+    		$('#deleteConfirmationModal').modal('show');
+    		$('#deleteConfirmationModal').on('click', '.btn-ok', function(e) {
+	    		$.ajax({
+		            url: '/faq/faq_delete/?faq_id='+faq_id,
+		            type: 'GET',
+		            cache: false,
+		            success: function(data) {
+		            
+		            	if (data['success']){
+		            		iziToast.success({
+			                                title: 'Deleted',
+			                                message: 'Deleted, Page Reloads' ,
+			                        });
+		            		window.location='/faq/no-answers/all'
+		            	}
+		            	else{
+		            	}
+		            },
+		            error: function(xhr, status, error) {
+		                var err = eval("(" + xhr.responseText + ")");
+		                alert(err.Message);
+		            }
+	    		});	
+    		})
+    }
+
+ $(document).ready(function() {
+
+    $('#editFaqForm').formValidation({
+			        framework: 'bootstrap',
+			        icon: {
+			            valid: 'glyphicon glyphicon-ok',
+			            invalid: 'glyphicon glyphicon-remove',
+			            validating: 'glyphicon glyphicon-refresh'
+			        },
+			        fields: {
+			            'program-question-edit': {
+			                validators: {
+			                    notEmpty: {
+			                        message: 'Question is required'
+			                    }, 
+			                }
+			            },
+			            'program-answer-edit': {
+			                validators: {
+			                    notEmpty: {
+			                        message: 'Answer is required'
+			                    }
+			                }
+			            }
+			        }
+			    })
+    		.on('success.form.fv', function(e) {
+             // Save the form data via an Ajax request
+             	e.preventDefault();
+		        var formData = new FormData();
+		        //var file = $('input[name^="image_ref"]')[0].files[0];
+		        //formData.append('file', file);
+		        formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+		        
+		        var faqData = {};
+		        
+		        if ($('#program-type-edit').val() == 'others'){
+		        faqData['program_type_id'] = null
+		        }
+		        else{
+		        	faqData['program_type_id'] = $("#program-type-edit :selected").attr("data-programtype-id");
+		        }
+
+		        if ($('#program-task-edit').val() == 'others'){
+		        faqData['program_task_id'] = null
+		        }
+		        else{
+		        	faqData['program_task_id'] = $('#program-task-edit :selected').attr("data-programtask-id");
+		        }
+		        //faqData['program_type_id'] = $("#program-type :selected").attr("data-programtype-id");
+		        //faqData['program_type_id'] = "test"
+		        //faqData['program_task'] = $('#program-tasks').val();
+		        faqData['question'] = $('#program-question-edit').val();
+		        faqData['answer'] = $('#program-answer-edit').val(); 
+		        faqData['program_answer_edit_id'] = $('#program-answer-edit-id').val();
+
+		        formData.append('faqData', JSON.stringify(faqData));
+		          
+			        $.ajax({
+			                url: '/faq/faq_update/',
+			                type: 'POST',
+			                data: formData,
+			                cache: false,
+			                contentType: false,
+			                processData: false,
+			                success: function(data) {
+			                	if (data['success']){
+			                		iziToast.success({
+			                                title: 'Saved',
+			                                message: 'Updated, Page Reloads' ,
+			                        });
+			                		window.location='/faq/all'
+			                	}
+			                	else{
+			                		$('#span-msg').text(data['msg']);
+			                		$('#msg-info').show();
+			                	}
+			                },
+			                error: function(xhr, status, error) {
+			                    var err = eval("(" + xhr.responseText + ")");
+			                    alert(err.Message);
+			                    
+			                }
+			            })
+         		});
+	})//document ready function ends here.
+
+
+</script>
+
+		
+
+
+
+
+
+
+	 
+
+
+	

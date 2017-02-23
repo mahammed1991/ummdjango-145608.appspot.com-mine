@@ -1,0 +1,286 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Admin Panel</title>
+
+    <!-- Bootstrap -->
+    <link href="{% static 'manage_admin/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'manage_admin/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'manage_admin/css/style.css' %}" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <section class="top-white-bg">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-4 col-md-6 col-sm-6">
+                    <a href="index.html" class="logo"><img src="{% static 'manage_admin/images/logo.png' %}" alt=""></a>
+                </div>
+                <div class="col-xs-8 col-md-6 col-sm-6">
+                    <a href="#" class="logout  pull-right"><i class="fa fa-power-off" aria-hidden="true"></i></a>
+                    <a href="/knowledgebase/admin/" class="logout  pull-right"><i class="fa fa-users " aria-hidden="true"></i></a>
+                    <a href="/" class="logout  pull-right" target="_blank"><i class="fa fa-home" aria-hidden="true"></i></a>
+                    <a href="/qualityframework/create/" class="process-btn pull-right">Create New Quality Framework</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="process-create">
+        <div class="container">
+            <div class="white-bg" style="height:500px; overflow-y: scroll;">
+                <div class="padding-15">
+                            
+                    <table class="table table-bordered faq-table">
+                        <tr>
+                            <th style="width: 107em">Quality Framework</th>
+                            <th style="width: 9em;">Action</th>
+                        </tr>
+                        {% for qualityframework in qualityframeworks %}
+                        <tr>
+                            <td>{{ qualityframework.name }}</td>
+                            <p hidden id='qf-id'>{{qualityframework.id}}</p>
+                            <td>
+                                <button data-toggle="modal" type="button" class="btn" id="" onclick="deleteQF({{qualityframework.id}})" style="float: right;">
+                                <i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                <button data-toggle="modal"  type="button" 
+                                class="btn" onclick="editQF({{qualityframework.id}})" id="edit-qf" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>    
+                </div>
+            </div>
+            </div>
+        </div>
+    </section>
+  
+    <div class="modal-style" style="width:100%">
+        <div class="modal fade" id="qualityFrameworkModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+            <div class="modal-dialog" role="document" style="width: 80%;">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Name</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <form id="qualityFrameworkDataForm">
+                        {% csrf_token %}
+                            <input type="hidden" name="qf_id" value="">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="qf_name" id="qf-name" placeholder="">
+                                <p id="qf-name-error" style="color:red"></p>
+                            </div>
+
+                            <h4 class="modal-title margin-bottom-10px" >Data</h4>
+                            <div class="form-group">
+                                <textarea class="form-control" name="qf_data" id="qf-data" data-qfdata-id=""></textarea>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary" id="qualityFrameworkDataFormSubmit">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>  
+    </div>
+
+    <div class="modal-style">
+        <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title2">Are you ABSOLUTELY sure? </h4>
+                    </div>
+                    <div class="modal-body">
+                        
+                        <div class="facebox-alert">
+                            Unexpected bad things will happen if you don’t read this!
+                        </div>
+                        <div class="del-confirm-msg">
+                            <p>This action <strong>CANNOT</strong> be undone. This will permanently delete the <strong>sreekanth-anubolu/Java-Basic-Programs</strong> repository, wiki, issues, and comments, and remove all collaborator associations.</p>
+                            <p>Please type in the name of the repository to confirm.</p>
+                        </div>
+                        <button type="submit" class="btn btn-block btn-danger btn-ok">I understand the consequences, delete this item</button>
+                      </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="{% static 'manage_admin/js/jquery.min.js' %}"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{% static 'manage_admin/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/iziToast.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/formValidation.min.js' %}"></script>
+    <script src="{% static 'manage_admin/js/form_bootstrap.min.js' %}"></script>
+    <script src="{% static 'ckeditor/ckeditor.js' %}"></script>
+
+     <script type="text/javascript">
+        $(document).ready(function(){
+            CKEDITOR.replace('qf-data');
+
+            $('#qualityFrameworkDataForm').formValidation({
+                fields: {
+                    qf_name: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Name is required'
+                            },
+
+                        }
+                    },
+                }
+            })
+            .on('success.form.fv', function(e) {
+                e.preventDefault();
+                var formData = new FormData();
+
+                formData.append('csrfmiddlewaretoken', $("[name='csrfmiddlewaretoken']").val());
+                formData.append('qf_id', $("[name='qf_id']").val());
+
+
+                var data = CKEDITOR.instances["qf-data"].getData();
+
+                var qfData = {};
+
+                qfData['name'] = $('#qf-name').val();
+                qfData['data'] = data;
+
+                formData.append('qfData', JSON.stringify(qfData));
+
+                if(data.length < 1){
+                    alert("Please provide data for the column.")
+                    $('#qf-submit').prop('disabled', true);
+                }
+                else{
+                    $('#qf-submit').removeClass('disabled');
+                    $('#qf-submit').prop('disabled', false);
+                    // $('#qf-name-error').text('');
+
+                    $.ajax({
+                        url: '/qualityframework/update/',
+                        type: 'POST',
+                        data: formData,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success: function(data) {
+                            if (data['success']){
+                                console.log(data)
+                                window.location='/qualityframework/all'
+                            }
+                            else{
+
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            alert(err.Message);
+                        }
+                    })
+                    
+                }
+                $('#qf-submit').removeClass('disabled');
+                $('#qf-submit').prop('disabled', false);
+                // $('#qf-name-error').text('');
+            });
+
+            $("#qf-name").focusout(function() {
+                
+                if ($(this).val()) {
+                    $.ajax({
+                            url: '/get-qualityframework-name/',
+                            type: 'POST',
+                            data: {'name':$("#qf-name").val()},
+                            success: function(data) {
+                                if (data['msg'] != ''){
+                                    $('#qf-name-error').text(data['msg']);
+                                    $('input[type="submit"]').prop('disabled', true);
+                                }
+                                else{
+                                    $('#qf-name-error').text('');
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                var err = eval("(" + xhr.responseText + ")");
+                                alert(err.Message);
+                            }
+                    })
+                } else {
+                    $('#qf-name-error').text('');
+                }
+            })
+        });
+
+        function editQF(qf_id){
+            $.ajax({
+                url: '/get-qf-data/'+qf_id,
+                type: 'GET',
+                cache: false,
+                success: function(data) {
+                    var data = data['data'];
+
+                    $('#qf-name').html('');
+                    $('#qf-data').html('');
+                    $('#qf-name').val(data['name'].replace(/&nbsp;/g, ' '));
+                    CKEDITOR.instances["qf-data"].setData(data['data'].replace(/&nbsp;/g, ' '));
+                    $('input[name=qf_id]').val(qf_id)
+                    
+                },
+                error: function(xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(err.Message);
+                }
+            }); 
+            $('#qualityFrameworkModal').modal('show');
+        }
+
+        function deleteQF(qf_id){
+            $('.del-confirm-msg').html('');
+            $('.del-confirm-msg').html('<p>This action <strong>CANNOT</strong> be undone. This will permanently delete the this FAQ.');
+            $('#deleteConfirmationModal').modal('show');
+            $('#deleteConfirmationModal').on('click', '.btn-ok', function(e) {
+                $.ajax({
+                    url: '/qf/qf_delete/'+qf_id,
+                    type: 'GET',
+                    cache: false,
+                    success: function(data) {
+                        if (data['success']){
+                            window.location='/qualityframework/all'
+                        }
+                        else{
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        alert(err.Message);
+                    }
+                }); 
+            })
+        }
+     </script>
+
+  </body>
+</html>
