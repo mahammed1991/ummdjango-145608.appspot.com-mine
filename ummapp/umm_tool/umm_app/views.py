@@ -1386,10 +1386,10 @@ def faq_update(request):
                     try:
                         from google.appengine.api import mail
                         mail.send_mail(sender="swassets@regalix-inc.com",
-                                  # to="<"+faq.created_by.email+">",
                                   to="<mashraf@regalix-inc.com>",
                                   subject="CHAPERONE Your Question has been answered",
                                   body= "Question is"+faq_data.get('question') +"</br>*** This is an automatically generated email, please do not reply ***")
+                                  # to="<"+faq.created_by.email+">",
                     except:
                         pass
                 else:
