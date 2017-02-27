@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Create New Process</title>
+    <title>UMM FAQ-NO-ANSWERS</title>
 
     <!-- Bootstrap -->
     <link href="{% static 'manage_admin/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -187,6 +187,13 @@
 			          <div class="form-group">
 			           <textarea name="program-answer-edit" id="program-answer-edit" class="form-control" ></textarea>
 			          </div>
+
+			         <label class="control control--checkbox" >Notify to Question Posted User
+						<input id="notify_q_poster" type="checkbox" name="notify_q_poster" checked/>
+						<div class="control__indicator"></div>
+					 </label>
+
+			         
 
 					    <div class="modal-footer">
 					        <!-- <button type="submit" class="btn btn-primary" onclick="updateFaq({{data.id}})"">Save</button> -->
@@ -377,6 +384,7 @@ function editFaq(key){
 		        faqData['question'] = $('#program-question-edit').val();
 		        faqData['answer'] = $('#program-answer-edit').val(); 
 		        faqData['program_answer_edit_id'] = $('#program-answer-edit-id').val();
+		        faqData['notify_q_poster'] = $('#notify_q_poster').is(":checked");
 
 		        formData.append('faqData', JSON.stringify(faqData));
 		          

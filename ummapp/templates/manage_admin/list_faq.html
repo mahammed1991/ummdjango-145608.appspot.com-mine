@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Create New Process</title>
+    <title>UMM FAQ LIST</title>
 
     <!-- Bootstrap -->
     <link href="{% static 'manage_admin/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -66,6 +66,7 @@
 							<th>Program Task</th>
 							<th>Question</th>
 							<th>Answer</th>
+							<th>Last Modified</th>
 							<th>Action</th>
 						</tr>
 							{% for data in faq %}
@@ -90,6 +91,8 @@
 							{% else %}
 							<td>{{ data.answer }}</td>
 							{% endif %}
+
+							<td>{{ data.modified_date }}</td>
 
 							<td>
 			            		<button data-toggle="modal"  type="button" 
@@ -379,6 +382,7 @@ function editFaq(key){
 			                		iziToast.success({
 			                                title: 'Saved',
 			                                message: 'Updated, Page Reloads' ,
+			                                
 			                        });
 			                		window.location='/faq/all'
 			                	}
