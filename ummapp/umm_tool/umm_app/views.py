@@ -1446,6 +1446,7 @@ def get_faq(request):
     if request.GET.get('task_id') != 'other':
         try:
             faq = Faq.objects.filter(program_task=int(request.GET.get('task_id')))
+            faq = faq.exclude(answer__exact='')
             faq = [{'q':each.question,'a':each.answer} for each in faq]
             return HttpResponse(json.dumps({'success':True, 'msg':'successfuly data fetched','faq':faq }), content_type="application/json")
         except:
