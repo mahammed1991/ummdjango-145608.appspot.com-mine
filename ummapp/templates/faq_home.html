@@ -3,7 +3,7 @@
 <html>
 
 <head>
-	<title>UMM - Tool</title>
+	<title>UMM - FAQ</title>
 	{% load staticfiles %}
 	<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.css'%}">
     
@@ -361,7 +361,7 @@
 			for (i=0;i<data['faq'].length;i++){
 
 			fqa = "<div class='panel'><div class='panel-heading'><h4 class='panel-title'><a class='accordion-toggle' data-toggle='collapse' data-parent='#accordion' href='#collapse"+i+"  '>"+
-               "<span class='glyphicon glyphicon-plus pull-right collapsed1'></span>Q "+count+" ) "+data['faq'][i]['q']+"</a></h4>"+
+               "<span class='glyphicon glyphicon-plus pull-right collapsed1'></span><b>Q "+count+" )</b> "+data['faq'][i]['q']+"</a></h4>"+
   		"<div id='collapse"+i+"' class='panel-collapse collapse'><div class='panel-body'><p> "+data['faq'][i]['a']+"</p>"+
         "</div></div></div>"				
 					$('.fqa-adding-table').append(fqa);
@@ -462,8 +462,9 @@ $('#userQuestionForm')
 					                		$('.question-user-q').val('');
 					                		$('#faqpopup').modal('hide');
 						                		iziToast.success({
-			                                title: 'Saved',
-			                                message: data['msg'] ,
+			                                title: 'POSTED !',
+			                                message: 'Moderator will answer your Question soon' ,
+			                                position: 'center',
 			                            });
 
 					                	}

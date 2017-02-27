@@ -71,23 +71,25 @@
 	  </div>
 	</section>
 
+	<!-- **************IMPORTANT CAROSOUL FOR TIME BEING COMMENTED******************* -->
 	<section class="sub-row">
 	  <div class="container-fluid">
-			  <div class="col-lg-7 no-padding">
+
+			 <!--  <div class="col-lg-7 no-padding">
 				  <div class="faq-bg">
 					  <ul>
 					  </ul>
 				  </div>
-			  </div>
-			  <div class="col-lg-5 no-padding">
+			  </div> -->
+			 <!--  <div class="col-lg-5 no-padding">
 				  <div class="combo-bg">
 					  <div id="text-carousel" class="carousel slide" data-ride="carousel">
-					<!-- Wrapper for slides -->
+					
 						<div class="row">
 							<div class="carousel-inner" data-toggle="modal" data-target="#myModal2">
 							</div>
 						</div>
-	<!-- Controls --> <a class="left carousel-control" href="#text-carousel" data-slide="prev">
+					 <a class="left carousel-control" href="#text-carousel" data-slide="prev">
 					<span class="glyphicon glyphicon-chevron-left"></span>
 				  </a>
 				 <a class="right carousel-control" href="#text-carousel" data-slide="next">
@@ -96,9 +98,10 @@
 
 					</div>
 				  </div>
-			  </div>
+			  </div> -->
 	  </div>
 	</section>
+	<!-- ************** End of Carousol Comment ******************* -->
 	<section class="table-setting">
 		<div class="container-fluid">
 			<table class="table table-bordered">
@@ -116,14 +119,17 @@
 		</div>
 	</section>
 
+<!-- **************IMPORTANT Elevator Pitch; FOR TIME BEING COMMENTED******************* -->
 	<section class="recommendations-section">
-		  <div class="container-fluid">
+		  <!-- <div class="container-fluid">
 		  	  <div class="white-bg">
 			  	<h2>Elevator Pitch</h2>
 			  	<p id="elevator_data"></p>
 			  </div>
-		  </div>
-	  </section>
+		  </div> -->
+	</section>
+
+	<!-- ************** End of Elevator Pitch  Comment ******************* -->
 
 <div class="container modal fade modal-box-css" id="myModal" style="margin-top: 20px;">
 	<div role="document">
@@ -244,8 +250,42 @@
 		            		$column_value = $('#value_row');
 		            		for(var i=0;i<data.length;i++){
 		            			column_data = data[i].data.replace(/&nbsp;/g, ' ');
-		            			$column_name.append('<th data-number="'+data[i].column_number+'" class="task-column tbl-btn"  style="max-width:50px;min-width:30px;width:32px;" data-taskdata-id="'+data[i].data_id+'">'+ data[i].column_name+'</th>')
-		            			$column_value.append('<td data-number="'+data[i].column_number+'" class="task-column tbl-btn" style="word-wrap: break-word;max-width:55px;" data-taskdata-id="'+data[i].data_id+'">'+ column_data +'</td>');
+		            			substring = "https://";
+		            			var str = column_data;
+								var is_url = str.includes(substring);
+
+		            			if(column_data.length > 200 && (!(is_url))){
+
+		            			$column_name.append('<th data-number="'+data[i].column_number+'" class="task-column tbl-btn"  style="max-width:150px;min-width:30px;width:32px;" data-taskdata-id="'+data[i].data_id+'">'+ data[i].column_name+'</th>')
+
+		            			$column_value.append('<td data-number="'+data[i].column_number+'" class="task-column tbl-btn" style="" data-taskdata-id="'+data[i].data_id+'">'+ column_data +'</td>');
+		            			}
+
+		            			else if(is_url){
+
+					           	$(column_data+':contains("http://")').html(function(index, html) {
+			    				var url = html.match(/(((ftp|https?):\/\/)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g);
+
+							    		$.each(url, function(i, v) {
+							        		html = html.replace(v, '<a style="color:#c92127;" href="' + v + '" target="_blank">' + v + '</a>');        
+							    		});
+
+				            		$column_name.append('<th data-number="'+data[i].column_number+'" class="task-column tbl-btn"  style="max-width:150px;word-break: break-word;min-width:30px;width:32px;" data-taskdata-id="'+data[i].data_id+'">'+ data[i].column_name+'</th>')
+
+				            		$column_value.append('<td data-number="'+data[i].column_number+'" class="task-column tbl-btn" style="word-break: break-word;" data-taskdata-id="'+data[i].data_id+'">'+ /*column_data*/ html +'</td>');
+
+		            				});
+		            			
+		            			}
+
+		            			else{
+
+		            			$column_name.append('<th data-number="'+data[i].column_number+'" class="task-column tbl-btn"  style="max-width:150px;min-width:30px;width:32px;" data-taskdata-id="'+data[i].data_id+'">'+ data[i].column_name+'</th>')
+		            			
+		            			$column_value.append('<td data-number="'+data[i].column_number+'" class="task-column tbl-btn" style="word-wrap: break-word;max-width:150px;" data-taskdata-id="'+data[i].data_id+'">'+ column_data +'</td>');
+
+		            			}
+
 		            		}
 		            	}
 

@@ -1366,6 +1366,7 @@ def faq_edit(request):
 def faq_update(request):
     if request.user.groups.filter(name='CHAPERONE-MANAGER'):
         if request.method == 'POST':
+            print request.POST
             faq_data = json.loads(request.POST.get("faqData"))
             try:
                 faq = Faq.objects.get(pk=int(faq_data.get('program_answer_edit_id')))
@@ -1381,12 +1382,27 @@ def faq_update(request):
                     task = None
                     pass
 
+                if faq_data.get('notify_q_poster'):
+                    try:
+                        from google.appengine.api import mail
+                        mail.send_mail(sender="swassets@regalix-inc.com",
+                                  to="<mashraf@regalix-inc.com>",
+                                  subject="CHAPERONE Your Question has been answered",
+                                  body= "Question is"+faq_data.get('question') +"</br>*** This is an automatically generated email, please do not reply ***")
+                                  # to="<"+faq.created_by.email+">",
+                    except:
+                        pass
+                else:
+                    pass
+
+
                 faq.program_type = program_type
                 faq.program_task = task
                 faq.question = faq_data.get('question')
                 faq.answer = faq_data.get('answer')
                 faq.modified_by =  User.objects.get(email=request.user.email)
                 faq.save()
+
 
                 resp = {'success':True, 'msg':''}
                 return HttpResponse(json.dumps(resp), content_type="application/json")
