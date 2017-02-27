@@ -221,7 +221,10 @@ modal-style .btn {
 .faq-table .fa{ color: #000 }
 .faq-table th:nth-child(1){ width: 10em; }
 .faq-table th:nth-child(2) { width: 10em; }
-.faq-table th:nth-child(5) { width: 9em; }
+.faq-table th:nth-child(3) { width: 22em; } 
+.faq-table th:nth-child(4) { width: 22em; }
+.faq-table th:nth-child(5) { width: 10em; }
+.faq-table th:nth-child(6) { width: 8em; }
 
 /*bellow css is for get_faq_with_no_answers.html*/
 .faq-table-no-answers th{ font-weight: 700; background:#c92127;color:#fff;}
@@ -229,8 +232,8 @@ modal-style .btn {
 .faq-table-no-answers th:nth-child(1){ width: 12em; }
 .faq-table-no-answers th:nth-child(2) { width: 12em; }
 .faq-table-no-answers th:nth-child(3) { width: 12em; }
-.faq-table-no-answers th:nth-child(4) { width: 12em; }
-.faq-table-no-answers th:nth-child(6) { width: 10em; }
+.faq-table-no-answers th:nth-child(4) { width: 13em; }
+.faq-table-no-answers th:nth-child(6) { width: 8em; }
 /*Responsive Start*/
 
 .no-faq-unswered{font-weight: 600;}
@@ -293,3 +296,16 @@ and (orientation : portrait) {
      -o-transition:  all 0.5s ease 0s;
      transition:  all 0.5s ease 0s;
 }
+
+/*Notify check box // Question posted user*/
+.control {display: block;position: relative; padding-left: 28px;margin-bottom: 10px;cursor: pointer; color:blue; line-height: 22px}
+.control input {position: absolute;z-index: -1;opacity: 0;}
+.control__indicator { position: absolute;top: 2px; left: 0; height: 17px; width: 17px;background: #fff;}
+.control--radio .control__indicator {border-radius: 50%;}
+.control:hover input ~ .control__indicator, .control input:focus ~ .control__indicator {background: #fff;}
+.control input:checked ~ .control__indicator {background: #039be5;}
+.control:hover input:not([disabled]):checked ~ .control__indicator, .control input:checked:focus ~ .control__indicator { background: #039be5;}
+.control input:disabled ~ .control__indicator {background: #fff;opacity: 0.6;pointer-events: none;}
+.control__indicator:after {content: ''; position: absolute;display: none;}
+.control input:checked ~ .control__indicator:after {display: block;}
+.control--checkbox .control__indicator:after { left: 8px;top: 4px; width: 3px;height: 8px;border: solid #fff;border-width: 0 2px 2px 0;transform: rotate(45deg);}
