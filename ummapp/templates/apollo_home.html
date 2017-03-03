@@ -13,6 +13,9 @@
 
 	<link rel="stylesheet" type="text/css" href="{% static 'css/looper.css'%}">
 	<link rel="stylesheet" type="text/css" href="{% static 'css/new_custom.css'%}">
+
+
+
 </head>
 
 <body>
@@ -37,7 +40,7 @@
 	  <div class="container-fluid">
 		  <ul>
 			  <!--<li><a href="/">Advertiser Goals</a></li>-->
-			  {% for sub_process in sub_processs %}
+			  {% for sub_process in sub_processs  %}
 			  	<li><a href="/process/{{sub_process.process.id}}/sp/{{sub_process.url_name}}/view" data-processid="{{sub_process.id}}" class="process">{{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</a></li>
 			  {% endfor %}
 			  {% if faq %}
@@ -72,10 +75,10 @@
 	</section>
 
 	<!-- **************IMPORTANT CAROSOUL FOR TIME BEING COMMENTED******************* -->
-	<section class="sub-row">
+	<!--<section class="sub-row">
 	  <div class="container-fluid">
 
-			 <!--  <div class="col-lg-7 no-padding">
+			   <div class="col-lg-7 no-padding">
 				  <div class="faq-bg">
 					  <ul>
 					  </ul>
@@ -98,13 +101,15 @@
 
 					</div>
 				  </div>
-			  </div> -->
+			  </div> 
 	  </div>
-	</section>
+	</section>-->
 	<!-- ************** End of Carousol Comment ******************* -->
+
+	<!-- table window for coloumn more than 9 -->
 	<section class="table-setting">
 		<div class="container-fluid">
-			<table class="table table-bordered">
+			<table class="table table-bordered" style="margin-top: 20px;">
 				<thead>
 					<tr id="key_row">
 					
@@ -118,16 +123,89 @@
 			</table>
 		</div>
 	</section>
+	<!-- end of table window for coloumn more than 9 -->
+
+
+	<section class="div-setting" id="static-table-column-data">
+		  <div class="container-fluid">
+			  <div class="row">
+			  		<div class="col-sm-2">
+						<div class="div-row first-row">
+							<h2>Base Points</h2>
+							<div id="base-point-sub"><p></p></div>
+						</div>
+					 </div>
+
+					 <div class="col-sm-2">
+						 <div class="div-row first-row">
+							<h2>Kicker Points</h2>
+							<div id="kick-point-sub"><p></p></div>
+						 </div>
+					 </div>
+
+					 <div class="col-sm-2">
+							  <div class="div-row first-row">
+								  <h2>AAT Required</h2>
+								  <div id="aat-sub"><p></p></div>
+							  </div>
+						  </div>
+
+					  <div class="col-sm-3">
+							  <div class="div-row first-row">
+								  <h2>Maximum Wins</h2>
+								  <div id="max-win-sub"><p></p></div>
+							  </div>
+						</div>
+
+						  <div class="col-sm-3">
+							  <div class="div-row first-row">
+								  <h2>Adoption Window</h2>
+								  <div id="adoption-window-sub"><p></p></div>
+							  </div>
+						  </div>
+				</div>
+				<div class="row">
+						  <div class="col-sm-6">
+							  <div class="div-row second-row">
+								  <h2>Points Formula</h2>
+								  <div id="points-formul-sub"><p></p></div>
+							  </div>
+					  </div>
+
+					  	<div class="col-sm-6">
+							  <div class="div-row second-row">
+								  <h2>Opportunity Only (no self initiated tasks)</h2>
+								  <div id="opportunity-only-sub"><p></p></div>
+							  </div>
+						  </div>
+				</div>
+				<div class="row">
+						  <div class="col-sm-6">
+						  	<div class="div-row third-row">
+								  <h2>Adoption Definition	</h2>
+								  <div id="adoption-def-sub" style="word-wrap: break-word;"><p></p></div>
+					  	    </div>
+						  </div>
+						  <div class="col-sm-6">
+						  		<div class="div-row third-row">
+								  <h2>Eligibility Rules</h2>
+								  <div id="adoption-window" style="word-wrap: break-word;"></div>
+					  			</div>
+						  </div>
+
+				  </div>
+		  </div>
+</section>
 
 <!-- **************IMPORTANT Elevator Pitch; FOR TIME BEING COMMENTED******************* -->
-	<section class="recommendations-section">
-		  <!-- <div class="container-fluid">
+	<!--<section class="recommendations-section">
+		   <div class="container-fluid">
 		  	  <div class="white-bg">
 			  	<h2>Elevator Pitch</h2>
 			  	<p id="elevator_data"></p>
 			  </div>
-		  </div> -->
-	</section>
+		  </div> 
+	</section>-->
 
 	<!-- ************** End of Elevator Pitch  Comment ******************* -->
 
@@ -203,21 +281,29 @@
 	</div>
 </div>
 
-</div>
+
+
+	
+
+
 	<script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/looper.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
+     <script type="text/javascript" src="{% static 'js/matchHeight-min.js' %}"></script>
 	<!--<script type="text/javascript" src="{% static 'js/script.js' %}"></script>-->
+	<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.0/jquery.matchHeight-min.js"></script> -->
 	<script type="text/javascript">
 
 		$(document).ready(function(){
+
 			sub_process = "{{sub_process.id}}"
 			$('.process[data-processid='+ sub_process + "]").addClass('active');
 			updateCarouseldata(sub_process);
 	    	if('.prg-type'){
 	    		$('.prg-type:first').parent().addClass('active');
 	    	}
+
 
 		    $('.prg-type').click(function (e) {
 		    	e.preventDefault();
@@ -237,23 +323,17 @@
 		    });
 
 
-			var loadTaskData = function(task_id){
-				$.ajax({
-		            url: '/get-task-data/'+task_id,
-		            type: 'GET',
-		            success: function(data) {
-		            	$('#key_row').html('')
-		            	$('#value_row').html('')
-		            	var data = data['data'];
-		            	if (data.length > 0){
-		            		$column_name = $('#key_row');
+
+
+		    function cloumnMoreOrLess(data){
+		    	$column_name = $('#key_row');
 		            		$column_value = $('#value_row');
 		            		for(var i=0;i<data.length;i++){
 		            			column_data = data[i].data.replace(/&nbsp;/g, ' ');
 		            			substring = "https://";
 		            			var str = column_data;
 								var is_url = str.includes(substring);
-
+								
 		            			if(column_data.length > 200 && (!(is_url))){
 
 		            			$column_name.append('<th data-number="'+data[i].column_number+'" class="task-column tbl-btn"  style="max-width:150px;min-width:30px;width:32px;" data-taskdata-id="'+data[i].data_id+'">'+ data[i].column_name+'</th>')
@@ -267,7 +347,7 @@
 			    				var url = html.match(/(((ftp|https?):\/\/)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g);
 
 							    		$.each(url, function(i, v) {
-							        		html = html.replace(v, '<a style="color:#c92127;" href="' + v + '" target="_blank">' + v + '</a>');        
+							        		html = html.replace(v, '<a style="color:black;" href="' + v + '" target="_blank">' + v + '</a>');        
 							    		});
 
 				            		$column_name.append('<th data-number="'+data[i].column_number+'" class="task-column tbl-btn"  style="max-width:150px;word-break: break-word;min-width:30px;width:32px;" data-taskdata-id="'+data[i].data_id+'">'+ data[i].column_name+'</th>')
@@ -286,17 +366,148 @@
 
 		            			}
 
-		            		}
-		            	}
+		            		}// for loop ends here
+		    }//end of cloumnMoreOrLess function
 
+		    
+
+		    function cloumnEqualToNine(data){
+		    	for(var i=0;i<data.length;i++){
+
+        			substring = "https://";
+        			var str = String(data[i].data);
+					var is_url = str.includes(substring);
+					
+					if (is_url){
+					
+					$(str+':contains("http://")').html(function(index, html) {
+    				var url = html.match(/(((ftp|https?):\/\/)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g);
+
+				    $.each(url, function(i, v) {
+				    html = html.replace(v, '<a style="color:blue;" href="' + v + '" target="_blank">' + v + '</a>');   
+				    		});
+				    		 
+				    	if(data[i].column_name ==="Base Points"){
+	            			$('#base-point-sub').html('');
+	            			$('#base-point-sub').append(html);
+	            		}
+	            		if(data[i].column_name ==="Kicker Points"){
+	            			$('#kick-point-sub').html('');
+	            			$('#kick-point-sub').append(html);
+	            		}
+	            		if(data[i].column_name ==="AAT Required"){
+	            			$('#aat-sub').html('');
+	            			$('#aat-sub').append(html);
+	            		}
+	            		if(data[i].column_name ==="Maximum Wins"){
+	            			$('#max-win-sub').html('');
+	            			$('#max-win-sub').append(html);
+	            		}
+	            		if(data[i].column_name ==="Adoption Window"){
+	            			$('#adoption-window-sub').html('');
+	            			$('#adoption-window-sub').append(html);
+	            		}
+	            		if(data[i].column_name ==="Points Formula"){
+	            			$('#points-formul-sub').html('');
+	            			$('#points-formul-sub').append(html);
+	            		}
+	            		if(data[i].column_name ==="Opportunity Only (no self initiated tasks)"){
+	            			$('#opportunity-only-sub').html('');
+	            			$('#opportunity-only-sub').append(html);
+	            		}
+	            		
+	            		if(data[i].column_name ==="Adoption Definition") {
+	            			$('#adoption-def-sub').html('');
+	            			$('#adoption-def-sub').append(html);
+	            		}
+
+	            		if(data[i].column_name ==="Eligibility Rules"){
+	            			$('#adoption-window').html('');
+	            			$('#adoption-window').append(html);
+	            		}
+	            		
+        				});
+
+					}
+
+					else{
+
+	            		if((data[i].column_name ==="Base Points")){
+	            			$('#base-point-sub').html('');
+	            			$('#base-point-sub').append((data[i].data).replace(/&nbsp;/gi,' '));
+	            		}
+	            		if((data[i].column_name ==="Kicker Points")){
+	            			$('#kick-point-sub').html('');
+	            			$('#kick-point-sub').append((data[i].data).replace(/&nbsp;/gi,' '));
+	            		}
+	            		if((data[i].column_name ==="AAT Required")){
+	            			$('#aat-sub').html('');
+	            			$('#aat-sub').append((data[i].data).replace(/&nbsp;/gi,' '));
+	            		}
+	            		if((data[i].column_name ==="Maximum Wins")){
+	            			$('#max-win-sub').html('');
+	            			$('#max-win-sub').append((data[i].data).replace(/&nbsp;/gi,' '));
+	            		}
+	            		if((data[i].column_name ==="Adoption Window")){
+	            			$('#adoption-window-sub').html('');
+	            			$('#adoption-window-sub').append((data[i].data).replace(/&nbsp;/gi,' '));
+	            			/*$('#adoption-window-sub').html().replace(/&nbsp;/gi,' ');*/
+	            		}
+	            		if((data[i].column_name ==="Points Formula")){
+	            			$('#points-formul-sub').html('');
+	            			$('#points-formul-sub').append((data[i].data).replace(/&nbsp;/gi,' '));
+	            		}
+	            		if((data[i].column_name ==="Opportunity Only (no self initiated tasks)") ){
+	            			$('#opportunity-only-sub').html('');
+	            			$('#opportunity-only-sub').append((data[i].data).replace(/&nbsp;/gi,' '));
+	            		}
+
+	            		if(data[i].column_name ==="Adoption Definition") {
+	            			$('#adoption-def-sub').html('');
+	            			$('#adoption-def-sub').append((data[i].data).replace(/&nbsp;/gi,' '));
+	            		}
+
+	            		if((data[i].column_name ==="Eligibility Rules")){
+	            			$('#adoption-window').html('');
+	            			$('#adoption-window').append((data[i].data).replace(/&nbsp;/gi,' '));
+	            		}
+	            		
+					}
+	            		$('.first-row').matchHeight();
+	            		$('.second-row').matchHeight();
+	            		$('.third-row').matchHeight();
+        	}//end for loop
+		}// end of function cloumnEqualToNine
+
+
+			var loadTaskData = function(task_id){
+				$.ajax({
+		            url: '/get-task-data/'+task_id,
+		            type: 'GET',
+		            success: function(data) {
+		            	$('#key_row').html('')
+		            	$('#value_row').html('')
+		            	var data = data['data'];
+		            	
+		            	if (data.length == 9){
+		            		$("#static-table-column-data").show();
+		            		cloumnEqualToNine(data)
+		            		} // if (data.length == 9) ends here
+		            	else if(!(data.length == 9)){
+		            		 $("#static-table-column-data").hide();
+		            		cloumnMoreOrLess(data)
+		            		}
+		            	
 		            },
 		            error: function(xhr, status, error) {
 		                var err = eval("(" + xhr.responseText + ")");
 		                alert(err.Message);
-		                //alert("Something went wrong, please try after some time");
 		            }
 	    		});	
+
 			}
+
+
 
 			function updateTaskTypes(program_type_id){
 				$('#program-tasks').html("")
@@ -326,7 +537,6 @@
 		            error: function(xhr, status, error) {
 		                var err = eval("(" + xhr.responseText + ")");
 		                alert(err.Message);
-		                //alert("Something went wrong, please try after some time");
 		            }
 	    		});
 			}
@@ -506,6 +716,8 @@
             $('#home-qf').addClass('active');
             window.location='/qf/home/'
         })	
+
+
 
 	</script>
 </body>
