@@ -439,7 +439,7 @@ def show_process_data(request, process_id, sprocess_name):
         sub_process = SubProcess.objects.get(process=process_id,url_name=sprocess_name)
             
         if sub_process:
-            program_types = ProgramType.objects.filter(subprocess=sub_process).order_by('created_date')
+            program_types = ProgramType.objects.filter(subprocess=sub_process, is_disabled=False)
             sub_processs = SubProcess.objects.filter(is_disabled=False)
         response = {'request': request, 'user': request.user,'sub_process':sub_process,
                     'program_types':program_types,'sub_processs':sub_processs,
