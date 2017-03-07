@@ -118,7 +118,23 @@ a.sub-task-link.active{background: #4caf50; }
 .sub-row .combo-bg .carousel-control .glyphicon-chevron-right, .carousel-control .icon-next {right: 10%;}
 .modal-box-css .modal-title{ font-size: 18px; font-weight: 600}
 .modal-box-css .modal-dialog{ width: 80%}
-.modal-box-css .tab-content>.active {margin-top: 20px;}
+/*.modal-box-css .tab-content>.active {margin-top: 20px;}*/
+.modal-box-css .nav-tabs>li>a {
+    border: 1px solid transparent;
+    border-radius: 0px 0px 0 0; background-color: #039be5; color: #fff
+}
+.modal-box-css  .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+    color: #fff;
+    background-color: #039be5;
+    border: 1px solid transparent
+}
+.modal-box-css .nav-tabs>li.active a { background-color: #4caf50;}
+
+ .modal-box-css .nav-tabs {
+    border-bottom: 0px solid #ddd !important;
+}
+
+.qf-window{width:98%;margin-top: 20px;overflow-y: hidden !important;}
 
 .table-setting{ margin-top:20px 0px 0px}
 .table-setting .white-bg{ background: #fff; padding: 15px; }

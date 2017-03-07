@@ -172,7 +172,7 @@ def budget_band(request):
 def auth_error(request):
     error = "Please sign out from current Google account and use your Regalix Email Id to login"
     context = RequestContext(request, {'request': request, 'user': request.user, 'error': error})
-    return render(request, 'index.html', context_instance=context)
+    return render(request, 'apollo_index.html', context_instance=context)
 
 
 def check_email(request, strategy, details, *args, **kwargs):
@@ -439,8 +439,15 @@ def show_process_data(request, process_id, sprocess_name):
         sub_process = SubProcess.objects.get(process=process_id,url_name=sprocess_name)
             
         if sub_process:
+            
+            id_list = [234, 235, 236, 237, 239, 238] # Given Order [ 'Setup', 'Launch', 'Expand', 'Deliver', 'Zero point recommendations', 'Other Tasks']
             program_types = ProgramType.objects.filter(subprocess=sub_process, is_disabled=False)
             sub_processs = SubProcess.objects.filter(is_disabled=False)
+            
+            if len(program_types) == len(id_list):
+                objects = dict([(obj.id, obj) for obj in program_types])
+                program_types = [objects[id]  for id in id_list]
+                
         response = {'request': request, 'user': request.user,'sub_process':sub_process,
                     'program_types':program_types,'sub_processs':sub_processs,
                     'is_manager':is_manager
