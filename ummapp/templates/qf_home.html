@@ -13,10 +13,30 @@
 
 	<link rel="stylesheet" type="text/css" href="{% static 'css/looper.css'%}">
 	<link rel="stylesheet" type="text/css" href="{% static 'css/new_custom.css'%}">
+	<link rel="shortcut icon" type="image/png" href="{% static 'manage_admin/images/new_favicon.ico'%}"/>
+
+	<style type="text/css">
+		.white-bg td {
+		    border: 1px solid #333;
+		    padding: 3px;
+		    line-height: initial;
+
+		}
+		.white-bg{
+			    margin-top: 9%;
+			    /*background: #e6ffcc !important;*/
+		}
+		.nav-top-fixed{
+			position: fixed; width: 100%;
+			top: 0em;
+		}
+
+	</style>
 
 </head>
 
 <body>
+<div class="nav-top-fixed">
 	<header class="top-section">
 	  <div class="container-fluid">
 		  <div class="row">
@@ -70,12 +90,13 @@
 		  </div>
 	  </div>
 	</section>
-
 </div>
+
 <section class="recommendations-section">
 	<div class="container-fluid">
-		<div class="white-bg">
-			<div class="panel-group fqa-adding-table" id="accordion" style="height:300px; overflow-y: scroll;">
+		<div class="white-bg" style="">
+		<!-- <div class="white-bg" style="max-height: 500px; overflow: scroll;"> -->
+			<div class="panel-group fqa-adding-table" id="accordion">
       			<!-- Quality Framework will be added here in javascript -->
 		
 			</div>
@@ -85,25 +106,32 @@
 		  
 </section>
 
-<div class="container modal fade modal-box-css" id="myModal" style="margin-top: 20px;">
+<!-- bellow commented code is for modal window if they tell to revert it back we have to revert it back -->
+
+<!-- <div class="container modal fade modal-box-css qf-window" id="myModal">
 	<div role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close close-window-clear" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				<h4 class="modal-title" id="myModalLabel"></h4>
+		 <ul class="nav nav-tabs prgrm-tab" role="tablist">
+
+				{% for qualityframework in qualityframeworks %}
+				<li role="presentation"><a style="cursor: pointer;" data-toggle="modal" data-target="#myModal" qf-data-id="{{ qualityframework.id }}" class="qf-name-within-window">
+				{{ qualityframework.name }}</a>
+				</li>
+			    {% endfor %} 
+		 </ul>
 			</div>
 			<div class="modal-body">
-				<div class="qf-table"> 
-					
-                    
-                </div>
+				<div class="qf-table"> </div>
             </div>
             <div class="modal-footer">
             	<button type="button" class="btn btn-default close-window-clear" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 </body>
 	<script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
@@ -112,9 +140,9 @@
     <script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
 	<script type="text/javascript">
 
-		$(window).load(function(){
+		/*$(window).load(function(){
 	        $('#myModal').modal('show');
-	    });
+	    });*/
 	    
 		$(document).ready(function() {
 
@@ -124,17 +152,54 @@
 
 		 	if('.qf-name'){
 				$(".qf-name:first").parent().addClass('active');
-				getQualityFramework($(".qf-name:first").attr('qf-data-id'));
+				$(".qf-name-within-window:first").parent().addClass('active');
+				/*getQualityFramework($(".qf-name:first").attr('qf-data-id'));*/
+				getQualityFrameworkLoad($(".qf-name:first").attr('qf-data-id'));
 		 	}
 
 			$('.qf-name').click(function (e) {
 		    	e.preventDefault();
-		    	$('.qf-name').parent().removeClass('active')
-		    	$(this).parent().addClass('active')
-		    	getQualityFramework($(this).attr('qf-data-id'));
+		    	$('.qf-name').parent().removeClass('active');
+		    	$(this).parent().addClass('active');
+		    	/*$(".modal-header>ul>li.active").removeClass('active');*/
+		    	/*alert($(this).attr('qf-data-id').val();)*/
+		    	/*getQualityFramework($(this).attr('qf-data-id'));*/
+		    	getQualityFrameworkLoad($(this).attr('qf-data-id'))
 		    });
 
-		    function getQualityFramework(qf_id){
+		   /* $('.qf-name-within-window').click(function (e) {
+		    	e.preventDefault();
+		    	$('#myModal').modal('show');
+		    	$(".modal-header>ul>li.active").removeClass('active')
+		    	$(this).parent().addClass('active');
+		    	getQualityFrameworkWithinWindow($(this).attr('qf-data-id'));
+
+		    	return false;//To not to close modal window
+		    });*/
+
+
+		     function getQualityFrameworkLoad(qf_id){
+			    $.ajax({
+	                url: '/get-qf-data/'+qf_id,
+	                type: 'GET',
+	                cache: false,
+	                success: function(data) {
+	                    var data = data['data'];
+	                    $('.white-bg').html('');
+	                    tdata = data.data.replace(/&nbsp;/g, ' ');
+						$('.white-bg').append(tdata);
+	                    
+	                },
+	                error: function(xhr, status, error) {
+	                    var err = eval("(" + xhr.responseText + ")");
+	                    alert(err.Message);
+	                }
+	            }); 
+			}
+
+		   
+			//Bellow function is to show QF in odal window
+		    /*function getQualityFramework(qf_id){
 			    $.ajax({
 	                url: '/get-qf-data/'+qf_id,
 	                type: 'GET',
@@ -143,10 +208,33 @@
 	                    var data = data['data'];
 	                    $('.qf-table').html('');
 	                    $('.modal-title').html('');
-	                    tname = data.name.replace(/&nbsp;/g, ' ');
+	                   // tname = data.name.replace(/&nbsp;/g, ' ');
 	                    tdata = data.data.replace(/&nbsp;/g, ' ');
 
-	                    $('.modal-title').append(tname)
+	                    //$('.modal-title').append(tname)
+						$('.qf-table').append(tdata)
+						//$('.white-bg').append(tdata);
+	                    
+	                },
+	                error: function(xhr, status, error) {
+	                    var err = eval("(" + xhr.responseText + ")");
+	                    alert(err.Message);
+	                }
+	            }); 
+			}	*/		
+
+			/*function getQualityFrameworkWithinWindow(qf_id){
+			    $.ajax({
+	                url: '/get-qf-data/'+qf_id,
+	                type: 'GET',
+	                cache: false,
+	                success: function(data) {
+	                    var data = data['data'];
+	                    $('.qf-table').html('');
+	                    $('.modal-title').html('');
+	                    //tname = data.name.replace(/&nbsp;/g, ' ');
+	                    tdata = data.data.replace(/&nbsp;/g, ' ');
+	                    //$('.modal-title').append(tname)
 						$('.qf-table').append(tdata)
 	                    
 	                },
@@ -155,7 +243,10 @@
 	                    alert(err.Message);
 	                }
 	            }); 
-			}				
+			}*/
+
+
+
 			  
 		});// end of document ready function
 

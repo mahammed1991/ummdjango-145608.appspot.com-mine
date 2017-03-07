@@ -13,6 +13,7 @@
 
 	<link rel="stylesheet" type="text/css" href="{% static 'css/looper.css'%}">
 	<link rel="stylesheet" type="text/css" href="{% static 'css/new_custom.css'%}">
+	<link rel="shortcut icon" type="image/png" href="{% static 'manage_admin/images/new_favicon.ico'%}"/>
 
 
 
@@ -40,7 +41,7 @@
 	  <div class="container-fluid">
 		  <ul>
 			  <!--<li><a href="/">Advertiser Goals</a></li>-->
-			  {% for sub_process in sub_processs  %}
+			  {% for sub_process in sub_processs %}
 			  	<li><a href="/process/{{sub_process.process.id}}/sp/{{sub_process.url_name}}/view" data-processid="{{sub_process.id}}" class="process">{{sub_process.name}} Q'{{sub_process.quarter.quarter}} {{sub_process.quarter.quarter_year}}</a></li>
 			  {% endfor %}
 			  {% if faq %}
@@ -58,8 +59,9 @@
 		   <!-- Nav tabs -->
 		  <ul class="nav nav-tabs prgrm-tab" role="tablist">
 			{% for ptype in program_types %}
-			<li role="presentation"><a  href="#tab{{ ptype.id }}" aria-controls="tab{{ ptype.id }}" role="tab" data-toggle="tab" data-programtype-id="{{ ptype.id }}" class="prg-type ">{{ ptype.name }}</a>
-			</li>
+				<li role="presentation"><a  href="#tab{{ ptype.id }}" aria-controls="tab{{ ptype.id }}" role="tab" data-toggle="tab" data-programtype-id="{{ ptype.id }}" class="prg-type ">{{ ptype.name }}</a>
+				</li>
+				
 			<!--<script>
 		    	 cateList.push({{ category.id }});
 		     </script>-->	

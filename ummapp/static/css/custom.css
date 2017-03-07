@@ -345,6 +345,14 @@ text-decoration: none;}
 #error{margin-left: 30%;
       margin-top: 20px;
 }
+#error-login-box p {color:red;}
+#error-login-box{
+    position: fixed;
+    width: 100%;
+    max-width: 400px;
+    top: 22%;
+    left: 50%;
+}
 
 .user{float: right;
      padding-top: 15px;
